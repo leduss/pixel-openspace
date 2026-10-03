@@ -41,7 +41,7 @@ import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
 import { Frise } from './timeline'
-import { ecrirePreferences, lirePreferences, Reglages, type Preferences } from './settings'
+import { ecrirePreferences, lirePreferences, Reglages, useMeteoDuLieu, type Preferences } from './settings'
 import { THEME_GYM } from './themes/gym'
 import { THEME_MODERNE } from './themes/modern'
 import { fete, type Fete } from './seasons'
@@ -265,6 +265,9 @@ export function PixelOpenspace({
     })
   const language = preferences.language ?? langueProp
   const enseigne = preferences.title?.trim() || title
+  // Un lieu choisi dans les réglages : sa vraie météo remplace celle des props, une fois trouvée.
+  const etatMeteo = useMeteoDuLieu(preferences.weatherPlace, language)
+  const meteo = etatMeteo.etat === 'trouve' ? etatMeteo.meteo : weather
   const nomTheme = preferences.theme ?? themeProp
   const seasonal = preferences.seasonal ?? saisonsProp
   const assombrir = preferences.night ?? true
@@ -664,6 +667,9 @@ export function PixelOpenspace({
               <Reglages
                 titre={preferences.title ?? ''}
                 titreOrigine={title}
+                lieu={preferences.weatherPlace ?? ''}
+                lieuOrigine={weather?.place}
+                etatMeteo={etatMeteo}
                 theme={nomTheme}
                 langue={language}
                 saisons={seasonal}
@@ -709,7 +715,7 @@ export function PixelOpenspace({
                   <Records snake={records.snake} casse={records.casse} />
                   <ColisDeposes nombre={deposes} bas={lePlan.hauteur - 20} />
                   {seasonal ? <Fetes quoi={fete(maintenant)} bas={lePlan.hauteur - 20} /> : null}
-                  <Fenetre meteo={weather} />
+                  <Fenetre meteo={meteo} />
                   <Horloge maintenant={maintenant} ouverture={ouverture} />
                   {cafe && theme.CafeQuiCoule ? <theme.CafeQuiCoule /> : null}
 

@@ -148,7 +148,7 @@ Every option can also live in a `pixel-openspace.json` file, in the current fold
 - A whiteboard with the next five runs, a real-time clock, the office cat napping on empty desks.
 - The seasons: Halloween all October, Christmas all December, and Easter for the two weeks before Easter Monday, with hidden eggs and a bunny.
 - Day and night: the room darkens in the evening, and the RGB towers, neon signs, lamps and screens glow.
-- A settings gear: whoever watches the room renames the sign on the wall, picks the theme and language, turns on the 8-bit sound and browser alerts, and turns off the seasons, the night or the walking around. Their choices stay in their browser and win over the props.
+- A settings gear: whoever watches the room renames the sign on the wall, picks the city whose real weather shows at the window (from [Open-Meteo](https://open-meteo.com), no key needed), the theme and the language, turns on the 8-bit sound and browser alerts, and turns off the seasons, the night or the walking around. Their choices stay in their browser and win over the props.
 - Browser notifications when an agent fails, and an 8-bit sound for starts, failures and visitors (both opt-in).
 - `prefers-reduced-motion` is respected: everybody stays put.
 

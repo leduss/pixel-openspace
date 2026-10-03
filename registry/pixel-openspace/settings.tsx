@@ -7,7 +7,7 @@
  */
 
 import { SettingsIcon } from 'lucide-react'
-import { useId, useState, type ReactNode } from 'react'
+import { useEffect, useId, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -16,16 +16,59 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { useTextes } from './primitives'
-import type { Language, ThemeName } from './types'
+import type { Language, ThemeName, Weather } from './types'
+import { lireMeteo, localiser, type Endroit } from './weather'
 
 /** Ce que le visiteur a changé ; ce qu'il n'a pas touché suit les props. */
 export type Preferences = {
   title?: string
+  /** Le lieu de la météo à la fenêtre, à la place de celle des props. */
+  weatherPlace?: string
   theme?: ThemeName
   language?: Language
   seasonal?: boolean
   night?: boolean
   motion?: boolean
+}
+
+/** Où en est la recherche du lieu choisi dans les réglages. */
+export type EtatMeteo = { etat: 'aucun' } | { etat: 'recherche' } | { etat: 'introuvable' } | { etat: 'trouve'; meteo: Weather }
+
+/**
+ * La météo du lieu tapé dans les réglages : cherchée une fois la frappe
+ * finie, puis relue toutes les quinze minutes.
+ */
+export function useMeteoDuLieu(lieu: string | undefined, langue: Language): EtatMeteo {
+  const [etat, setEtat] = useState<EtatMeteo>({ etat: 'aucun' })
+  useEffect(() => {
+    const cherche = lieu?.trim()
+    if (!cherche) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- plus de lieu choisi : la météo des props reprend
+      setEtat({ etat: 'aucun' })
+      return
+    }
+    let fini = false
+    let endroit: Endroit | null = null
+    const lire = async () => {
+      try {
+        endroit ??= await localiser(cherche, langue)
+        const meteo = { ...(await lireMeteo(endroit)), place: endroit.nom ?? cherche }
+        if (!fini) setEtat({ etat: 'trouve', meteo })
+      } catch {
+        if (!fini && !endroit) setEtat({ etat: 'introuvable' })
+      }
+    }
+    setEtat({ etat: 'recherche' })
+    // Une recherche par lieu, pas une par lettre tapée.
+    const attente = setTimeout(lire, 700)
+    const minuterie = setInterval(lire, 15 * 60_000)
+    return () => {
+      fini = true
+      clearTimeout(attente)
+      clearInterval(minuterie)
+    }
+  }, [lieu, langue])
+  return etat
 }
 
 const CLE = 'pixel-openspace:settings'
@@ -108,6 +151,9 @@ function Choix<T extends string>({
 export function Reglages({
   titre,
   titreOrigine,
+  lieu,
+  lieuOrigine,
+  etatMeteo,
   theme,
   langue,
   saisons,
@@ -124,6 +170,10 @@ export function Reglages({
   /** L'enseigne choisie par le visiteur, vide s'il garde celle des props. */
   titre: string
   titreOrigine: string
+  /** Le lieu tapé par le visiteur, vide s'il garde la météo des props. */
+  lieu: string
+  lieuOrigine?: string
+  etatMeteo: EtatMeteo
   theme: ThemeName
   langue: Language
   saisons: boolean
@@ -141,6 +191,15 @@ export function Reglages({
   // Ouverte et fermée à la main, sans `asChild` ni `render` : la même fenêtre marche avec les styles shadcn Radix et Base UI.
   const [ouverte, setOuverte] = useState(false)
   const idTitre = useId()
+  const idLieu = useId()
+  const aideMeteo =
+    etatMeteo.etat === 'recherche'
+      ? t.weatherSearching
+      : etatMeteo.etat === 'introuvable'
+        ? t.weatherNotFound
+        : etatMeteo.etat === 'trouve'
+          ? t.weatherFound(etatMeteo.meteo.place ?? lieu, etatMeteo.meteo.temperature)
+          : null
   return (
     <Dialog open={ouverte} onOpenChange={setOuverte}>
       <Button variant="outline" size="icon-sm" aria-label={t.open} title={t.open} onClick={() => setOuverte(true)}>
@@ -161,6 +220,18 @@ export function Reglages({
               maxLength={24}
               onChange={(e) => changer({ title: e.target.value || undefined })}
             />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor={idLieu}>{t.weather}</Label>
+            <Input
+              id={idLieu}
+              value={lieu}
+              placeholder={lieuOrigine ?? t.weatherPlaceholder}
+              onChange={(e) => changer({ weatherPlace: e.target.value || undefined })}
+            />
+            {aideMeteo ? (
+              <p className={`text-sm ${etatMeteo.etat === 'introuvable' ? 'text-destructive' : 'text-muted-foreground'}`}>{aideMeteo}</p>
+            ) : null}
           </div>
           <Choix nom={t.theme} options={THEMES.map((n) => [n, t.themes[n]])} valeur={theme} changer={(v) => changer({ theme: v })} />
           <Choix nom={t.language} options={LANGUES} valeur={langue} changer={(v) => changer({ language: v })} />

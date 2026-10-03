@@ -40,6 +40,11 @@ export type Texts = {
     title: string
     description: string
     sign: string
+    weather: string
+    weatherPlaceholder: string
+    weatherSearching: string
+    weatherNotFound: string
+    weatherFound: (place: string, temperature: number) => string
     theme: string
     themes: Record<'geek' | 'eighties' | 'gym' | 'modern', string>
     language: string
@@ -135,6 +140,11 @@ const EN: Texts = {
     title: 'Settings',
     description: 'Saved in this browser only.',
     sign: 'Sign on the wall',
+    weather: 'Weather at the window',
+    weatherPlaceholder: 'A city, or latitude,longitude',
+    weatherSearching: 'Looking for it…',
+    weatherNotFound: 'Place not found.',
+    weatherFound: (place, temperature) => `${place}: ${temperature} °C right now, from Open-Meteo.`,
     theme: 'Theme',
     themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern' },
     language: 'Language',
@@ -235,6 +245,11 @@ const FR: Texts = {
     title: 'Réglages',
     description: 'Enregistrés dans ce navigateur seulement.',
     sign: 'Enseigne au mur',
+    weather: 'Météo à la fenêtre',
+    weatherPlaceholder: 'Une ville, ou latitude,longitude',
+    weatherSearching: 'Recherche…',
+    weatherNotFound: 'Lieu introuvable.',
+    weatherFound: (place, temperature) => `${place} : ${temperature} °C en ce moment, d’après Open-Meteo.`,
     theme: 'Thème',
     themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne' },
     language: 'Langue',

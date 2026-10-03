@@ -47,6 +47,11 @@
           "target": "components/pixel-openspace/timeline.tsx"
         },
         {
+          "path": "registry/pixel-openspace/weather.ts",
+          "type": "registry:lib",
+          "target": "components/pixel-openspace/weather.ts"
+        },
+        {
           "path": "registry/pixel-openspace/i18n.ts",
           "type": "registry:component",
           "target": "components/pixel-openspace/i18n.ts"
