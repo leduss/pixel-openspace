@@ -161,13 +161,10 @@ Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées s
 - **cron** : ta crontab. cron ne garde pas d'historique : chaque passage est supposé avoir eu lieu à l'heure.
 - **systemd** (Linux) : tes timers utilisateur, avec le résultat de leur dernier passage et la dernière ligne de leur journal.
 
-Il n'est pas encore sur npm. Depuis un clone :
+Une seule commande, avec Node.js 18.3 ou plus récent :
 
 ```bash
-git clone https://github.com/leduss/pixel-openspace
-cd pixel-openspace
-bun install
-bun run cli -- --match sauvegarde --theme modern
+npx pixel-openspace --match sauvegarde --theme modern
 ```
 
 Le serveur n'écoute que sur `127.0.0.1:4747` et ouvre ton navigateur. Les options utiles :

@@ -161,13 +161,10 @@ The `cli/` folder holds a small server that finds the jobs scheduled on your mac
 - **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
 - **systemd** (Linux): your user timers, with the result of their last run and their last journal line.
 
-It is not on npm yet. From a clone:
+One command, with Node.js 18.3 or later:
 
 ```bash
-git clone https://github.com/leduss/pixel-openspace
-cd pixel-openspace
-bun install
-bun run cli -- --match backup --theme modern
+npx pixel-openspace --match backup --theme modern
 ```
 
 The server listens on `127.0.0.1:4747` only and opens your browser. The useful options:

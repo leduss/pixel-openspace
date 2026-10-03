@@ -29,6 +29,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 ### Added
 
+- The local server is on npm: `npx pixel-openspace`, no clone needed.
 - A fifth theme, `kitchen`: a restaurant kitchen with stainless ranges, where a working job cooks over a blue flame and a failed one burns its pan in black smoke. The lead is the head chef.
 - Settings follow you across tabs: change the theme in one, every open room follows.
 - Continuous integration on GitHub: lint, types, tests, the local server build, and a check that the published registry matches the sources.
