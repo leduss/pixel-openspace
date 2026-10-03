@@ -27,7 +27,13 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 ### Added
 
+- Settings follow you across tabs: change the theme in one, every open room follows.
 - Continuous integration on GitHub: lint, types, tests, the local server build, and a check that the published registry matches the sources.
+- Render tests for the component, the day timeline and the settings.
+
+### Changed
+
+- The component is split into smaller files (`card`, `decor`, `people`, `festivities`, `vue`…): updating adds them to `components/pixel-openspace/`. Nothing changes on screen.
 
 ## 0.1.0 · 2026-10-03
 

@@ -27,7 +27,13 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 ### Ajouté
 
+- Les réglages suivent d'un onglet à l'autre : change le thème dans l'un, toutes les salles ouvertes suivent.
 - L'intégration continue sur GitHub : lint, types, tests, construction du serveur local, et vérification que le registre publié correspond aux sources.
+- Des tests de rendu pour le composant, la frise de la journée et les réglages.
+
+### Modifié
+
+- Le composant est découpé en fichiers plus petits (`card`, `decor`, `people`, `festivities`, `vue`…) : la mise à jour les ajoute dans `components/pixel-openspace/`. Rien ne change à l'écran.
 
 ## 0.1.0 · 2026-10-03
 
