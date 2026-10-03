@@ -1,0 +1,41 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "pixel-openspace",
+  "homepage": "https://github.com/leduss/pixel-openspace",
+  "items": [
+    {
+      "name": "pixel-openspace",
+      "type": "registry:block",
+      "title": "Pixel Openspace",
+      "description": "A pixel-art open space where your scheduled jobs and AI agents come to work: they sit and type while running, wander to the coffee machine when idle, and their PC smokes when they fail.",
+      "registryDependencies": ["button", "card"],
+      "files": [
+        {
+          "path": "registry/pixel-openspace/pixel-openspace.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/pixel-openspace.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/engine.ts",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/engine.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/arcade.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/arcade.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/i18n.ts",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/i18n.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/types.ts",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/types.ts"
+        }
+      ]
+    }
+  ]
+}
