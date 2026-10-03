@@ -102,6 +102,7 @@ export const TEXTES = {
     aussiTitre: 'Also in the room',
     aussiTexte: 'None of this is needed to watch your jobs. It is there because an office you look at every day should be a nice place.',
     details: [
+      ['Two themes', 'A geek open space with RGB towers, or a 1986 corporate office: wood panelling, green-phosphor CRTs, rotary phones.'],
       ['Two arcade cabinets', 'Component Snake and Chip Breaker, both playable. High scores hang on the wall.'],
       ['A wall screen', 'Up to four numbers of your own: jobs today, errors, queue size, budget.'],
       ['The lead', 'Does its rounds while it runs, then reports in front of the wall screen and reads your announcements.'],
@@ -164,6 +165,10 @@ export const TEXTES = {
     aussiTexte:
       'Rien de tout ça n’est nécessaire pour surveiller tes tâches. C’est là parce qu’un bureau qu’on regarde tous les jours doit être un endroit agréable.',
     details: [
+      [
+        'Deux thèmes',
+        'Un open space geek aux tours RGB, ou un bureau d’entreprise de 1986 : lambris, écrans cathodiques vert phosphore, téléphones à cadran.',
+      ],
       ['Deux bornes d’arcade', 'Snake des composants et Casse-puces, jouables toutes les deux. Les records sont affichés au mur.'],
       ['Un écran mural', 'Jusqu’à quatre chiffres à toi : tâches du jour, erreurs, file d’attente, budget.'],
       ['Le chef', 'Fait sa ronde quand il tourne, puis son rapport devant l’écran mural, et lit tes annonces.'],

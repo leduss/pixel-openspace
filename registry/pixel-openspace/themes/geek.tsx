@@ -64,15 +64,6 @@ export function Decor({
   return (
     <>
       <defs>
-        <style>{`@keyframes trotteuse { to { transform: rotate(360deg) } }
-        @keyframes montage-bureau {
-          from { transform: translateY(-160px); opacity: 0 }
-          60% { transform: translateY(6px); opacity: 1 }
-          to { transform: none; opacity: 1 }
-        }`}</style>
-        <filter id="flou-neon" x="-20%" y="-50%" width="140%" height="200%">
-          <feGaussianBlur stdDeviation="2.2" />
-        </filter>
         <pattern id="beton" width="96" height="96" patternUnits="userSpaceOnUse">
           <rect width="96" height="96" fill="#565a62" />
           <rect width="96" height="1" fill="#4c5058" />

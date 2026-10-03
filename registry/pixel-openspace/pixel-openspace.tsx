@@ -25,8 +25,21 @@ import {
   type Statut,
 } from './engine'
 import { TEXTS, type Texts } from './i18n'
-import { ACCENT, Anim, LAMPE_PLAN, MUR_SALLE, Pixels, TextesContexte, animerLeDecor, etapes, useTextes, type Lumiere } from './primitives'
+import {
+  ACCENT,
+  Anim,
+  DefsCommunes,
+  LAMPE_PLAN,
+  MUR_SALLE,
+  Pixels,
+  TextesContexte,
+  animerLeDecor,
+  etapes,
+  useTextes,
+  type Lumiere,
+} from './primitives'
 import type { Theme } from './theme'
+import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
 import { fete, type Fete } from './seasons'
 import type { Agent, AgentStatus, OpenSpaceProps, SceneObject, ThemeName, WallTile, Weather } from './types'
@@ -78,7 +91,7 @@ function versVue(a: Agent, id = a.id): Vue {
 type Equipe = { chef: Vue; agents: Array<Vue> }
 
 /* Les thèmes disponibles, par leur nom public. */
-const THEMES: Record<ThemeName, Theme> = { geek: THEME_GEEK }
+const THEMES: Record<ThemeName, Theme> = { geek: THEME_GEEK, eighties: THEME_80 }
 
 /* Le thème de la scène, à portée des postes et des bonshommes. */
 const ThemeContexte = createContext<Theme>(THEME_GEEK)
@@ -644,6 +657,7 @@ export function PixelOpenspace({
                   role="img"
                   aria-label={t.sceneLabel}
                 >
+                  <DefsCommunes />
                   <theme.Decor hauteur={lePlan.hauteur} titre={title} liens={objectLinks} aller={aller} jouer={setJeu} />
                   <EcranMural tuiles={wall} />
                   <TableauBlanc prochains={prochains} />

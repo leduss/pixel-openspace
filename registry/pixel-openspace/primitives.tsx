@@ -205,3 +205,20 @@ export function Cliquable({
 
 /** Une source de lumière dans la nuit ; colorée, elle jette en plus une lueur de sa couleur. */
 export type Lumiere = { x: number; y: number; r: number; couleur?: string }
+
+/** Ce dont tous les thèmes ont besoin : la trotteuse de l'horloge, la chute d'un bureau qui se monte, le flou des néons. */
+export function DefsCommunes() {
+  return (
+    <defs>
+      <style>{`@keyframes trotteuse { to { transform: rotate(360deg) } }
+      @keyframes montage-bureau {
+        from { transform: translateY(-160px); opacity: 0 }
+        60% { transform: translateY(6px); opacity: 1 }
+        to { transform: none; opacity: 1 }
+      }`}</style>
+      <filter id="flou-neon" x="-20%" y="-50%" width="140%" height="200%">
+        <feGaussianBlur stdDeviation="2.2" />
+      </filter>
+    </defs>
+  )
+}

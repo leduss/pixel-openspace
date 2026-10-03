@@ -57,6 +57,7 @@ Les états (`working`, `ok`, `late`, `failed`, `off`, `never`, `on-demand`) et t
 
 ## Ce qu'il y a d'autre dans la salle
 
+- Deux thèmes (prop `theme`) : un open space geek aux tours RGB (`geek`), ou un bureau d'entreprise de 1986, lambris et écrans cathodiques vert phosphore (`eighties`).
 - Deux bornes d'arcade jouables, **Snake des composants** et **Casse-puces**, avec leurs records au mur.
 - Un tableau blanc avec les cinq prochains passages, une horloge à l'heure, le chat de l'atelier qui dort sur les bureaux vides.
 - Les saisons : Halloween tout octobre, Noël tout décembre, et Pâques les deux semaines avant le lundi de Pâques, avec ses œufs cachés et son lapin.
