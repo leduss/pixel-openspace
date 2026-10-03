@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Les idées de thèmes, gardées en local
+IDEES-THEMES.md

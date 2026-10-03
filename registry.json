@@ -140,6 +140,11 @@
           "path": "registry/pixel-openspace/themes/modern.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/themes/modern.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/themes/kitchen.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/themes/kitchen.tsx"
         }
       ],
       "dependencies": [

@@ -1,4 +1,4 @@
-import type { Language } from './types'
+import type { Language, ThemeName } from './types'
 
 /** Every word the open space writes or says, in English and in French. */
 export type Texts = {
@@ -46,7 +46,7 @@ export type Texts = {
     weatherNotFound: string
     weatherFound: (place: string, temperature: number) => string
     theme: string
-    themes: Record<'geek' | 'eighties' | 'gym' | 'modern', string>
+    themes: Record<ThemeName, string>
     language: string
     sound: string
     soundHint: string
@@ -148,7 +148,7 @@ const EN: Texts = {
     weatherNotFound: 'Place not found.',
     weatherFound: (place, temperature) => `${place}: ${temperature} °C right now, from Open-Meteo.`,
     theme: 'Theme',
-    themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern' },
+    themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern', kitchen: 'Kitchen' },
     language: 'Language',
     sound: '8-bit sound',
     soundHint: 'A jingle when a job starts, fails, or a visitor comes in.',
@@ -255,7 +255,7 @@ const FR: Texts = {
     weatherNotFound: 'Lieu introuvable.',
     weatherFound: (place, temperature) => `${place} : ${temperature} °C en ce moment, d’après Open-Meteo.`,
     theme: 'Thème',
-    themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne' },
+    themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne', kitchen: 'Cuisine' },
     language: 'Langue',
     sound: 'Son 8 bits',
     soundHint: 'Une ritournelle quand une tâche démarre, plante, ou qu’un visiteur entre.',

@@ -7,11 +7,18 @@ import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
 import { THEME_GYM } from './themes/gym'
+import { THEME_CUISINE } from './themes/kitchen'
 import { THEME_MODERNE } from './themes/modern'
 import type { ThemeName } from './types'
 
 /* Les thèmes disponibles, par leur nom public. */
-export const THEMES: Record<ThemeName, Theme> = { geek: THEME_GEEK, eighties: THEME_80, gym: THEME_GYM, modern: THEME_MODERNE }
+export const THEMES: Record<ThemeName, Theme> = {
+  geek: THEME_GEEK,
+  eighties: THEME_80,
+  gym: THEME_GYM,
+  modern: THEME_MODERNE,
+  kitchen: THEME_CUISINE,
+}
 
 /* Le thème de la scène, à portée des postes et des bonshommes. */
 export const ThemeContexte = createContext<Theme>(THEME_GEEK)

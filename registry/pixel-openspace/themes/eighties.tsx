@@ -419,11 +419,11 @@ function Cathodique({ cx, dy, statut, bientot }: { cx: number; dy: number; statu
   const g = cx - 22
   return (
     <g>
-      {/* L'unité centrale, sous l'écran : son lecteur de disquettes et son voyant. */}
-      <rect x={cx - 32} y={dy + 6} width="56" height="12" fill="#c9c1ad" />
-      <rect x={cx - 32} y={dy + 6} width="56" height="2" fill="#ddd6c3" />
-      <rect x={cx - 26} y={dy + 11} width="18" height="2" fill="#3f3a30" />
-      <rect x={cx + 14} y={dy + 10} width="4" height="3" fill={statut === 'au-travail' ? '#22c55e' : '#57534e'}>
+      {/* L'unité centrale, centrée sous l'écran : son lecteur de disquettes et son voyant. */}
+      <rect x={cx - 28} y={dy + 6} width="56" height="12" fill="#c9c1ad" />
+      <rect x={cx - 28} y={dy + 6} width="56" height="2" fill="#ddd6c3" />
+      <rect x={cx - 22} y={dy + 11} width="18" height="2" fill="#3f3a30" />
+      <rect x={cx + 18} y={dy + 10} width="4" height="3" fill={statut === 'au-travail' ? '#22c55e' : '#57534e'}>
         {statut === 'au-travail' ? <Anim attributeName="opacity" values="1;0.2;1;1" dur="0.4s" repeatCount="indefinite" /> : null}
       </rect>
       {/* L'écran, bombé dans son boîtier beige. */}
@@ -592,15 +592,15 @@ function tenue80(id: string): Record<string, string> {
   const h = hachage(id)
   const veste = VESTES[h % VESTES.length]
   return {
-    h: CHEVEUX[(h >> 4) % CHEVEUX.length],
-    s: PEAUX[(h >> 8) % PEAUX.length],
+    h: CHEVEUX[(h >>> 4) % CHEVEUX.length],
+    s: PEAUX[(h >>> 8) % PEAUX.length],
     e: '#1c1917',
     c: veste,
     C: `color-mix(in oklab, ${veste} 70%, black)`,
-    t: CRAVATES[(h >> 12) % CRAVATES.length],
+    t: CRAVATES[(h >>> 12) % CRAVATES.length],
     // Le casque du Walkman, mousse orange.
     k: '#f97316',
-    p: PANTALONS[(h >> 16) % PANTALONS.length],
+    p: PANTALONS[(h >>> 16) % PANTALONS.length],
     b: '#1c1917',
   }
 }

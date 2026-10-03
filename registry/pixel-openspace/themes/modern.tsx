@@ -563,14 +563,14 @@ function tenueModerne(id: string): Record<string, string> {
   const h = hachage(id)
   const haut = HAUTS[h % HAUTS.length]
   return {
-    h: CHEVEUX[(h >> 4) % CHEVEUX.length],
-    s: PEAUX[(h >> 8) % PEAUX.length],
+    h: CHEVEUX[(h >>> 4) % CHEVEUX.length],
+    s: PEAUX[(h >>> 8) % PEAUX.length],
     e: '#1c1917',
     c: haut,
     C: `color-mix(in oklab, ${haut} 80%, black)`,
     t: haut,
     k: '#f5f5f4',
-    p: BAS[(h >> 12) % BAS.length],
+    p: BAS[(h >>> 12) % BAS.length],
     b: '#fafaf9',
   }
 }

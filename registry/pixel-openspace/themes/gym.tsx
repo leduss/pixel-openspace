@@ -605,14 +605,14 @@ function tenueGym(id: string): Record<string, string> {
   const h = hachage(id)
   const maillot = MAILLOTS[h % MAILLOTS.length]
   return {
-    h: CHEVEUX[(h >> 4) % CHEVEUX.length],
-    s: PEAUX[(h >> 8) % PEAUX.length],
+    h: CHEVEUX[(h >>> 4) % CHEVEUX.length],
+    s: PEAUX[(h >>> 8) % PEAUX.length],
     e: '#1c1917',
     c: maillot,
     C: `color-mix(in oklab, ${maillot} 75%, black)`,
     t: maillot,
     k: '#111827',
-    p: SHORTS[(h >> 12) % SHORTS.length],
+    p: SHORTS[(h >>> 12) % SHORTS.length],
     b: '#f8fafc',
   }
 }

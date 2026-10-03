@@ -18,6 +18,8 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 ### Fixed
 
+- Some agents showed black hair, skin or clothes in every theme: the colour was picked with a signed shift on a hash above 2³¹. They get their colours back.
+- In the `eighties` theme, the computer under each CRT is centred.
 - The local server only answers requests addressed to `127.0.0.1` or `localhost`, which blocks DNS rebinding: another website could otherwise read your jobs and, with `--allow-run`, start them.
 - The local server stops with a clear message on an unknown `--theme` or `--lang`, instead of a broken page.
 - An unknown `language` falls back to English, and an unknown `status` shows as `ok` with a warning in development, instead of crashing the room.
@@ -27,6 +29,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 ### Added
 
+- A fifth theme, `kitchen`: a restaurant kitchen with stainless ranges, where a working job cooks over a blue flame and a failed one burns its pan in black smoke. The lead is the head chef.
 - Settings follow you across tabs: change the theme in one, every open room follows.
 - Continuous integration on GitHub: lint, types, tests, the local server build, and a check that the published registry matches the sources.
 - Render tests for the component, the day timeline and the settings.

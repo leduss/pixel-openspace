@@ -77,7 +77,7 @@ export type SceneObject = 'workbench' | 'tv' | 'server-rack' | 'vending-machine'
 export type Language = 'en' | 'fr'
 
 /** The look of the room: a geek open space today, a corporate office around 1986, or a gym where every job rides an exercise bike. */
-export type ThemeName = 'geek' | 'eighties' | 'gym' | 'modern'
+export type ThemeName = 'geek' | 'eighties' | 'gym' | 'modern' | 'kitchen'
 
 export type OpenSpaceProps = {
   /** Up to five per row; rows are added as needed. */

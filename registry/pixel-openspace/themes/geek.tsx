@@ -670,7 +670,7 @@ export const PANTALONS = ['#334155', '#1e3a8a', '#44403c', '#3f3f46', '#365314']
 export const hachage = (id: string) => hacher(id, 7, 31)
 
 /** Un agent sur deux travaille casque sur les oreilles ; le chef, jamais. */
-export const porteCasque = (id: string) => id !== CHEF_ID && !estInvite(id) && ((hachage(id) >> 16) & 1) === 1
+export const porteCasque = (id: string) => id !== CHEF_ID && !estInvite(id) && ((hachage(id) >>> 16) & 1) === 1
 
 /** Chacun garde son sweat et sa coupe d'une visite à l'autre. */
 export function teint(id: string): Record<string, string> {
@@ -684,14 +684,14 @@ export function teint(id: string): Record<string, string> {
   const h = hachage(id)
   const sweat = CHEMISES[h % CHEMISES.length]
   return {
-    h: CHEVEUX[(h >> 4) % CHEVEUX.length],
-    s: PEAUX[(h >> 8) % PEAUX.length],
+    h: CHEVEUX[(h >>> 4) % CHEVEUX.length],
+    s: PEAUX[(h >>> 8) % PEAUX.length],
     e: '#1c1917',
     c: sweat,
     C: `color-mix(in oklab, ${sweat} 70%, black)`,
     t: '#f8fafc',
     k: '#111827',
-    p: PANTALONS[(h >> 12) % PANTALONS.length],
+    p: PANTALONS[(h >>> 12) % PANTALONS.length],
     b: '#f8fafc',
   }
 }
