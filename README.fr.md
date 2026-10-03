@@ -10,7 +10,7 @@ Chaque agent a son bureau. Celui qui tourne s'assoit et tape, l'écran allumé. 
 
 Deux façons de s'en servir :
 
-- **Dans ton appli** : un composant [shadcn/ui](https://ui.shadcn.com) pour Next.js et React. Le code est copié dans ton projet, habillé par tes propres `Button` et `Card`, et c'est toi qui lui passes tes tâches.
+- **Dans ton appli** : un composant [shadcn/ui](https://ui.shadcn.com) pour Next.js et React. Le code est copié dans ton projet, habillé par tes propres `Button` et `Card`, et c'est toi qui lui passes tes tâches : cron, files d'attente, agents IA, pipelines de CI.
 - **Sans écrire de code** : un petit serveur local qui lit les tâches déjà planifiées sur ta machine (launchd, cron, timers systemd) et ouvre leur open space dans ton navigateur.
 
 ## Dans ton appli
@@ -112,6 +112,33 @@ export default function Office() {
       onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
     />
   )
+}
+```
+
+### La CI aussi
+
+Tout ce qui tourne, réussit ou échoue peut avoir son bureau : un workflow GitHub Actions, un pipeline GitLab, un déploiement. Pendant qu'il tourne, son agent tape ; quand le build casse, son PC fume et le chef vient le voir ; chaque exécution du jour fait un point sur la frise. Ici, les dernières exécutions d'un workflow GitHub deviennent un agent de plus à ajouter aux autres. GitHub accepte 60 appels par heure sans jeton : garde la réponse une minute ou deux avant de redemander.
+
+```ts
+// app/api/ci/route.ts
+export async function GET() {
+  const res = await fetch('https://api.github.com/repos/OWNER/REPO/actions/workflows/ci.yml/runs?per_page=30', {
+    headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` },
+  })
+  const { workflow_runs: runs } = await res.json()
+  const running = runs.find((run) => run.status !== 'completed')
+  const done = runs.filter((run) => run.status === 'completed' && run.conclusion !== 'cancelled')
+  const last = done[0]
+  return Response.json({
+    id: 'ci',
+    name: 'CI',
+    emoji: '🧪',
+    schedule: 'à chaque push',
+    status: running ? 'working' : !last ? 'never' : last.conclusion === 'success' ? 'ok' : 'failed',
+    lastMessage: (running ?? last)?.display_title,
+    lastRun: last?.updated_at,
+    runs: done.reverse().map((run) => ({ at: run.run_started_at, ok: run.conclusion === 'success', message: run.display_title })),
+  })
 }
 ```
 

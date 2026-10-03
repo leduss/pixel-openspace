@@ -10,7 +10,7 @@ Every agent gets a desk. Whoever is running sits down and types, screen lit up. 
 
 There are two ways to use it:
 
-- **In your app**: a [shadcn/ui](https://ui.shadcn.com) component for Next.js and React. The code is copied into your project, styled by your own `Button` and `Card`, and you feed it your jobs.
+- **In your app**: a [shadcn/ui](https://ui.shadcn.com) component for Next.js and React. The code is copied into your project, styled by your own `Button` and `Card`, and you feed it your jobs: cron jobs, queues, AI agents, CI pipelines.
 - **Without writing code**: a small local server that reads the jobs already scheduled on your machine (launchd, cron, systemd timers) and opens their open space in your browser.
 
 ## In your app
@@ -112,6 +112,33 @@ export default function Office() {
       onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
     />
   )
+}
+```
+
+### CI pipelines too
+
+Anything that runs, passes or fails can have a desk: a GitHub Actions workflow, a GitLab pipeline, a deploy. While it runs, its agent types; when the build breaks, its PC smokes and the lead walks over; every run of the day is a dot on the timeline. Here, the last runs of a GitHub workflow become one more agent to add to the others. GitHub allows 60 calls an hour without a token: keep the answer a minute or two before asking again.
+
+```ts
+// app/api/ci/route.ts
+export async function GET() {
+  const res = await fetch('https://api.github.com/repos/OWNER/REPO/actions/workflows/ci.yml/runs?per_page=30', {
+    headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` },
+  })
+  const { workflow_runs: runs } = await res.json()
+  const running = runs.find((run) => run.status !== 'completed')
+  const done = runs.filter((run) => run.status === 'completed' && run.conclusion !== 'cancelled')
+  const last = done[0]
+  return Response.json({
+    id: 'ci',
+    name: 'CI',
+    emoji: '🧪',
+    schedule: 'on every push',
+    status: running ? 'working' : !last ? 'never' : last.conclusion === 'success' ? 'ok' : 'failed',
+    lastMessage: (running ?? last)?.display_title,
+    lastRun: last?.updated_at,
+    runs: done.reverse().map((run) => ({ at: run.run_started_at, ok: run.conclusion === 'success', message: run.display_title })),
+  })
 }
 ```
 

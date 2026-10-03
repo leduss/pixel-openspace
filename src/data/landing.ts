@@ -66,7 +66,7 @@ export const TEXTES = {
     copie: 'Copied',
     titre: 'Your cron jobs, at their desks.',
     intro:
-      'pixel-openspace shows your scheduled jobs and AI agents as a pixel-art office. Running jobs sit down and type, idle ones go get coffee, and when one fails its PC starts to smoke and the lead walks over.',
+      'pixel-openspace shows your scheduled jobs, CI pipelines and AI agents as a pixel-art office. Running jobs sit down and type, idle ones go get coffee, and when one fails its PC starts to smoke and the lead walks over.',
     etoile: 'Star it on GitHub',
     cafe: 'Buy me a coffee',
     licence: 'A shadcn/ui component for Next.js and React. Free and open source under the MIT license.',
@@ -118,6 +118,10 @@ export const TEXTES = {
         'Pumpkins and a ghost all October, a Christmas tree and garlands all December, hidden eggs and a hopping bunny at Easter.',
       ],
       ['The office cat', 'Naps on whichever desk was left empty.'],
+      [
+        'CI pipelines too',
+        'A GitHub Actions workflow, a GitLab pipeline, a deploy: it types while it runs, and a broken build smokes like any failed job.',
+      ],
       ['The day timeline', 'Under the room, one dot per run since midnight, red when it failed. Pass each job its runs.'],
       [
         'A settings gear',
@@ -137,7 +141,7 @@ export const TEXTES = {
     copie: 'Copié',
     titre: 'Tes tâches cron, à leur bureau.',
     intro:
-      'pixel-openspace montre tes tâches planifiées et tes agents IA comme un bureau en pixel art. Ceux qui tournent s’assoient et tapent, les désœuvrés vont au café, et quand l’un plante, son PC se met à fumer et le chef vient le voir.',
+      'pixel-openspace montre tes tâches planifiées, ta CI et tes agents IA comme un bureau en pixel art. Ceux qui tournent s’assoient et tapent, les désœuvrés vont au café, et quand l’un plante, son PC se met à fumer et le chef vient le voir.',
     etoile: 'Une étoile sur GitHub',
     cafe: 'M’offrir un café',
     licence: 'Un composant shadcn/ui pour Next.js et React. Gratuit et open source, sous licence MIT.',
@@ -187,6 +191,10 @@ export const TEXTES = {
       ['Visiteurs et livreurs', 'Augmente un compteur et quelqu’un entre : un visiteur salue le chef, un livreur dépose un colis.'],
       ['Les saisons', 'Citrouilles et fantôme tout octobre, sapin et guirlandes tout décembre, œufs cachés et lapin qui bondit à Pâques.'],
       ['Le chat de l’atelier', 'Fait la sieste sur le bureau resté vide.'],
+      [
+        'La CI aussi',
+        'Un workflow GitHub Actions, un pipeline GitLab, un déploiement : il tape pendant qu’il tourne, et un build cassé fume comme n’importe quelle tâche en échec.',
+      ],
       [
         'La frise de la journée',
         'Sous la salle, un point par passage depuis minuit, rouge s’il a raté. Passe à chaque tâche ses passages.',
