@@ -25,7 +25,7 @@
   "homepage": "https://pixel-openspace.vercel.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/leduss/pixel-openspace",
+    "url": "git+https://github.com/leduss/pixel-openspace.git",
     "directory": "cli"
   }
 }
