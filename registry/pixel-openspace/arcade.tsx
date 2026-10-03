@@ -80,14 +80,10 @@ export function JeuArcade({ jeu, textes, fermer }: { jeu: Jeu; textes: Texts; fe
   const borne = BORNES[jeu]
   const [toile, setToile] = useState<HTMLCanvasElement | null>(null)
   const [score, setScore] = useState(0)
-  const [record, setRecord] = useState(0)
+  // La borne ne s'ouvre que dans le navigateur, sur un clic : son record s'y lit dès l'ouverture.
+  const [record, setRecord] = useState(() => lireRecord(jeu))
   const [phase, setPhase] = useState<'titre' | 'jeu' | 'perdu'>('titre')
   const [partie, setPartie] = useState(0)
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- le record vit dans le navigateur, lu après l'ouverture
-    setRecord(lireRecord(jeu))
-  }, [jeu])
 
   /* Hors partie, l'écran titre ; en partie, le jeu tourne jusqu'à la défaite. */
   useEffect(() => {

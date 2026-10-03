@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { JeuArcade, lireRecord, type Jeu } from './arcade'
@@ -9,7 +9,8 @@ import { TEXTS, type Texts } from './i18n'
 import { ACCENT, DefsCommunes, TextesContexte, animerLeDecor, type Lumiere } from './primitives'
 import { THEME_GEEK } from './themes/geek'
 import { Frise } from './timeline'
-import { ecrirePreferences, lirePreferences, type Preferences } from './preferences'
+import { changerPreferences } from './preferences'
+import { useDansLeNavigateur, usePreferences } from './navigateur'
 import { Reglages, useMeteoDuLieu } from './settings'
 import { fete } from './seasons'
 import type { Agent, OpenSpaceProps, SceneObject } from './types'
@@ -92,18 +93,9 @@ export function PixelOpenspace({
   className,
   style,
 }: OpenSpaceProps) {
-  /* Ce que le visiteur a réglé derrière la roue dentée passe avant les props ; lu après l'hydratation. */
-  const [preferences, setPreferences] = useState<Preferences>({})
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- les préférences vivent dans le navigateur
-    setPreferences(lirePreferences())
-  }, [])
-  const changerPreferences = (p: Preferences) =>
-    setPreferences((avant) => {
-      const apres = { ...avant, ...p }
-      ecrirePreferences(apres)
-      return apres
-    })
+  /* Ce que le visiteur a réglé derrière la roue dentée passe avant les props. */
+  const preferences = usePreferences()
+  const dansLeNavigateur = useDansLeNavigateur()
   const language = preferences.language ?? langueProp
   const enseigne = preferences.title?.trim() || title
   // Un lieu choisi dans les réglages : sa vraie météo remplace celle des props, une fois trouvée.
@@ -130,22 +122,21 @@ export function PixelOpenspace({
    * se dessine qu'une fois arrivée dans le navigateur ; un cadre vide aux bonnes
    * proportions tient sa place d'ici là.
    */
-  const [pret, setPret] = useState(now !== undefined)
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- marque l'arrivée dans le navigateur, une seule fois
-    setPret(true)
-  }, [])
+  const pret = now !== undefined || dansLeNavigateur
   const [maintenant, setMaintenant] = useState(ouverture)
   const [choisi, setChoisi] = useState<string | null>(null)
   const [paroles, setParoles] = useState<Record<string, string>>({})
   const [etires, setEtires] = useState<Record<string, true>>({})
   const [nouveaux, setNouveaux] = useState<Record<string, true>>({})
   const [jeu, setJeu] = useState<Jeu | null>(null)
-  const [records, setRecords] = useState({ snake: 0, casse: 0 })
   const [deposes, setDeposes] = useState(0)
-  const [son, setSon] = useState(false)
-  const [alertes, setAlertes] = useState(false)
-  const [alertesBloquees, setAlertesBloquees] = useState(false)
+  /* Le son et les alertes : le choix fait dans cette visite, sinon celui gardé par le navigateur. */
+  const [sonChoisi, setSonChoisi] = useState<boolean | null>(null)
+  const [alertesChoisies, setAlertesChoisies] = useState<boolean | null>(null)
+  const son = sonChoisi ?? (dansLeNavigateur && lire(CLE_SON) === '1')
+  const permission = dansLeNavigateur && typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  const alertes = alertesChoisies ?? (dansLeNavigateur && lire(CLE_ALERTES) === '1' && permission === 'granted')
+  const alertesBloquees = dansLeNavigateur && (typeof Notification === 'undefined' || permission === 'denied')
   const audio = useRef<AudioContext | null>(null)
   const alertesActives = useRef(false)
   const scenePleinEcran = useRef<HTMLDivElement>(null)
@@ -170,53 +161,44 @@ export function PixelOpenspace({
 
   /* Le son se rallume d'une visite à l'autre, mais le navigateur ne l'autorise qu'après un geste : le premier clic. */
   useEffect(() => {
-    if (lire(CLE_SON) !== '1') return
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- la préférence vit dans le navigateur, lue après l'hydratation
-    setSon(true)
+    if (!son || audio.current) return
     const reveiller = () => {
       audio.current ??= new AudioContext()
       void audio.current.resume()
     }
     window.addEventListener('pointerdown', reveiller, { once: true })
     return () => window.removeEventListener('pointerdown', reveiller)
-  }, [])
+  }, [son])
 
   const basculerSon = () => {
     if (son) {
       void audio.current?.close()
       audio.current = null
-      setSon(false)
+      setSonChoisi(false)
       ecrire(CLE_SON, '0')
       return
     }
     audio.current = new AudioContext()
     jouerNotes(audio.current, SONS.travail)
-    setSon(true)
+    setSonChoisi(true)
     ecrire(CLE_SON, '1')
   }
 
-  /* Les alertes restent branchées d'une visite à l'autre, tant que le navigateur les autorise. */
+  /* Les alertes restent branchées d'une visite à l'autre, tant que le navigateur les autorise ; la boucle les lit ici. */
   useEffect(() => {
-    const voulu = lire(CLE_ALERTES) === '1' && typeof Notification !== 'undefined' && Notification.permission === 'granted'
-    alertesActives.current = voulu
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- l'état vient du navigateur, connu seulement après l'hydratation
-    setAlertes(voulu)
-    setAlertesBloquees(typeof Notification === 'undefined' || Notification.permission === 'denied')
-  }, [])
+    alertesActives.current = alertes
+  })
 
   const basculerAlertes = async () => {
     if (alertes) {
-      alertesActives.current = false
-      setAlertes(false)
+      setAlertesChoisies(false)
       ecrire(CLE_ALERTES, '0')
       return
     }
     if (typeof Notification === 'undefined') return
-    const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission()
-    const ok = permission === 'granted'
-    setAlertesBloquees(permission === 'denied')
-    alertesActives.current = ok
-    setAlertes(ok)
+    const reponse = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission()
+    const ok = reponse === 'granted'
+    setAlertesChoisies(ok)
     ecrire(CLE_ALERTES, ok ? '1' : '0')
   }
 
@@ -227,11 +209,10 @@ export function PixelOpenspace({
   }
 
   /* Les records des bornes, relus à chaque fermeture de borne. */
-  useEffect(() => {
-    if (jeu) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- les records vivent dans le navigateur
-    setRecords({ snake: lireRecord('snake'), casse: lireRecord('casse-briques') })
-  }, [jeu])
+  const records = useMemo(
+    () => (dansLeNavigateur && !jeu ? { snake: lireRecord('snake'), casse: lireRecord('casse-briques') } : { snake: 0, casse: 0 }),
+    [dansLeNavigateur, jeu],
+  )
 
   /* Un agent cliqué dit ce qu'il fait, le temps de le lire. */
   const parler = (vue: Vue) => {
@@ -306,7 +287,9 @@ export function PixelOpenspace({
   }, [empreinteEquipe, visitors, deliveries])
 
   const lePlan = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
-  const [scene, setScene] = useState<Record<string, Pose>>(() => posesAuBureau(lePlan))
+  const [sceneAnimee, setScene] = useState<Record<string, Pose>>(() => posesAuBureau(lePlan))
+  // Les déplacements coupés, chacun reste assis à son bureau.
+  const scene = mouvement ? sceneAnimee : posesAuBureau(lePlan)
 
   /* Les états, les annonces du chef et les heures de nuit, lus par la boucle d'animation sans la relancer. */
   const statuts = useRef(new Map<string, Statut>())
@@ -319,13 +302,7 @@ export function PixelOpenspace({
   })
 
   useEffect(() => {
-    if (!mouvement) {
-      // Les déplacements coupés : chacun retourne s'asseoir à son bureau, et la scène ne bouge plus.
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- un seul rendu, à l'arrêt de la boucle
-      setScene(posesAuBureau(lePlan))
-      return
-    }
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!mouvement || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
     // Chacun se lève à son heure, pas tous ensemble.
     let marcheurs = [...[p.chef, ...p.bureaux].map((b) => marcheur(b.id, b.siege, 2_000 + Math.random() * 60_000)), chat(p)]
@@ -525,10 +502,7 @@ export function PixelOpenspace({
                 changer={changerPreferences}
                 basculerSon={basculerSon}
                 basculerAlertes={() => void basculerAlertes()}
-                reinitialiser={() => {
-                  setPreferences({})
-                  ecrirePreferences({})
-                }}
+                reinitialiser={() => changerPreferences(null)}
               />
             </ButtonGroup>
           ) : null}

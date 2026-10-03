@@ -31,3 +31,21 @@ describe('préférences', () => {
     expect(nettoyerPreferences({ title: 'A'.repeat(40) }).title).toHaveLength(24)
   })
 })
+
+describe('le magasin des préférences', () => {
+  it('fusionne les changements, valide, et rend toujours le même objet tant que rien ne change', async () => {
+    const { changerPreferences, preferencesActuelles } = await import('./preferences')
+    changerPreferences({ theme: 'gym' })
+    changerPreferences({ language: 'fr', title: '' })
+    const p = preferencesActuelles()
+    expect(p).toEqual({ theme: 'gym', language: 'fr' })
+    expect(preferencesActuelles()).toBe(p)
+  })
+
+  it('efface tout avec null', async () => {
+    const { changerPreferences, preferencesActuelles } = await import('./preferences')
+    changerPreferences({ motion: false })
+    changerPreferences(null)
+    expect(preferencesActuelles()).toEqual({})
+  })
+})

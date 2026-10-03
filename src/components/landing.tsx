@@ -62,6 +62,8 @@ function BoutonCafe({ texte }: { texte: string }) {
   return (
     <a
       href={CAFE}
+      target="_blank"
+      rel="noopener noreferrer"
       className="inline-flex h-10 w-fit items-center gap-2 rounded-lg border border-black bg-[#ffdd00] px-4 font-[family-name:var(--font-cookie)] text-2xl leading-none text-black transition-colors hover:bg-[#ffe633] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
     >
       <span aria-hidden="true" className="font-sans text-lg">

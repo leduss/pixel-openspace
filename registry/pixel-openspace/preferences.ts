@@ -56,3 +56,45 @@ export function ecrirePreferences(preferences: Preferences) {
     /* Navigation privée ou stockage bloqué : le réglage vaut pour cette visite. */
   }
 }
+
+/*
+ * Le magasin des préférences : le stockage n'est lu qu'une fois, et toutes les
+ * salles ouvertes sont prévenues d'un changement, même dans un autre onglet.
+ * Sans React : `navigateur.ts` le branche sur useSyncExternalStore.
+ */
+const AUCUNE: Preferences = {}
+let enCache: Preferences | null = null
+const abonnes = new Set<() => void>()
+
+const prevenir = () => abonnes.forEach((f) => f())
+
+/** Un autre onglet a changé les réglages : on les relira. */
+function changeAilleurs(e: StorageEvent) {
+  if (e.key !== CLE) return
+  enCache = null
+  prevenir()
+}
+
+export function preferencesActuelles(): Preferences {
+  return (enCache ??= lirePreferences())
+}
+
+/** Au rendu serveur et pendant l'hydratation : rien n'est encore réglé. */
+export const preferencesServeur = (): Preferences => AUCUNE
+
+export function abonnerPreferences(f: () => void) {
+  if (!abonnes.size) window.addEventListener('storage', changeAilleurs)
+  abonnes.add(f)
+  return () => {
+    abonnes.delete(f)
+    if (!abonnes.size) window.removeEventListener('storage', changeAilleurs)
+  }
+}
+
+/** Change quelques réglages ; `null` les efface tous, et les props reprennent la main. */
+export function changerPreferences(modif: Preferences | null) {
+  const apres = modif === null ? {} : nettoyerPreferences({ ...preferencesActuelles(), ...modif })
+  enCache = apres
+  ecrirePreferences(apres)
+  prevenir()
+}

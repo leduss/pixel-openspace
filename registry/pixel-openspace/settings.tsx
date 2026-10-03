@@ -28,26 +28,22 @@ export type EtatMeteo = { etat: 'aucun' } | { etat: 'recherche' } | { etat: 'int
  * finie, puis relue toutes les quinze minutes.
  */
 export function useMeteoDuLieu(lieu: string | undefined, langue: Language): EtatMeteo {
-  const [etat, setEtat] = useState<EtatMeteo>({ etat: 'aucun' })
+  const cherche = lieu?.trim()
+  // Le dernier résultat, avec le lieu qu'il concerne : un résultat pour un autre lieu ne compte plus.
+  const [resultat, setResultat] = useState<{ lieu: string; etat: EtatMeteo } | null>(null)
   useEffect(() => {
-    const cherche = lieu?.trim()
-    if (!cherche) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- plus de lieu choisi : la météo des props reprend
-      setEtat({ etat: 'aucun' })
-      return
-    }
+    if (!cherche) return
     let fini = false
     let endroit: Endroit | null = null
     const lire = async () => {
       try {
         endroit ??= await localiser(cherche, langue)
         const meteo = { ...(await lireMeteo(endroit)), place: endroit.nom ?? cherche }
-        if (!fini) setEtat({ etat: 'trouve', meteo })
+        if (!fini) setResultat({ lieu: cherche, etat: { etat: 'trouve', meteo } })
       } catch {
-        if (!fini && !endroit) setEtat({ etat: 'introuvable' })
+        if (!fini && !endroit) setResultat({ lieu: cherche, etat: { etat: 'introuvable' } })
       }
     }
-    setEtat({ etat: 'recherche' })
     // Une recherche par lieu, pas une par lettre tapée.
     const attente = setTimeout(lire, 700)
     const minuterie = setInterval(lire, 15 * 60_000)
@@ -56,8 +52,9 @@ export function useMeteoDuLieu(lieu: string | undefined, langue: Language): Etat
       clearTimeout(attente)
       clearInterval(minuterie)
     }
-  }, [lieu, langue])
-  return etat
+  }, [cherche, langue])
+  if (!cherche) return { etat: 'aucun' }
+  return resultat?.lieu === cherche ? resultat.etat : { etat: 'recherche' }
 }
 
 const NOMS_LANGUES: Array<[Language, string]> = [

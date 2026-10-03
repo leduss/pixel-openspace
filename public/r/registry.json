@@ -77,6 +77,11 @@
           "target": "components/pixel-openspace/preferences.ts"
         },
         {
+          "path": "registry/pixel-openspace/navigateur.ts",
+          "type": "registry:lib",
+          "target": "components/pixel-openspace/navigateur.ts"
+        },
+        {
           "path": "registry/pixel-openspace/settings.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/settings.tsx"
