@@ -205,8 +205,12 @@ function ecrire(cle: string, valeur: string) {
 /** Les minutes avant le prochain passage, quand il approche (dix minutes au plus). */
 function bientot(vue: Vue, maintenant: number): number | null {
   if (!vue.prochain || vue.statut === 'au-travail' || vue.statut === 'absent') return null
-  const minutes = Math.ceil((Date.parse(vue.prochain) - maintenant) / 60_000)
-  return minutes > 0 && minutes <= 10 ? minutes : null
+  const reste = Date.parse(vue.prochain) - maintenant
+  // À moins de 30 s, c'est un passage dû maintenant, souvent celui d'un ordonnanceur en retard qui annonce
+  // « tout de suite » à chaque relecture : sans ce seuil, l'écran resterait figé sur « dans 1 min ».
+  if (reste < 30_000) return null
+  const minutes = Math.ceil(reste / 60_000)
+  return minutes <= 10 ? minutes : null
 }
 
 /** L'obscurité de la salle selon l'heure : nuit noire de 21 h à 6 h, le soir et le matin en pente douce. */
