@@ -1,0 +1,12 @@
+/* Les styles de la démo, et les polices que next/font fournit d'habitude. */
+@import '../../src/app/globals.css';
+
+@source '../../registry';
+@source '../../src/components/ui';
+@source './';
+
+:root {
+  --font-atkinson: 'Atkinson Hyperlegible', ui-sans-serif, system-ui, sans-serif;
+  --font-pixel: 'Pixelify Sans', ui-monospace, monospace;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

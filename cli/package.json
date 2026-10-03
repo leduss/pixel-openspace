@@ -1,0 +1,31 @@
+{
+  "name": "pixel-openspace",
+  "version": "0.1.0",
+  "description": "Your scheduled jobs (launchd, cron, systemd timers) as pixel-art workers in an open space, in your browser.",
+  "type": "module",
+  "bin": {
+    "pixel-openspace": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.3"
+  },
+  "keywords": [
+    "cron",
+    "launchd",
+    "systemd",
+    "dashboard",
+    "pixel-art",
+    "monitoring"
+  ],
+  "license": "MIT",
+  "author": "Julien Dussart",
+  "homepage": "https://pixel-openspace.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leduss/pixel-openspace",
+    "directory": "cli"
+  }
+}

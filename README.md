@@ -4,13 +4,18 @@
 
 Every agent gets a desk. Whoever is running sits down and types, screen lit up. Idle ones wander off to the coffee machine, the arcade cabinets or a colleague’s desk. A failed job’s PC starts smoking and the lead walks over and stays until it recovers. Late ones doze, forgotten ones see their plant wilt and dust settle on their screen.
 
-[🇫🇷 Lire en français](./README.fr.md)
+**[Try the live demo](https://pixel-openspace.vercel.app)** · [🇫🇷 Lire en français](./README.fr.md)
 
 ![The pixel-openspace demo: jobs start, fail and recover across the four themes](./public/docs/demo.gif)
 
-It is a [shadcn/ui](https://ui.shadcn.com) component for Next.js and React: the code is copied into your project, styled by your own `Button` and `Card`.
+There are two ways to use it:
 
-## Install
+- **In your app**: a [shadcn/ui](https://ui.shadcn.com) component for Next.js and React. The code is copied into your project, styled by your own `Button` and `Card`, and you feed it your jobs.
+- **Without writing code**: a small local server that reads the jobs already scheduled on your machine (launchd, cron, systemd timers) and opens their open space in your browser.
+
+## In your app
+
+### Install
 
 In a project with shadcn/ui set up:
 
@@ -27,7 +32,7 @@ const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'] })
 // …and add pixel.variable to <html className>
 ```
 
-## Use
+### Use
 
 ```tsx
 'use client'
@@ -37,13 +42,14 @@ import { PixelOpenspace } from '@/components/pixel-openspace/pixel-openspace'
 export function Office() {
   return (
     <PixelOpenspace
+      language="en"
       agents={[
         { id: 'backup', name: 'Backup', emoji: '💾', status: 'ok', schedule: 'daily at 2:30', nextRun: '2026-10-04T02:30:00Z' },
         { id: 'deploy', name: 'Deploy', emoji: '🚀', status: 'failed', lastMessage: 'build failed: type error' },
         { id: 'inbox', name: 'Inbox', emoji: '📨', status: 'working', role: 'Triages the support inbox with an LLM' },
       ]}
       wall={[{ label: 'Jobs today', value: 128, tone: 'info' }]}
-      weather={{ temperature: 19, sky: 'clouds', day: true, place: 'Bordeaux' }}
+      weather={{ temperature: 19, sky: 'clouds', day: true, place: 'Lanton' }}
       onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
     />
   )
@@ -56,8 +62,8 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 
 | `status` | In the room |
 | --- | --- |
-| `working` | At its desk, typing, code scrolling on its screen, RGB keyboard and fans on |
-| `ok` | Up to date: wanders to the coffee machine, the arcade, the bean bags… |
+| `working` | At its desk, typing, code scrolling on its screen |
+| `ok` | Up to date: wanders to the coffee machine, the arcade, the sofa… |
 | `late` | Dozes at its desk |
 | `failed` | Red screen, smoking PC; the lead comes and stays by its side |
 | `off` | Empty chair, a post-it on a dark screen |
@@ -70,7 +76,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | --- | --- | --- |
 | `agents` | `Agent[]` | Five desks per row, rows added as needed |
 | `lead` | `Agent` | The lead in the glass office; a decorative one sits there if none is given |
-| `title` | `string` | The neon sign on the main room wall |
+| `title` | `string` | The sign on the main room wall |
 | `wall` | `WallTile[]` | Up to four tiles on the big wall screen (`label`, `value`, `tone`, `progress`) |
 | `announcements` | `string[]` | What the lead announces in front of the wall screen after its rounds |
 | `weather` | `Weather \| null` | The sky behind the lead’s window: `clear`, `clouds`, `fog`, `rain`, `snow`, `storm` |
@@ -78,7 +84,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | `deliveries` | `number` | A counter: each time it goes up, a courier drops a parcel by the boxes |
 | `celebrate` | `boolean` | Confetti over the whole room |
 | `language` | `'en' \| 'fr'` | Everything written and said in the room |
-| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | The look of the room: a geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, a gym where every job rides an exercise bike, or a bright modern office in light oak with standing desks and a ping-pong table (default `'geek'`) |
+| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | The look of the room (default `'geek'`, see below) |
 | `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
 | `nightHours` | `[number, number]` | When everybody stays at their desk (default `[22, 6]`) |
 | `toolbar` | `boolean` | Sound, browser alerts and fullscreen buttons (default `true`) |
@@ -89,11 +95,56 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 
 Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `role`, a `schedule`, `lastMessage`, `lastRun`, `nextRun` (its screen counts down the last ten minutes) and `staleAfterHours` (72 by default: after that without a run, its plant wilts).
 
+## Without writing code
+
+The `cli/` folder holds a small server that finds the jobs scheduled on your machine and shows them in the open space:
+
+- **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log.
+- **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
+- **systemd** (Linux): your user timers, with the result of their last run and their last journal line.
+
+It is not on npm yet. From a clone:
+
+```bash
+git clone https://github.com/leduss/pixel-openspace
+cd pixel-openspace
+bun install
+bun run cli -- --match backup --theme modern
+```
+
+The server listens on `127.0.0.1:4747` only and opens your browser. The useful options:
+
+| Option | |
+| --- | --- |
+| `-m, --match <text>` | Only show jobs whose name contains this text (repeatable). Also brings in services that have no schedule |
+| `-x, --exclude <text>` | Hide jobs whose name contains this text (repeatable) |
+| `-t, --theme <name>` | `geek`, `eighties`, `gym` or `modern`; `?theme=gym` in the address works too |
+| `-l, --lang <en\|fr>` | Language of the room (default: your system’s) |
+| `--allow-run` | Let the “Run now” button start a job (`launchctl kickstart`, `systemctl start`); off by default |
+| `--json` | Print the jobs it found and exit |
+
+Every option can also live in a `pixel-openspace.json` file, in the current folder or in `~/.config/pixel-openspace/config.json`, along with a nicer name, emoji or description per job:
+
+```json
+{
+  "title": "ACME OPS",
+  "theme": "eighties",
+  "language": "en",
+  "match": ["acme"],
+  "agents": {
+    "com.acme.backup": { "name": "Backup", "emoji": "💾", "role": "Dumps the database to S3" },
+    "com.acme.old-sync": { "hidden": true }
+  }
+}
+```
+
 ## What else is in the room
 
+- Four themes: a geek open space with RGB towers (`geek`), a 1986 corporate office with wood panelling and green-phosphor CRTs (`eighties`), a gym where every job rides an exercise bike (`gym`), and a bright modern office in light oak with laptops, standing desks and a ping-pong table (`modern`).
 - Two playable arcade cabinets, **Component Snake** and **Chip Breaker**, with their high scores on the wall.
 - A whiteboard with the next five runs, a real-time clock, the office cat napping on empty desks.
-- Day and night: the room darkens in the evening, and the RGB towers, neon signs and screens glow.
+- The seasons: Halloween all October, Christmas all December, and Easter for the two weeks before Easter Monday, with hidden eggs and a bunny.
+- Day and night: the room darkens in the evening, and the RGB towers, neon signs, lamps and screens glow.
 - Browser notifications when an agent fails, and an 8-bit sound for starts, failures and visitors (both opt-in).
 - `prefers-reduced-motion` is respected: everybody stays put.
 
@@ -106,11 +157,12 @@ The page is meant to stay open all day on a side screen. The loop runs at 30 fps
 ```bash
 bun install
 bun dev                  # the demo, on http://localhost:3000
-bun run test             # the movement engine
+bun run test             # the movement engine, the seasons, the schedules
 bun run registry:build   # rebuilds public/r/pixel-openspace.json
+bun run cli:build        # builds the local server into cli/dist
 ```
 
-The component lives in `registry/pixel-openspace/`; the demo in `src/`.
+The component lives in `registry/pixel-openspace/`, the local server in `cli/`, the landing page in `src/`.
 
 ## Credits
 
