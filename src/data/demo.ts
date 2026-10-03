@@ -20,8 +20,6 @@ const ilYa = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOS
 export const MOTS = {
   en: {
     essayer: 'Try it:',
-    theme: 'Theme',
-    themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern' },
     ciel: 'Sky',
     cieux: { clear: 'Sun', clouds: 'Clouds', fog: 'Fog', rain: 'Rain', snow: 'Snow', storm: 'Storm', night: 'Night' },
     lancer: 'Start Invoices',
@@ -42,8 +40,6 @@ export const MOTS = {
   },
   fr: {
     essayer: 'Essaie :',
-    theme: 'Thème',
-    themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne' },
     ciel: 'Ciel',
     cieux: { clear: 'Soleil', clouds: 'Nuages', fog: 'Brouillard', rain: 'Pluie', snow: 'Neige', storm: 'Orage', night: 'Nuit' },
     lancer: 'Lancer Factures',

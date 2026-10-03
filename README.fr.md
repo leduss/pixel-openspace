@@ -87,7 +87,7 @@ Le composant suit ses props : relis l'état de tes tâches (toutes les quelques 
 | `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | L'allure de la salle (`'geek'` par défaut, voir plus bas) |
 | `seasonal` | `boolean` | Halloween tout octobre, Noël tout décembre, Pâques les deux semaines avant le lundi de Pâques (`true` par défaut) |
 | `nightHours` | `[number, number]` | Les heures où chacun reste à son bureau (`[22, 6]` par défaut) |
-| `toolbar` | `boolean` | Les boutons du son, des alertes du navigateur et du plein écran (`true` par défaut) |
+| `toolbar` | `boolean` | Le bouton du plein écran et la roue dentée des réglages (`true` par défaut) |
 | `objectLinks` | `Partial<Record<SceneObject, string>>` | Rend cliquables l'établi, la télé, la baie de serveurs, le distributeur, le frigo ou les cartons |
 | `onObjectClick` | `(object, href) => void` | Appelé au lieu de suivre le lien, pour les routeurs côté client |
 | `onRun` | `(agent) => void \| Promise<void>` | Affiche un bouton « Lancer » sur la fiche de chaque agent |
@@ -147,6 +147,7 @@ Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, d
 - Un tableau blanc avec les cinq prochains passages, une horloge à l'heure, le chat de l'atelier qui dort sur les bureaux vides.
 - Les saisons : Halloween tout octobre, Noël tout décembre, et Pâques les deux semaines avant le lundi de Pâques, avec ses œufs cachés et son lapin.
 - Le jour et la nuit : la salle s'assombrit le soir, et les tours RGB, les néons, les lampes et les écrans s'allument.
+- Une roue dentée de réglages : qui regarde la salle choisit le thème et la langue, active le son 8 bits et les alertes du navigateur, coupe les saisons, la nuit ou les allées et venues. Ses choix restent dans son navigateur et passent avant les props.
 - Une notification du navigateur quand un agent tombe en échec, et un son 8 bits pour les départs, les échecs et les visiteurs (à activer).
 - `prefers-reduced-motion` est respecté : tout le monde reste à sa place.
 

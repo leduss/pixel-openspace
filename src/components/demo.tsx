@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { PixelOpenspace } from '@/registry/pixel-openspace/pixel-openspace'
 import { CIELS, MOTS, equipe, type Ciel } from '@/data/demo'
-import type { AgentStatus, Language, ThemeName } from '@/registry/pixel-openspace/types'
+import type { AgentStatus, Language } from '@/registry/pixel-openspace/types'
 
 export function Demo({ langue }: { langue: Language }) {
   const m = MOTS[langue]
@@ -13,7 +13,6 @@ export function Demo({ langue }: { langue: Language }) {
   const [visiteurs, setVisiteurs] = useState(0)
   const [livraisons, setLivraisons] = useState(0)
   const [fete, setFete] = useState(false)
-  const [theme, setTheme] = useState<ThemeName>('geek')
   const [ciel, setCiel] = useState<Ciel>('clouds')
 
   const changer = (id: string, status: AgentStatus, lastMessage?: string) =>
@@ -55,9 +54,7 @@ export function Demo({ langue }: { langue: Language }) {
       <PixelOpenspace
         agents={agents}
         language={langue}
-        theme={theme}
         title="ACME OPS"
-        toolbar={false}
         visitors={visiteurs}
         deliveries={livraisons}
         celebrate={fete}
@@ -75,22 +72,6 @@ export function Demo({ langue }: { langue: Language }) {
         }}
       />
       {/* Les essais, groupés par ce qu'ils font : une tâche qui tourne, une tâche qui plante, la vie de la salle. */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-1 text-sm text-muted-foreground">{m.theme}</span>
-        <ButtonGroup aria-label={m.theme}>
-          {(Object.keys(m.themes) as Array<ThemeName>).map((nom) => (
-            <Button
-              key={nom}
-              size="sm"
-              variant={theme === nom ? 'default' : 'outline'}
-              aria-pressed={theme === nom}
-              onClick={() => setTheme(nom)}
-            >
-              {m.themes[nom]}
-            </Button>
-          ))}
-        </ButtonGroup>
-      </div>
       {/* Le ciel derrière la fenêtre du chef : ce que la prop weather sait dessiner. */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="mr-1 text-sm text-muted-foreground">{m.ciel}</span>

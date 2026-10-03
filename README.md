@@ -87,7 +87,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | The look of the room (default `'geek'`, see below) |
 | `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
 | `nightHours` | `[number, number]` | When everybody stays at their desk (default `[22, 6]`) |
-| `toolbar` | `boolean` | Sound, browser alerts and fullscreen buttons (default `true`) |
+| `toolbar` | `boolean` | The fullscreen button and the settings gear (default `true`) |
 | `objectLinks` | `Partial<Record<SceneObject, string>>` | Make the workbench, TV, server rack, vending machine, fridge or parts boxes clickable |
 | `onObjectClick` | `(object, href) => void` | Called instead of following the link, for client-side routers |
 | `onRun` | `(agent) => void \| Promise<void>` | Shows a “Run now” button on each agent’s card |
@@ -147,6 +147,7 @@ Every option can also live in a `pixel-openspace.json` file, in the current fold
 - A whiteboard with the next five runs, a real-time clock, the office cat napping on empty desks.
 - The seasons: Halloween all October, Christmas all December, and Easter for the two weeks before Easter Monday, with hidden eggs and a bunny.
 - Day and night: the room darkens in the evening, and the RGB towers, neon signs, lamps and screens glow.
+- A settings gear: whoever watches the room picks the theme and language, turns on the 8-bit sound and browser alerts, and turns off the seasons, the night or the walking around. Their choices stay in their browser and win over the props.
 - Browser notifications when an agent fails, and an 8-bit sound for starts, failures and visitors (both opt-in).
 - `prefers-reduced-motion` is respected: everybody stays put.
 

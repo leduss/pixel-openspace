@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Toggle } from '@/components/ui/toggle'
 import { JeuArcade, lireRecord, type Jeu } from './arcade'
 import {
   BUREAU,
@@ -41,6 +40,7 @@ import {
 import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
+import { ecrirePreferences, lirePreferences, Reglages, type Preferences } from './settings'
 import { THEME_GYM } from './themes/gym'
 import { THEME_MODERNE } from './themes/modern'
 import { fete, type Fete } from './seasons'
@@ -237,9 +237,9 @@ export function PixelOpenspace({
   visitors = 0,
   deliveries = 0,
   celebrate = false,
-  language = 'en',
-  theme: nomTheme = 'geek',
-  seasonal = true,
+  language: langueProp = 'en',
+  theme: themeProp = 'geek',
+  seasonal: saisonsProp = true,
   nightHours = [22, 6],
   toolbar = true,
   objectLinks = {},
@@ -249,6 +249,24 @@ export function PixelOpenspace({
   className,
   style,
 }: OpenSpaceProps) {
+  /* Ce que le visiteur a réglé derrière la roue dentée passe avant les props ; lu après l'hydratation. */
+  const [preferences, setPreferences] = useState<Preferences>({})
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- les préférences vivent dans le navigateur
+    setPreferences(lirePreferences())
+  }, [])
+  const changerPreferences = (p: Preferences) =>
+    setPreferences((avant) => {
+      const apres = { ...avant, ...p }
+      ecrirePreferences(apres)
+      return apres
+    })
+  const language = preferences.language ?? langueProp
+  const nomTheme = preferences.theme ?? themeProp
+  const seasonal = preferences.seasonal ?? saisonsProp
+  const assombrir = preferences.night ?? true
+  const mouvement = preferences.motion ?? true
+
   const t = TEXTS[language]
   const theme = THEMES[nomTheme] ?? THEME_GEEK
   const equipe: Equipe = {
@@ -278,6 +296,7 @@ export function PixelOpenspace({
   const [deposes, setDeposes] = useState(0)
   const [son, setSon] = useState(false)
   const [alertes, setAlertes] = useState(false)
+  const [alertesBloquees, setAlertesBloquees] = useState(false)
   const audio = useRef<AudioContext | null>(null)
   const alertesActives = useRef(false)
   const scenePleinEcran = useRef<HTMLDivElement>(null)
@@ -333,6 +352,7 @@ export function PixelOpenspace({
     alertesActives.current = voulu
     // eslint-disable-next-line react-hooks/set-state-in-effect -- l'état vient du navigateur, connu seulement après l'hydratation
     setAlertes(voulu)
+    setAlertesBloquees(typeof Notification === 'undefined' || Notification.permission === 'denied')
   }, [])
 
   const basculerAlertes = async () => {
@@ -345,6 +365,7 @@ export function PixelOpenspace({
     if (typeof Notification === 'undefined') return
     const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission()
     const ok = permission === 'granted'
+    setAlertesBloquees(permission === 'denied')
     alertesActives.current = ok
     setAlertes(ok)
     ecrire(CLE_ALERTES, ok ? '1' : '0')
@@ -449,6 +470,12 @@ export function PixelOpenspace({
   })
 
   useEffect(() => {
+    if (!mouvement) {
+      // Les déplacements coupés : chacun retourne s'asseoir à son bureau, et la scène ne bouge plus.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- un seul rendu, à l'arrêt de la boucle
+      setScene(posesAuBureau(lePlan))
+      return
+    }
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
     // Chacun se lève à son heure, pas tous ensemble.
@@ -537,8 +564,8 @@ export function PixelOpenspace({
       cancelAnimationFrame(image)
       clearTimeout(attente)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- la boucle ne repart que si les bureaux ou la langue changent
-  }, [cle, language, nomTheme])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- la boucle ne repart que si les bureaux, la langue, le thème ou les déplacements changent
+  }, [cle, language, nomTheme, mouvement])
 
   const tous = [equipe.chef, ...equipe.agents]
   const postes = [{ vue: equipe.chef, place: lePlan.chef }, ...equipe.agents.map((vue, i) => ({ vue, place: lePlan.bureaux[i] }))]
@@ -578,7 +605,7 @@ export function PixelOpenspace({
     .sort((a, b) => a.prochain!.localeCompare(b.prochain!))
     .slice(0, 5)
     .map((a) => ({ heure: heureCourte(a.prochain!, maintenant, t.locale), nom: a.fiche.nom }))
-  const nuit = obscurite(maintenant)
+  const nuit = assombrir ? obscurite(maintenant) : 0
   const aller = (objet: SceneObject) => {
     const href = objectLinks[objet]
     if (!href) return
@@ -628,15 +655,26 @@ export function PixelOpenspace({
         >
           {toolbar ? (
             <ButtonGroup className="self-end">
-              <Toggle variant="outline" size="sm" pressed={alertes} onPressedChange={() => void basculerAlertes()}>
-                {alertes ? t.alertsOn : t.alertsOff}
-              </Toggle>
-              <Toggle variant="outline" size="sm" pressed={son} onPressedChange={basculerSon}>
-                {son ? t.sound : t.soundOff}
-              </Toggle>
               <Button variant="outline" size="sm" onClick={basculerPleinEcran}>
                 {t.fullscreen}
               </Button>
+              <Reglages
+                theme={nomTheme}
+                langue={language}
+                saisons={seasonal}
+                nuit={assombrir}
+                mouvement={mouvement}
+                son={son}
+                alertes={alertes}
+                alertesBloquees={alertesBloquees}
+                changer={changerPreferences}
+                basculerSon={basculerSon}
+                basculerAlertes={() => void basculerAlertes()}
+                reinitialiser={() => {
+                  setPreferences({})
+                  ecrirePreferences({})
+                }}
+              />
             </ButtonGroup>
           ) : null}
 

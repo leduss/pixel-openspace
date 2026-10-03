@@ -25,11 +25,29 @@ export type Texts = {
   running: string
   launching: string
   close: string
-  sound: string
-  soundOff: string
-  alertsOn: string
-  alertsOff: string
   fullscreen: string
+  /** La fenêtre des réglages, derrière la roue dentée. */
+  settings: {
+    open: string
+    title: string
+    description: string
+    theme: string
+    themes: Record<'geek' | 'eighties' | 'gym' | 'modern', string>
+    language: string
+    sound: string
+    soundHint: string
+    alerts: string
+    alertsHint: string
+    alertsBlocked: string
+    seasonal: string
+    seasonalHint: string
+    night: string
+    nightHint: string
+    motion: string
+    motionHint: string
+    reset: string
+    done: string
+  }
   sceneLabel: string
   phrases: Phrases
   objects: Record<
@@ -95,11 +113,28 @@ const EN: Texts = {
   running: 'Running',
   launching: 'Launching…',
   close: 'Close',
-  sound: '🔊 Sound',
-  soundOff: '🔈 Sound off',
-  alertsOn: '🔔 Alerts on',
-  alertsOff: '🔕 Alert me',
   fullscreen: '⛶ Fullscreen',
+  settings: {
+    open: 'Settings',
+    title: 'Settings',
+    description: 'Saved in this browser only.',
+    theme: 'Theme',
+    themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern' },
+    language: 'Language',
+    sound: '8-bit sound',
+    soundHint: 'A jingle when a job starts, fails, or a visitor comes in.',
+    alerts: 'Browser alerts',
+    alertsHint: 'A notification when a job fails or falls behind.',
+    alertsBlocked: 'Notifications are blocked for this site in your browser settings.',
+    seasonal: 'Seasonal decorations',
+    seasonalHint: 'Halloween in October, Christmas in December, Easter in spring.',
+    night: 'Darken at night',
+    nightHint: 'The room dims in the evening and the screens glow.',
+    motion: 'People walk around',
+    motionHint: 'Off: everybody stays at their desk, which saves CPU.',
+    reset: 'Reset',
+    done: 'Done',
+  },
   sceneLabel: 'The agents’ open space',
   phrases: {
     relaunch: 'Relaunching you!',
@@ -170,11 +205,28 @@ const FR: Texts = {
   running: 'Au travail',
   launching: 'Lancement…',
   close: 'Fermer',
-  sound: '🔊 Son',
-  soundOff: '🔈 Son coupé',
-  alertsOn: '🔔 Alertes branchées',
-  alertsOff: '🔕 Me prévenir',
   fullscreen: '⛶ Plein écran',
+  settings: {
+    open: 'Réglages',
+    title: 'Réglages',
+    description: 'Enregistrés dans ce navigateur seulement.',
+    theme: 'Thème',
+    themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne' },
+    language: 'Langue',
+    sound: 'Son 8 bits',
+    soundHint: 'Une ritournelle quand une tâche démarre, plante, ou qu’un visiteur entre.',
+    alerts: 'Alertes du navigateur',
+    alertsHint: 'Une notification quand une tâche plante ou prend du retard.',
+    alertsBlocked: 'Les notifications sont bloquées pour ce site dans les réglages du navigateur.',
+    seasonal: 'Décorations de saison',
+    seasonalHint: 'Halloween en octobre, Noël en décembre, Pâques au printemps.',
+    night: 'Assombrir la nuit',
+    nightHint: 'La salle s’assombrit le soir et les écrans s’allument.',
+    motion: 'Les bonshommes circulent',
+    motionHint: 'Désactivé : chacun reste à son bureau, et le processeur se repose.',
+    reset: 'Réinitialiser',
+    done: 'Terminé',
+  },
   sceneLabel: 'L’open space des agents',
   phrases: {
     relaunch: 'Je te relance !',

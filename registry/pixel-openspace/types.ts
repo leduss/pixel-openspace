@@ -96,7 +96,7 @@ export type OpenSpaceProps = {
   seasonal?: boolean
   /** From what hour to what hour everybody stays at their desk. Default [22, 6]. */
   nightHours?: [number, number]
-  /** Sound, browser alerts and fullscreen buttons above the scene. Default true. */
+  /** The fullscreen button and the settings gear above the scene. Default true. */
   toolbar?: boolean
   /** Where each prop leads when clicked; a prop without a link is not clickable. */
   objectLinks?: Partial<Record<SceneObject, string>>

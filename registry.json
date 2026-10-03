@@ -12,10 +12,12 @@
         "button",
         "card",
         "badge",
-        "toggle",
         "button-group",
         "dialog",
-        "kbd"
+        "kbd",
+        "switch",
+        "label",
+        "separator"
       ],
       "files": [
         {
@@ -32,6 +34,11 @@
           "path": "registry/pixel-openspace/arcade.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/arcade.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/settings.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/settings.tsx"
         },
         {
           "path": "registry/pixel-openspace/i18n.ts",
@@ -78,6 +85,9 @@
           "type": "registry:component",
           "target": "components/pixel-openspace/themes/modern.tsx"
         }
+      ],
+      "dependencies": [
+        "lucide-react"
       ]
     }
   ]
