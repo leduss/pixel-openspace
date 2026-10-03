@@ -40,6 +40,7 @@ import {
 import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
+import { Frise } from './timeline'
 import { ecrirePreferences, lirePreferences, Reglages, type Preferences } from './settings'
 import { THEME_GYM } from './themes/gym'
 import { THEME_MODERNE } from './themes/modern'
@@ -237,6 +238,7 @@ export function PixelOpenspace({
   visitors = 0,
   deliveries = 0,
   celebrate = false,
+  timeline = true,
   language: langueProp = 'en',
   theme: themeProp = 'geek',
   seasonal: saisonsProp = true,
@@ -777,6 +779,9 @@ export function PixelOpenspace({
               ) : null}
             </div>
           </div>
+          {timeline && agents.some((a) => a.runs?.length) ? (
+            <Frise agents={lead ? [lead, ...agents] : agents} maintenant={maintenant} choisir={setChoisi} />
+          ) : null}
           {jeu ? <JeuArcade key={jeu} jeu={jeu} textes={t} fermer={() => setJeu(null)} /> : null}
         </div>
       </ThemeContexte.Provider>

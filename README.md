@@ -83,6 +83,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | `visitors` | `number` | A counter: each time it goes up, a visitor walks in to greet the lead |
 | `deliveries` | `number` | A counter: each time it goes up, a courier drops a parcel by the boxes |
 | `celebrate` | `boolean` | Confetti over the whole room |
+| `timeline` | `boolean` | The day timeline under the room, one dot per run, when agents have `runs` (default `true`) |
 | `language` | `'en' \| 'fr'` | Everything written and said in the room |
 | `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | The look of the room (default `'geek'`, see below) |
 | `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
@@ -93,7 +94,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | `onRun` | `(agent) => void \| Promise<void>` | Shows a “Run now” button on each agent’s card |
 | `now` | `number` | The current time, to render on the server; without it the scene draws once in the browser |
 
-Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `role`, a `schedule`, `lastMessage`, `lastRun`, `nextRun` (its screen counts down the last ten minutes) and `staleAfterHours` (72 by default: after that without a run, its plant wilts).
+Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `role`, a `schedule`, `lastMessage`, `lastRun`, `nextRun` (its screen counts down the last ten minutes), `staleAfterHours` (72 by default: after that without a run, its plant wilts) and `runs`, today’s runs as `{ at, ok, message }` for the timeline.
 
 ## Without writing code
 

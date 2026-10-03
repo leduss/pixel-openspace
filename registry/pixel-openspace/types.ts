@@ -36,6 +36,18 @@ export type Agent = {
   schedule?: string
   /** Hours without a run after which its plant wilts and dust covers its screen. Default 72. */
   staleAfterHours?: number
+  /** Today's runs, oldest first: one dot each on the day timeline under the room. */
+  runs?: Array<AgentRun>
+}
+
+/** One run of an agent, for the day timeline. */
+export type AgentRun = {
+  /** ISO date of the run. */
+  at: string
+  /** False for a failed run: a red dot. Default true. */
+  ok?: boolean
+  /** Shown when hovering the dot. */
+  message?: string
 }
 
 /** A tile of the big wall screen. */
@@ -89,6 +101,8 @@ export type OpenSpaceProps = {
   deliveries?: number
   /** Confetti over the whole room: a birthday, a launch, a record month. */
   celebrate?: boolean
+  /** The day timeline under the room, when agents have `runs`. Default true. */
+  timeline?: boolean
   language?: Language
   /** The look of the room: furniture, outfits, break corners. Default 'geek'. */
   theme?: ThemeName

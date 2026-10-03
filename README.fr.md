@@ -83,6 +83,7 @@ Le composant suit ses props : relis l'état de tes tâches (toutes les quelques 
 | `visitors` | `number` | Un compteur : chaque fois qu'il monte, un visiteur entre saluer le chef |
 | `deliveries` | `number` | Un compteur : chaque fois qu'il monte, un livreur dépose un colis près des cartons |
 | `celebrate` | `boolean` | Des confettis sur toute la salle |
+| `timeline` | `boolean` | La frise de la journée sous la salle, un point par passage, quand les agents ont des `runs` (`true` par défaut) |
 | `language` | `'en' \| 'fr'` | Tout ce qui s'écrit et se dit dans la salle |
 | `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | L'allure de la salle (`'geek'` par défaut, voir plus bas) |
 | `seasonal` | `boolean` | Halloween tout octobre, Noël tout décembre, Pâques les deux semaines avant le lundi de Pâques (`true` par défaut) |
@@ -93,7 +94,7 @@ Le composant suit ses props : relis l'état de tes tâches (toutes les quelques 
 | `onRun` | `(agent) => void \| Promise<void>` | Affiche un bouton « Lancer » sur la fiche de chaque agent |
 | `now` | `number` | L'heure, pour un rendu côté serveur ; sans elle, la scène se dessine une fois dans le navigateur |
 
-Chaque `Agent` a un `id`, un `name`, un `status`, et au choix un `emoji`, un `role`, un `schedule`, `lastMessage`, `lastRun`, `nextRun` (son écran fait le compte à rebours des dix dernières minutes) et `staleAfterHours` (72 par défaut : passé ce délai sans passage, sa plante fane).
+Chaque `Agent` a un `id`, un `name`, un `status`, et au choix un `emoji`, un `role`, un `schedule`, `lastMessage`, `lastRun`, `nextRun` (son écran fait le compte à rebours des dix dernières minutes), `staleAfterHours` (72 par défaut : passé ce délai sans passage, sa plante fane) et `runs`, les passages du jour sous la forme `{ at, ok, message }` pour la frise.
 
 ## Sans écrire de code
 
