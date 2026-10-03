@@ -61,7 +61,27 @@ export type Plan = {
 
 const chaiseY = (dy: number) => dy + BUREAU.hauteur + 22
 
-export function plan(ids: Array<string>, phrases: Phrases = TEXTS.en.phrases): Plan {
+/**
+ * Un coin de pause d'un thème, dans les pièces du haut : où se tenir, où regarder
+ * (0 vers le haut, 180 vers le bas), et si l'on s'y assoit. Le premier compte
+ * double, comme le second : c'est le café et son voisin.
+ */
+export type CoinDePause = { nom: string; x: number; y: number; face?: number; assis?: boolean }
+
+/* Les coins du thème geek : la cuisine à droite, le coin gaming au milieu. */
+export const COINS_GEEK: Array<CoinDePause> = [
+  { nom: 'cafe', x: 768, y: 100 },
+  { nom: 'distributeur', x: 881, y: 104 },
+  { nom: 'frigo', x: 950, y: 108 },
+  { nom: 'arcade', x: 372, y: 112 },
+  { nom: 'arcade-2', x: 415, y: 112 },
+  { nom: 'etabli', x: 636, y: 108 },
+  // Sur les poufs, face à la télé : de dos.
+  { nom: 'pouf-gauche', x: 482, y: 146, assis: true },
+  { nom: 'pouf-droite', x: 538, y: 146, assis: true },
+]
+
+export function plan(ids: Array<string>, phrases: Phrases = TEXTS.en.phrases, coins: Array<CoinDePause> = COINS_GEEK): Plan {
   const rangees = Math.max(1, Math.ceil(ids.length / COLONNES))
   const bureaux = ids.map((id, i) => {
     const cx = X0 + (i % COLONNES) * PAS
@@ -106,25 +126,14 @@ export function plan(ids: Array<string>, phrases: Phrases = TEXTS.en.phrases): P
     },
   }
 
-  const devant = (nom: string, x: number, y: number, face = 0, assis = false): Lieu => ({
-    nom,
-    pos: { x, y },
-    acces: [{ x, y: ALLEE_HAUT }],
-    face,
-    assis,
-  })
-  // La cuisine à droite, le coin gaming au milieu : on y entre par le bas, droit devant soi.
-  const pauses: Array<Lieu> = [
-    devant('cafe', 768, 100),
-    devant('distributeur', 881, 104),
-    devant('frigo', 950, 108),
-    devant('arcade', 372, 112),
-    devant('arcade-2', 415, 112),
-    devant('etabli', 636, 108),
-    // Sur les poufs, face à la télé : de dos.
-    devant('pouf-gauche', 482, 146, 0, true),
-    devant('pouf-droite', 538, 146, 0, true),
-  ]
+  // Les coins de pause viennent du thème : on y entre par le bas, droit devant soi, depuis l'allée du haut.
+  const pauses: Array<Lieu> = coins.map((c) => ({
+    nom: c.nom,
+    pos: { x: c.x, y: c.y },
+    acces: [{ x: c.x, y: ALLEE_HAUT }],
+    face: c.face ?? 0,
+    assis: c.assis ?? false,
+  }))
 
   const hauteur = HAUT + rangees * RANGEE + 10
   const derniereAllee = HAUT + (rangees - 1) * RANGEE + 108
@@ -204,9 +213,10 @@ export const estInvite = (id: string) => id.startsWith('visiteur:') || id.starts
 
 export const CHAT_ID = 'chat'
 
-/** Le chat d'atelier, qui commence sa journée roulé sur un pouf. */
+/** Le chat d'atelier, qui commence sa journée roulé sur un siège. */
 export function chat(p: Plan): Marcheur {
-  const pouf = p.pauses.find((l) => l.nom === 'pouf-droite') ?? p.pauses[0]
+  // Le dernier siège du thème (un pouf, un banc…), sinon le premier coin venu.
+  const pouf = [...p.pauses].reverse().find((l) => l.assis) ?? p.pauses[0]
   return marcheur(CHAT_ID, pouf, 6_000)
 }
 

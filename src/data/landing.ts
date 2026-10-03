@@ -83,7 +83,7 @@ export const TEXTES = {
     etapesTitre: 'Set it up in three steps',
     etape1: 'Add the component',
     etape1Texte: [
-      'The shadcn CLI copies six files into your ',
+      'The shadcn CLI copies the component’s files into your ',
       'components',
       ' folder, yours to read and change. The labels in the room use Pixelify Sans: load it with ',
       'next/font',
@@ -144,7 +144,7 @@ export const TEXTES = {
     etapesTitre: 'L’installer en trois étapes',
     etape1: 'Ajouter le composant',
     etape1Texte: [
-      'Le CLI de shadcn copie six fichiers dans ton dossier ',
+      'Le CLI de shadcn copie les fichiers du composant dans ton dossier ',
       'components',
       ', à toi de les lire et de les modifier. Les étiquettes de la salle utilisent Pixelify Sans : charge-la avec ',
       'next/font',

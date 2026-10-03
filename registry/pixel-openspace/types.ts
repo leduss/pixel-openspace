@@ -64,6 +64,9 @@ export type SceneObject = 'workbench' | 'tv' | 'server-rack' | 'vending-machine'
 
 export type Language = 'en' | 'fr'
 
+/** The look of the room. More are on the way. */
+export type ThemeName = 'geek'
+
 export type OpenSpaceProps = {
   /** Up to five per row; rows are added as needed. */
   agents: Array<Agent>
@@ -87,6 +90,8 @@ export type OpenSpaceProps = {
   /** Confetti over the whole room: a birthday, a launch, a record month. */
   celebrate?: boolean
   language?: Language
+  /** The look of the room: furniture, outfits, break corners. Default 'geek'. */
+  theme?: ThemeName
   /** Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday. Default true. */
   seasonal?: boolean
   /** From what hour to what hour everybody stays at their desk. Default [22, 6]. */

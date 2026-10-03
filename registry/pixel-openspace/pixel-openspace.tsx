@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, memo, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { createContext, memo, useContext, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { JeuArcade, lireRecord, type Jeu } from './arcade'
@@ -22,8 +22,11 @@ import {
   type Statut,
 } from './engine'
 import { TEXTS, type Texts } from './i18n'
+import { ACCENT, Anim, LAMPE_PLAN, MUR_SALLE, Pixels, TextesContexte, animerLeDecor, etapes, useTextes, type Lumiere } from './primitives'
+import type { Theme } from './theme'
+import { THEME_GEEK } from './themes/geek'
 import { fete, type Fete } from './seasons'
-import type { Agent, AgentStatus, OpenSpaceProps, SceneObject, WallTile, Weather } from './types'
+import type { Agent, AgentStatus, OpenSpaceProps, SceneObject, ThemeName, WallTile, Weather } from './types'
 
 /*
  * pixel-openspace — an open space in pixel art where your scheduled jobs and
@@ -71,23 +74,12 @@ function versVue(a: Agent, id = a.id): Vue {
 
 type Equipe = { chef: Vue; agents: Array<Vue> }
 
-/* Les mots de la scène, dans la langue choisie, à portée de chaque morceau du décor. */
-const TextesContexte = createContext<Texts>(TEXTS.en)
-const useTextes = () => useContext(TextesContexte)
+/* Les thèmes disponibles, par leur nom public. */
+const THEMES: Record<ThemeName, Theme> = { geek: THEME_GEEK }
 
-/* La couleur d'accent : le laiton de l'atelier, réglable par --po-accent. */
-const ACCENT = 'var(--po-accent)'
-
-/* La couleur de la lampe, sur le plan. */
-const LAMPE_PLAN: Record<Statut, string> = {
-  'au-travail': ACCENT,
-  'a-jour': '#4ade80',
-  'en-retard': '#fb923c',
-  'en-echec': '#ef4444',
-  absent: '#52525b',
-  jamais: '#a1a1aa',
-  'a-la-demande': '#38bdf8',
-}
+/* Le thème de la scène, à portée des postes et des bonshommes. */
+const ThemeContexte = createContext<Theme>(THEME_GEEK)
+const useTheme = () => useContext(ThemeContexte)
 
 function depuis(iso: string | null, maintenant: number, t: Texts): string {
   if (!iso) return t.never
@@ -228,6 +220,7 @@ export function PixelOpenspace({
   deliveries = 0,
   celebrate = false,
   language = 'en',
+  theme: nomTheme = 'geek',
   seasonal = true,
   nightHours = [22, 6],
   toolbar = true,
@@ -239,6 +232,7 @@ export function PixelOpenspace({
   style,
 }: OpenSpaceProps) {
   const t = TEXTS[language]
+  const theme = THEMES[nomTheme] ?? THEME_GEEK
   const equipe: Equipe = {
     chef: versVue(lead ?? CHEF_DECOR(t), CHEF_ID),
     agents: agents.map((a) => versVue(a)),
@@ -423,7 +417,7 @@ export function PixelOpenspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- on ne réagit qu'à ce qui se voit : états, messages, compteurs
   }, [empreinteEquipe, visitors, deliveries])
 
-  const lePlan = plan(cle ? cle.split(',') : [], t.phrases)
+  const lePlan = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
   const [scene, setScene] = useState<Record<string, Pose>>(() => posesAuBureau(lePlan))
 
   /* Les états, les annonces du chef et les heures de nuit, lus par la boucle d'animation sans la relancer. */
@@ -438,7 +432,7 @@ export function PixelOpenspace({
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const p = plan(cle ? cle.split(',') : [], t.phrases)
+    const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
     // Chacun se lève à son heure, pas tous ensemble.
     let marcheurs = [...[p.chef, ...p.bureaux].map((b) => marcheur(b.id, b.siege, 2_000 + Math.random() * 60_000)), chat(p)]
     let numero = 0
@@ -526,7 +520,7 @@ export function PixelOpenspace({
       clearTimeout(attente)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- la boucle ne repart que si les bureaux ou la langue changent
-  }, [cle, language])
+  }, [cle, language, nomTheme])
 
   const tous = [equipe.chef, ...equipe.agents]
   const postes = [{ vue: equipe.chef, place: lePlan.chef }, ...equipe.agents.map((vue, i) => ({ vue, place: lePlan.bureaux[i] }))]
@@ -557,7 +551,7 @@ export function PixelOpenspace({
     if (vue) parler(vue)
     choisir(id)
   }
-  const cafe = presents.some(({ pose }) => pose.lieu === 'cafe' && !pose.marche)
+  const cafe = Boolean(theme.coinCafe) && presents.some(({ pose }) => pose.lieu === theme.coinCafe && !pose.marche)
   const invites = Object.entries(scene).filter(([id]) => estInvite(id))
   const poseChat = scene[CHAT_ID]
   // Les cinq prochains passages, pour le tableau blanc du chef.
@@ -574,8 +568,7 @@ export function PixelOpenspace({
     else window.location.href = href
   }
 
-  // Les lumières qui percent la nuit : les écrans, les tours RGB, la lampe du chef, l'enseigne,
-  // la baie serveur, les bornes, la télé, la machine à café, le distributeur et le frigo vitré.
+  // Les lumières qui percent la nuit : les écrans allumés, la lampe du chef, et celles du thème.
   const lumieres: Array<Lumiere> = [
     ...postes
       .filter(({ vue }) => vue.statut !== 'absent')
@@ -589,17 +582,10 @@ export function PixelOpenspace({
                 r: vue.statut === 'au-travail' ? 95 : 60,
                 couleur: vue.statut === 'au-travail' ? ACCENT : undefined,
               },
-              { x: place.cx + 45, y: place.dy + 2, r: 34, couleur: teint(vue.fiche.id).c },
+              ...(theme.lumierePoste?.(place.cx, place.dy, theme.tenue(vue.fiche.id).c) ?? []),
             ],
       ),
-    { x: 222, y: 36, r: 60, couleur: ACCENT },
-    { x: 59, y: 60, r: 40, couleur: '#22c55e' },
-    { x: 373, y: 50, r: 50, couleur: '#a855f7' },
-    { x: 417, y: 50, r: 45, couleur: '#22d3ee' },
-    { x: 516, y: 44, r: 80, couleur: '#38bdf8' },
-    { x: 768, y: 40, r: 40 },
-    { x: 882, y: 56, r: 45, couleur: '#f87171' },
-    { x: 949, y: 56, r: 55, couleur: '#e0f2fe' },
+    ...theme.lumieres,
   ]
 
   // La carte s'accroche au-dessus de l'agent choisi, ou à son bureau s'il est absent.
@@ -617,115 +603,123 @@ export function PixelOpenspace({
 
   return (
     <TextesContexte.Provider value={t}>
-      <div
-        className={['flex flex-col gap-3', className].filter(Boolean).join(' ')}
-        style={{ '--po-accent': '#e8b923', ...style } as CSSProperties}
-      >
-        {toolbar ? (
-          <div className="flex flex-wrap justify-end gap-2">
-            <Button variant={alertes ? 'secondary' : 'outline'} size="sm" onClick={basculerAlertes} aria-pressed={alertes}>
-              {alertes ? t.alertsOn : t.alertsOff}
-            </Button>
-            <Button variant={son ? 'secondary' : 'outline'} size="sm" onClick={basculerSon} aria-pressed={son}>
-              {son ? t.sound : t.soundOff}
-            </Button>
-            <Button variant="outline" size="sm" onClick={basculerPleinEcran}>
-              {t.fullscreen}
-            </Button>
-          </div>
-        ) : null}
-
+      <ThemeContexte.Provider value={theme}>
         <div
-          ref={scenePleinEcran}
-          className="overflow-x-auto rounded-xl border bg-[#120e0b] [&:fullscreen]:flex [&:fullscreen]:items-center [&:fullscreen]:justify-center [&:fullscreen]:rounded-none [&:fullscreen]:border-0"
+          className={['flex flex-col gap-3', className].filter(Boolean).join(' ')}
+          style={{ '--po-accent': '#e8b923', ...style } as CSSProperties}
         >
+          {toolbar ? (
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button variant={alertes ? 'secondary' : 'outline'} size="sm" onClick={basculerAlertes} aria-pressed={alertes}>
+                {alertes ? t.alertsOn : t.alertsOff}
+              </Button>
+              <Button variant={son ? 'secondary' : 'outline'} size="sm" onClick={basculerSon} aria-pressed={son}>
+                {son ? t.sound : t.soundOff}
+              </Button>
+              <Button variant="outline" size="sm" onClick={basculerPleinEcran}>
+                {t.fullscreen}
+              </Button>
+            </div>
+          ) : null}
+
           <div
-            className="relative min-w-[720px] [:fullscreen>&]:w-[min(100vw,calc(100vh*var(--ratio)))]"
-            style={{ '--ratio': LARGEUR / lePlan.hauteur } as CSSProperties}
+            ref={scenePleinEcran}
+            style={{ background: theme.fond }}
+            className="overflow-x-auto rounded-xl border [&:fullscreen]:flex [&:fullscreen]:items-center [&:fullscreen]:justify-center [&:fullscreen]:rounded-none [&:fullscreen]:border-0"
           >
-            {!pret ? <div style={{ aspectRatio: `${LARGEUR} / ${lePlan.hauteur}` }} /> : null}
-            {pret ? (
-              <svg
-                viewBox={`0 0 ${LARGEUR} ${lePlan.hauteur}`}
-                className="block w-full select-none"
-                style={{ fontFamily: "var(--font-pixel, 'Pixelify Sans'), ui-monospace, monospace" }}
-                shapeRendering="crispEdges"
-                role="img"
-                aria-label={t.sceneLabel}
-              >
-                <Decor hauteur={lePlan.hauteur} titre={title} liens={objectLinks} aller={aller} jouer={setJeu} />
-                <EcranMural tuiles={wall} />
-                <TableauBlanc prochains={prochains} />
-                <Records snake={records.snake} casse={records.casse} />
-                <ColisDeposes nombre={deposes} bas={lePlan.hauteur - 20} />
-                {seasonal ? <Fetes quoi={fete(maintenant)} bas={lePlan.hauteur - 20} /> : null}
-                <Fenetre meteo={weather} />
-                <Horloge maintenant={maintenant} ouverture={ouverture} />
-                {cafe ? <CafeQuiCoule /> : null}
+            <div
+              className="relative min-w-[720px] [:fullscreen>&]:w-[min(100vw,calc(100vh*var(--ratio)))]"
+              style={{ '--ratio': LARGEUR / lePlan.hauteur } as CSSProperties}
+            >
+              {!pret ? <div style={{ aspectRatio: `${LARGEUR} / ${lePlan.hauteur}` }} /> : null}
+              {pret ? (
+                <svg
+                  viewBox={`0 0 ${LARGEUR} ${lePlan.hauteur}`}
+                  className="block w-full select-none"
+                  style={{ fontFamily: "var(--font-pixel, 'Pixelify Sans'), ui-monospace, monospace" }}
+                  shapeRendering="crispEdges"
+                  role="img"
+                  aria-label={t.sceneLabel}
+                >
+                  <theme.Decor hauteur={lePlan.hauteur} titre={title} liens={objectLinks} aller={aller} jouer={setJeu} />
+                  <EcranMural tuiles={wall} />
+                  <TableauBlanc prochains={prochains} />
+                  <Records snake={records.snake} casse={records.casse} />
+                  <ColisDeposes nombre={deposes} bas={lePlan.hauteur - 20} />
+                  {seasonal ? <Fetes quoi={fete(maintenant)} bas={lePlan.hauteur - 20} /> : null}
+                  <Fenetre meteo={weather} />
+                  <Horloge maintenant={maintenant} ouverture={ouverture} />
+                  {cafe && theme.CafeQuiCoule ? <theme.CafeQuiCoule /> : null}
 
-                {postes.map(({ vue, place }) => (
-                  <Poste
-                    key={vue.fiche.id}
-                    vue={vue}
-                    place={place}
-                    occupe={vue.statut !== 'absent' && (scene[vue.fiche.id]?.assise ?? 'bureau') === 'bureau'}
-                    bientot={bientot(vue, maintenant)}
-                    monte={Boolean(nouveaux[vue.fiche.id])}
-                    oublie={oublie(vue, maintenant)}
-                    choisi={choisi === vue.fiche.id}
-                    choisir={() => choisir(vue.fiche.id)}
-                  />
-                ))}
-
-                {presents.map(({ vue, pose }) => (
-                  <Personnage
-                    key={vue.fiche.id}
-                    id={vue.fiche.id}
-                    pose={pose}
-                    etire={Boolean(etires[vue.fiche.id])}
-                    choisir={cliquerAgent}
-                  />
-                ))}
-                {invites.map(([id, pose]) => (
-                  <Personnage key={id} id={id} pose={pose} etire={false} />
-                ))}
-                {poseChat ? <Chat pose={poseChat} /> : null}
-
-                {/* Le dossier des chaises occupées, devant le dos de l'agent. */}
-                {presents
-                  .filter(({ vue, pose }) => pose.assise === 'bureau' && vue.fiche.id !== CHEF_ID)
-                  .map(({ vue, place }) => (
-                    <Dossier key={vue.fiche.id} x={place.siege.pos.x} y={place.siege.pos.y + 4} couleur={teint(vue.fiche.id).c} />
+                  {postes.map(({ vue, place }) => (
+                    <Poste
+                      key={vue.fiche.id}
+                      vue={vue}
+                      place={place}
+                      occupe={vue.statut !== 'absent' && (scene[vue.fiche.id]?.assise ?? 'bureau') === 'bureau'}
+                      bientot={bientot(vue, maintenant)}
+                      monte={Boolean(nouveaux[vue.fiche.id])}
+                      oublie={oublie(vue, maintenant)}
+                      choisi={choisi === vue.fiche.id}
+                      choisir={() => choisir(vue.fiche.id)}
+                    />
                   ))}
 
-                <Nuit niveau={nuit} lumieres={lumieres} hauteur={lePlan.hauteur} />
-                {celebrate ? <Confettis hauteur={lePlan.hauteur} /> : null}
+                  {presents.map(({ vue, pose }) => (
+                    <Personnage
+                      key={vue.fiche.id}
+                      id={vue.fiche.id}
+                      pose={pose}
+                      etire={Boolean(etires[vue.fiche.id])}
+                      choisir={cliquerAgent}
+                    />
+                  ))}
+                  {invites.map(([id, pose]) => (
+                    <Personnage key={id} id={id} pose={pose} etire={false} />
+                  ))}
+                  {poseChat ? <Chat pose={poseChat} /> : null}
 
-                {/* Les étiquettes et les bulles, au-dessus de tout, même la nuit. */}
-                {presents.map(({ vue, pose }) => (
-                  <Annonce key={vue.fiche.id} vue={vue} pose={pose} parole={paroles[vue.fiche.id] ?? pose.parole} />
-                ))}
-                {invites.map(([id, pose]) =>
-                  pose.parole ? <Parole key={id} x={Math.round(pose.x)} haut={cadrage(pose).haut} texte={pose.parole} /> : null,
-                )}
-              </svg>
-            ) : null}
+                  {/* Le dossier des chaises occupées, devant le dos de l'agent. */}
+                  {presents
+                    .filter(({ vue, pose }) => pose.assise === 'bureau' && vue.fiche.id !== CHEF_ID)
+                    .map(({ vue, place }) => (
+                      <theme.Dossier
+                        key={vue.fiche.id}
+                        x={place.siege.pos.x}
+                        y={place.siege.pos.y + 4}
+                        couleur={theme.tenue(vue.fiche.id).c}
+                      />
+                    ))}
 
-            {selection && ancre ? (
-              <Carte
-                key={selection.fiche.id}
-                agent={selection}
-                ancre={ancre}
-                hauteur={lePlan.hauteur}
-                maintenant={maintenant}
-                lancer={onRun}
-                fermer={() => setChoisi(null)}
-              />
-            ) : null}
+                  <Nuit niveau={nuit} lumieres={lumieres} hauteur={lePlan.hauteur} />
+                  {celebrate ? <Confettis hauteur={lePlan.hauteur} /> : null}
+
+                  {/* Les étiquettes et les bulles, au-dessus de tout, même la nuit. */}
+                  {presents.map(({ vue, pose }) => (
+                    <Annonce key={vue.fiche.id} vue={vue} pose={pose} parole={paroles[vue.fiche.id] ?? pose.parole} />
+                  ))}
+                  {invites.map(([id, pose]) =>
+                    pose.parole ? <Parole key={id} x={Math.round(pose.x)} haut={cadrage(pose).haut} texte={pose.parole} /> : null,
+                  )}
+                </svg>
+              ) : null}
+
+              {selection && ancre ? (
+                <Carte
+                  key={selection.fiche.id}
+                  agent={selection}
+                  ancre={ancre}
+                  hauteur={lePlan.hauteur}
+                  maintenant={maintenant}
+                  lancer={onRun}
+                  fermer={() => setChoisi(null)}
+                />
+              ) : null}
+            </div>
           </div>
+          {jeu ? <JeuArcade key={jeu} jeu={jeu} textes={t} fermer={() => setJeu(null)} /> : null}
         </div>
-        {jeu ? <JeuArcade key={jeu} jeu={jeu} textes={t} fermer={() => setJeu(null)} /> : null}
-      </div>
+      </ThemeContexte.Provider>
     </TextesContexte.Provider>
   )
 }
@@ -812,9 +806,6 @@ function Carte({
  * avec un trou doux autour de chaque écran allumé. Les LED, les néons et les
  * écrans au travail jettent en plus une lueur de leur couleur.
  */
-/** Une source de lumière dans la nuit ; colorée, elle jette en plus une lueur de sa couleur. */
-type Lumiere = { x: number; y: number; r: number; couleur?: string }
-
 function Nuit({ niveau, lumieres, hauteur }: { niveau: number; lumieres: Array<Lumiere>; hauteur: number }) {
   if (!niveau) return null
   return (
@@ -846,611 +837,6 @@ function Nuit({ niveau, lumieres, hauteur }: { niveau: number; lumieres: Array<L
           <ellipse key={i} cx={l.x} cy={l.y + 16} rx={l.r * 0.85} ry={l.r * 0.65} fill={`url(#lueur-${i})`} opacity={niveau / 0.62} />
         ) : null,
       )}
-    </g>
-  )
-}
-
-/** Le café qui coule dans la tasse quand quelqu'un attend devant la machine. */
-function CafeQuiCoule() {
-  return (
-    <g pointerEvents="none">
-      <rect x="767" y="47" width="2" height="5" fill="#6b3a1e">
-        <Anim attributeName="opacity" values="1;0.4;1" dur="0.5s" repeatCount="indefinite" />
-      </rect>
-      <rect x="764" y="52" width="8" height="3" fill="#6b3a1e">
-        <Anim attributeName="height" values="1;5;5" dur="3s" repeatCount="indefinite" />
-        <Anim attributeName="y" values="56;52;52" dur="3s" repeatCount="indefinite" />
-      </rect>
-    </g>
-  )
-}
-
-/* ——— Les animations par sauts ——— */
-
-/*
- * Les animations du décor (LED, néons, télé, ventilateurs, pluie…) ne passent
- * pas par les animations SVG du navigateur : Chrome les recalcule toutes à
- * chaque image, même quand rien ne change, et la page mangeait un tiers de
- * processeur pour des diodes. Chacune s'inscrit ici, et la boucle de la scène
- * les fait avancer par sauts, comme dans un vieux jeu : un élément n'est touché
- * que quand sa valeur change vraiment, et tout se fige au calme.
- *
- * `<Anim>` reprend la syntaxe de `<animate>` (values, dur, begin, keyTimes) :
- * les valeurs se succèdent à intervalles égaux, ou aux instants de keyTimes.
- */
-type Piste = {
-  cible: Element
-  attribut: string
-  /** Pour une transformation : translate, rotate… */
-  type?: string
-  valeurs: Array<string>
-  instants: Array<number> | null
-  dureeMs: number
-  debutMs: number
-  derniere?: string
-}
-
-const pistes = new Set<Piste>()
-
-const enMs = (duree: string | undefined) => (duree ? Number.parseFloat(duree) * (duree.endsWith('ms') ? 1 : 1000) : 0)
-
-function Anim({
-  attributeName,
-  type,
-  values,
-  dur,
-  begin,
-  keyTimes,
-}: {
-  attributeName: string
-  type?: string
-  values: string
-  dur: string
-  begin?: string
-  keyTimes?: string
-  repeatCount?: string
-}) {
-  const repere = useRef<SVGDescElement>(null)
-  useEffect(() => {
-    const cible = repere.current?.parentElement
-    if (!cible) return
-    const piste: Piste = {
-      cible,
-      attribut: attributeName,
-      type,
-      valeurs: values.split(';').map((v) => v.trim()),
-      instants: keyTimes ? keyTimes.split(';').map(Number) : null,
-      dureeMs: enMs(dur),
-      debutMs: enMs(begin),
-    }
-    pistes.add(piste)
-    return () => {
-      pistes.delete(piste)
-    }
-  }, [attributeName, type, values, dur, begin, keyTimes])
-  return <desc ref={repere} />
-}
-
-/** Fait avancer toutes les animations du décor à l'instant `t` (ms). */
-function animerLeDecor(t: number) {
-  for (const p of pistes) {
-    if (!p.dureeMs) continue
-    const phase = ((((t - p.debutMs) % p.dureeMs) + p.dureeMs) % p.dureeMs) / p.dureeMs
-    let i = Math.min(p.valeurs.length - 1, Math.floor(phase * p.valeurs.length))
-    if (p.instants) {
-      i = 0
-      while (i + 1 < p.instants.length && p.instants[i + 1] <= phase) i++
-    }
-    const v = p.type ? `${p.type}(${p.valeurs[i]})` : p.valeurs[i]
-    if (v !== p.derniere) {
-      p.derniere = v
-      p.cible.setAttribute(p.attribut, v)
-    }
-  }
-}
-
-/** Un trajet découpé en étapes, pour les animations qui déplacent quelque chose. */
-function etapes(de: number, a: number, n: number): string {
-  return Array.from({ length: n + 1 }, (_, i) => Math.round((de + ((a - de) * i) / n) * 100) / 100).join(';')
-}
-
-const allerRetour = (de: number, a: number, n: number) => `${etapes(de, a, n)};${etapes(a, de, n).split(';').slice(1).join(';')}`
-
-/* ——— Le pixel ——— */
-
-/** Dessine une grille de caractères, un caractère par pixel, en fusionnant les pixels voisins d'une ligne. */
-function Pixels({ grille, couleurs, u = 3 }: { grille: Array<string>; couleurs: Record<string, string>; u?: number }) {
-  const rects: Array<ReactNode> = []
-  grille.forEach((ligne, y) => {
-    let x = 0
-    while (x < ligne.length) {
-      const c = ligne[x]
-      let n = 1
-      while (ligne[x + n] === c) n++
-      if (couleurs[c]) rects.push(<rect key={`${x}-${y}`} x={x * u} y={y * u} width={n * u} height={u} fill={couleurs[c]} />)
-      x += n
-    }
-  })
-  return <>{rects}</>
-}
-
-const PLANTE = ['..g...g.', '.gGg.gGg', 'gGgggGg.', '.gGgGggg', '..gggGg.', '...ggg..', '.pppppp.', '.PPPPPP.', '..PPPP..']
-
-function Plante({ x, y }: { x: number; y: number }) {
-  return (
-    <g transform={`translate(${x} ${y})`}>
-      <Pixels grille={PLANTE} couleurs={{ g: '#4caf50', G: '#2e7d32', p: '#d07a3e', P: '#a35a2a' }} />
-    </g>
-  )
-}
-
-/* ——— Le décor ——— */
-
-const MUR = { arete: '#0f1115', face: '#262a31', plinthe: '#1a1d22' }
-
-/* Les pans du mur de la grande salle, entre ses entrées : le bureau du chef, le coin gaming, la cuisine. */
-const MUR_SALLE = [
-  [20, 238],
-  [282, 360],
-  [650, 740],
-  [975, 980],
-]
-
-/** Un mur vu de biais : son arête sombre, sa face, et la bande LED qui court à son pied. */
-function MurHaut({ x, largeur, led }: { x: number; largeur: number; led: string }) {
-  return (
-    <>
-      <rect x={x} y="14" width={largeur} height="6" fill={MUR.arete} />
-      <rect x={x} y="20" width={largeur} height="32" fill={MUR.face} />
-      <rect x={x} y="52" width={largeur} height="4" fill={MUR.plinthe} />
-      <rect x={x} y="51" width={largeur} height="2" fill={led} opacity="0.9" />
-    </>
-  )
-}
-
-/** Un néon : le texte, et son halo flou derrière. */
-function Neon({ x, y, texte, couleur, taille = 9 }: { x: number; y: number; texte: string; couleur: string; taille?: number }) {
-  return (
-    <g shapeRendering="auto">
-      <text x={x} y={y} fontSize={taille} textAnchor="middle" fill={couleur} filter="url(#flou-neon)" opacity="0.9">
-        {texte}
-      </text>
-      <text x={x} y={y} fontSize={taille} textAnchor="middle" fill="#fffbeb">
-        {texte}
-        <Anim attributeName="opacity" values="1;1;0.75;1;1" dur="4s" repeatCount="indefinite" />
-      </text>
-    </g>
-  )
-}
-
-/** Un objet du décor qu'on peut cliquer : il s'éclaire au survol et mène quelque part. */
-function Cliquable({ titre, faire, actif = true, children }: { titre: string; faire: () => void; actif?: boolean; children: ReactNode }) {
-  if (!actif) return <>{children}</>
-  return (
-    <g
-      role="link"
-      tabIndex={0}
-      aria-label={titre}
-      className="cursor-pointer outline-none transition-[filter] hover:brightness-125 focus-visible:brightness-125"
-      onClick={faire}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          faire()
-        }
-      }}
-    >
-      <title>{titre}</title>
-      {children}
-    </g>
-  )
-}
-
-function Decor({
-  hauteur,
-  titre,
-  liens,
-  aller,
-  jouer,
-}: {
-  hauteur: number
-  titre: string
-  liens: Partial<Record<SceneObject, string>>
-  aller: (objet: SceneObject) => void
-  jouer: (jeu: Jeu) => void
-}) {
-  const t = useTextes()
-  const bas = hauteur - 20
-  const lien = (objet: SceneObject) => ({ titre: t.objects[objet], faire: () => aller(objet), actif: Boolean(liens[objet]) })
-  return (
-    <>
-      <defs>
-        <style>{`@keyframes trotteuse { to { transform: rotate(360deg) } }
-        @keyframes montage-bureau {
-          from { transform: translateY(-160px); opacity: 0 }
-          60% { transform: translateY(6px); opacity: 1 }
-          to { transform: none; opacity: 1 }
-        }`}</style>
-        <filter id="flou-neon" x="-20%" y="-50%" width="140%" height="200%">
-          <feGaussianBlur stdDeviation="2.2" />
-        </filter>
-        <pattern id="beton" width="96" height="96" patternUnits="userSpaceOnUse">
-          <rect width="96" height="96" fill="#565a62" />
-          <rect width="96" height="1" fill="#4c5058" />
-          <rect width="1" height="96" fill="#4c5058" />
-          <rect x="14" y="22" width="2" height="2" fill="#5f636b" />
-          <rect x="60" y="40" width="3" height="2" fill="#4f535b" />
-          <rect x="38" y="74" width="2" height="2" fill="#60646c" />
-          <rect x="80" y="12" width="2" height="3" fill="#51555d" />
-        </pattern>
-        <pattern id="moquette-chef" width="16" height="16" patternUnits="userSpaceOnUse">
-          <rect width="16" height="16" fill="#3a3f4b" />
-          <rect width="8" height="8" fill="#3f4451" />
-          <rect x="8" y="8" width="8" height="8" fill="#3f4451" />
-        </pattern>
-        <pattern id="moquette-jeu" width="12" height="12" patternUnits="userSpaceOnUse">
-          <rect width="12" height="12" fill="#231f36" />
-          <rect x="2" y="2" width="2" height="2" fill="#2c2645" />
-          <rect x="8" y="8" width="2" height="2" fill="#1d1a2e" />
-        </pattern>
-        <pattern id="carreaux" width="32" height="32" patternUnits="userSpaceOnUse">
-          <rect width="32" height="32" fill="#d5d9df" />
-          <rect width="32" height="1" fill="#c2c7ce" />
-          <rect width="1" height="32" fill="#c2c7ce" />
-        </pattern>
-        <linearGradient id="led-jeu" x1="0" x2="1">
-          <stop offset="0" stopColor="#22d3ee" />
-          <stop offset="0.5" stopColor="#a855f7" />
-          <stop offset="1" stopColor="#ec4899" />
-        </linearGradient>
-      </defs>
-
-      {/* Les sols. */}
-      <rect x="20" y="56" width="310" height="142" fill="url(#moquette-chef)" />
-      <rect x="338" y="56" width="344" height="142" fill="url(#moquette-jeu)" />
-      <rect x="690" y="56" width="290" height="142" fill="url(#carreaux)" />
-      <rect x="20" y="198" width="960" height={bas - 198} fill="url(#beton)" />
-
-      {/* Les murs du fond, chacun avec sa bande LED. */}
-      <MurHaut x={20} largeur={310} led="var(--po-accent)" />
-      <MurHaut x={338} largeur={344} led="url(#led-jeu)" />
-      <MurHaut x={690} largeur={290} led="#e0f2fe" />
-
-      {/* Le bureau du chef : baie serveur, enseigne néon, plantes. */}
-      <Cliquable {...lien('server-rack')}>
-        <BaieServeur x={34} />
-      </Cliquable>
-      <Neon x={222} y={40} texte={t.leadOffice} couleur="var(--po-accent)" taille={11} />
-      <Plante x={300} y={62} />
-
-      {/* Le coin gaming : la borne d'arcade, la grande télé et sa console, les poufs, l'établi de montage. */}
-      <Cliquable titre={t.objects.snake} faire={() => jouer('snake')}>
-        <Arcade x={352} />
-      </Cliquable>
-      <Cliquable titre={t.objects.breakout} faire={() => jouer('casse-briques')}>
-        <BorneCasseBriques x={396} />
-      </Cliquable>
-      <Cliquable {...lien('tv')}>
-        <Tele x={442} />
-      </Cliquable>
-      <rect x="456" y="128" width="108" height="46" fill="#3b2f63" />
-      <rect x="456" y="128" width="108" height="2" fill="#a855f7" />
-      <rect x="456" y="172" width="108" height="2" fill="#a855f7" />
-      <Pouf x={482} y={146} couleur="#ef4444" />
-      <Pouf x={538} y={146} couleur="#22d3ee" />
-      <Cliquable {...lien('workbench')}>
-        <Etabli x={594} />
-      </Cliquable>
-      <Plante x={346} y={160} />
-
-      {/* La cuisine : machine espresso, distributeur, frigo vitré plein de canettes, mange-debout. */}
-      <rect x="700" y="24" width="20" height="20" fill="#111827" />
-      <Neon x={710} y={38} texte="☕" couleur="#f472b6" taille={12} />
-      <rect x="730" y="44" width="122" height="24" fill="#f3f4f6" />
-      <rect x="730" y="68" width="122" height="18" fill="#1f2937" />
-      {[734, 774, 814].map((x) => (
-        <rect key={x} x={x} y="72" width="34" height="10" fill="#273244" />
-      ))}
-      <rect x="748" y="22" width="40" height="38" fill="#9ca3af" />
-      <rect x="750" y="24" width="36" height="12" fill="#d1d5db" />
-      <rect x="752" y="38" width="32" height="6" fill="#111827" />
-      <rect x="778" y="27" width="5" height="5" fill="var(--po-accent)" />
-      <rect x="762" y="44" width="12" height="4" fill="#4b5563" />
-      <rect x="763" y="50" width="10" height="8" fill="#fafaf9" />
-      <path d="M765 47v-6M771 47v-6" stroke="#e7e5e4" strokeWidth="2" fill="none">
-        <Anim attributeName="transform" type="translate" values="0 2;0 -4;0 2" dur="2.6s" repeatCount="indefinite" />
-        <Anim attributeName="opacity" values="0;0.7;0" dur="2.6s" repeatCount="indefinite" />
-      </path>
-      <rect x="814" y="50" width="34" height="12" fill="#6b7280" />
-      <rect x="818" y="53" width="26" height="6" fill="#cbd5e1" />
-      <Cliquable {...lien('vending-machine')}>
-        <Distributeur x={860} />
-      </Cliquable>
-      <Cliquable {...lien('fridge')}>
-        <FrigoVitre x={922} />
-      </Cliquable>
-      <rect x="818" y="132" width="8" height="34" fill="#111827" />
-      <rect x="802" y="126" width="40" height="10" fill="#f9fafb" />
-      <rect x="802" y="136" width="40" height="3" fill="#d1d5db" />
-      {[786, 850].map((x) => (
-        <g key={x}>
-          <rect x={x} y="140" width="10" height="10" fill="#111827" />
-          <rect x={x + 3} y="150" width="4" height="12" fill="#374151" />
-        </g>
-      ))}
-      <Plante x={700} y={160} />
-
-      {/* La grande salle : les cartons de matériel qui attendent, les plantes. */}
-      <Cartons x={56} y={bas - 44} lien={lien} />
-      <Plante x={946} y={bas - 32} />
-
-      {/* Le mur de la grande salle, percé de ses trois entrées, avec sa bande LED ; l'écran y est accroché. */}
-      {MUR_SALLE.map(([de, a]) => (
-        <g key={de}>
-          <rect x={de} y="198" width={a - de} height="6" fill={MUR.arete} />
-          <rect x={de} y="204" width={a - de} height="38" fill={MUR.face} />
-          <rect x={de} y="242" width={a - de} height="4" fill={MUR.plinthe} />
-          <rect x={de} y="241" width={a - de} height="2" fill="var(--po-accent)" opacity="0.8" />
-        </g>
-      ))}
-      <Neon x={695} y={226} texte={titre} couleur="#22d3ee" taille={titre.length > 14 ? 7 : 9} />
-      <Porte bas={bas} />
-      <rect x="330" y="14" width="8" height="190" fill="#7dd3fc" opacity="0.18" />
-      <rect x="330" y="14" width="2" height="190" fill="#bae6fd" opacity="0.6" />
-      <rect x="682" y="14" width="8" height="190" fill={MUR.arete} />
-      <rect x="12" y="14" width="8" height={bas - 6} fill={MUR.arete} />
-      <rect x="980" y="14" width="8" height={bas - 6} fill={MUR.arete} />
-      <rect x="12" y="6" width="976" height="8" fill={MUR.arete} />
-      <rect x="12" y={bas} width="976" height="10" fill={MUR.arete} />
-    </>
-  )
-}
-
-/** La baie serveur : ses tiroirs et leurs diodes qui clignotent chacune à son rythme. */
-function BaieServeur({ x }: { x: number }) {
-  return (
-    <g>
-      <rect x={x} y="20" width="50" height="84" fill="#0b0d10" />
-      <rect x={x + 2} y="22" width="46" height="80" fill="#16191e" />
-      {Array.from({ length: 7 }, (_, i) => (
-        <g key={i}>
-          <rect x={x + 4} y={25 + i * 11} width="42" height="9" fill="#23272e" />
-          <rect x={x + 6} y={28 + i * 11} width="18" height="2" fill="#3a3f48" />
-          {[0, 1, 2].map((j) => (
-            <rect key={j} x={x + 30 + j * 5} y={27 + i * 11} width="3" height="3" fill={['#22c55e', '#22c55e', '#38bdf8'][j]}>
-              <Anim attributeName="opacity" values="1;0.15;1" dur={`${0.4 + ((i * 3 + j * 7) % 9) / 6}s`} repeatCount="indefinite" />
-            </rect>
-          ))}
-        </g>
-      ))}
-    </g>
-  )
-}
-
-/** La borne d'arcade : marquee néon, écran qui joue tout seul, boutons. */
-function Arcade({ x }: { x: number }) {
-  // Le serpent avance par à-coups vers la puce, comme dans le jeu.
-  const anneaux = ['#f472b6', '#a855f7', '#38bdf8', '#22c55e']
-  return (
-    <g>
-      <rect x={x} y="18" width="42" height="84" fill="#4c1d95" />
-      <rect x={x + 2} y="20" width="38" height="10" fill="#ec4899" />
-      <text x={x + 21} y="28" fontSize="7" textAnchor="middle" fill="#fdf2f8">
-        SNAKE
-      </text>
-      <rect x={x + 5} y="33" width="32" height="26" fill="#0b0d10" />
-      <rect x={x + 8} y="36" width="26" height="20" fill="#0f172a" />
-      <rect x={x + 26} y="44" width="4" height="4" fill="#e3b95a" />
-      <g>
-        <rect x={x + 18} y="45" width="3" height="3" fill="#f8fafc" />
-        {anneaux.map((c, i) => (
-          <rect key={c} x={x + 15 - i * 3} y="45" width="3" height="3" fill={c} />
-        ))}
-        <Anim attributeName="transform" type="translate" values="-4 0;-1 0;2 0;5 0;-4 0" dur="2s" repeatCount="indefinite" />
-      </g>
-      <rect x={x + 3} y="62" width="36" height="12" fill="#5b21b6" />
-      <rect x={x + 9} y="65" width="3" height="6" fill="#111827" />
-      <rect x={x + 8} y="63" width="5" height="3" fill="#ef4444" />
-      {[20, 26, 32].map((dx, i) => (
-        <rect key={dx} x={x + dx} y="66" width="4" height="4" fill={['#facc15', '#22c55e', '#38bdf8'][i]} />
-      ))}
-      <rect x={x + 6} y="76" width="30" height="24" fill="#3b0764" />
-      <rect x={x + 16} y="84" width="10" height="4" fill="#facc15" />
-    </g>
-  )
-}
-
-/** La deuxième borne, cyan : son écran rejoue un casse-briques, la bille rebondit sous les puces. */
-function BorneCasseBriques({ x }: { x: number }) {
-  const rangs = ['#e3b95a', '#22c55e', '#38bdf8']
-  return (
-    <g>
-      <rect x={x} y="18" width="42" height="84" fill="#0e7490" />
-      <rect x={x + 2} y="20" width="38" height="10" fill="#22d3ee" />
-      <text x={x + 21} y="28" fontSize="6" textAnchor="middle" fill="#083344">
-        CASSE-PUCES
-      </text>
-      <rect x={x + 5} y="33" width="32" height="26" fill="#0b0d10" />
-      <rect x={x + 8} y="36" width="26" height="20" fill="#020617" />
-      {rangs.map((c, r) =>
-        [0, 1, 2, 3].map((i) => <rect key={`${r}${i}`} x={x + 9 + i * 6} y={37 + r * 3} width="5" height="2" fill={c} />),
-      )}
-      <rect x={x + 18} y="46" width="2" height="2" fill="#f8fafc">
-        <Anim attributeName="x" values={`${x + 10};${x + 31};${x + 18};${x + 10}`} dur="2.4s" repeatCount="indefinite" />
-        <Anim attributeName="y" values="53;47;53;47;53" dur="1.2s" repeatCount="indefinite" />
-      </rect>
-      <rect x={x + 16} y="54" width="8" height="1" fill="#e5e7eb">
-        <Anim attributeName="x" values={`${x + 9};${x + 25};${x + 14};${x + 9}`} dur="2.4s" repeatCount="indefinite" />
-      </rect>
-      <rect x={x + 3} y="62" width="36" height="12" fill="#155e75" />
-      <rect x={x + 8} y="66" width="12" height="3" fill="#111827" />
-      <rect x={x + 12} y="65" width="4" height="5" fill="#e5e7eb" />
-      {[26, 32].map((dx, i) => (
-        <rect key={dx} x={x + dx} y="66" width="4" height="4" fill={['#ef4444', '#facc15'][i]} />
-      ))}
-      <rect x={x + 6} y="76" width="30" height="24" fill="#164e63" />
-      <rect x={x + 16} y="84" width="10" height="4" fill="#22d3ee" />
-    </g>
-  )
-}
-
-/** La grande télé, la console dessous, et un jeu de plateforme qui tourne en boucle. */
-function Tele({ x }: { x: number }) {
-  return (
-    <g>
-      <rect x={x} y="22" width="148" height="40" fill="#0b0d10" />
-      <rect x={x + 3} y="25" width="142" height="34" fill="#38bdf8" />
-      <rect x={x + 3} y="49" width="142" height="10" fill="#16a34a" />
-      <rect x={x + 3} y="49" width="142" height="2" fill="#4ade80" />
-      <rect x={x + 30} y="40" width="18" height="9" fill="#a16207" />
-      <rect x={x + 90} y="36" width="14" height="13" fill="#15803d" />
-      <rect x={x + 120} y="30" width="10" height="6" fill="#f8fafc" opacity="0.9" />
-      <rect x={x + 60} y="28" width="14" height="5" fill="#f8fafc" opacity="0.8" />
-      {/* Le héros qui court et saute. */}
-      <rect x={x + 10} y="43" width="5" height="6" fill="#ef4444">
-        <Anim attributeName="x" values={allerRetour(x + 8, x + 134, 18)} dur="7s" repeatCount="indefinite" />
-        <Anim attributeName="y" values="43;43;35;43;43" keyTimes="0;0.4;0.47;0.54;1" dur="3.5s" repeatCount="indefinite" />
-      </rect>
-      <rect x={x + 62} y="64" width="24" height="10" fill="#111827" />
-      <rect x={x + 30} y="66" width="88" height="10" fill="#1f2937" />
-      <rect x={x + 66} y="68" width="16" height="5" fill="#f8fafc" />
-      <rect x={x + 80} y="69" width="2" height="2" fill="#38bdf8" />
-    </g>
-  )
-}
-
-function Pouf({ x, y, couleur }: { x: number; y: number; couleur: string }) {
-  return (
-    <g>
-      <rect x={x - 14} y={y - 6} width="28" height="20" fill="#0b0d10" />
-      <rect x={x - 13} y={y - 5} width="26" height="18" fill={couleur} />
-      <rect x={x - 10} y={y - 4} width="20" height="4" fill="white" opacity="0.25" />
-      <rect x={x - 13} y={y + 9} width="26" height="4" fill="black" opacity="0.25" />
-    </g>
-  )
-}
-
-/** L'établi de montage : panneau à outils, tapis antistatique, PC ouvert, barrettes, tournevis. */
-function Etabli({ x }: { x: number }) {
-  return (
-    <g>
-      <rect x={x} y="20" width="82" height="28" fill="#a3825a" />
-      {Array.from({ length: 4 }, (_, i) =>
-        Array.from({ length: 10 }, (_, j) => (
-          <rect key={`${i}-${j}`} x={x + 4 + j * 8} y={23 + i * 7} width="1" height="1" fill="#6b5236" />
-        )),
-      )}
-      <rect x={x + 8} y="25" width="3" height="16" fill="#ef4444" />
-      <rect x={x + 16} y="24" width="10" height="4" fill="#9ca3af" />
-      <rect x={x + 20} y="28" width="2" height="12" fill="#9ca3af" />
-      <rect x={x + 32} y="26" width="12" height="12" fill="#facc15" />
-      <rect x={x + 56} y="25" width="18" height="6" fill="#374151" />
-      <rect x={x} y="48" width="82" height="22" fill="#9ca3af" />
-      <rect x={x + 4} y="50" width="74" height="18" fill="#0e7490" />
-      <rect x={x} y="70" width="82" height="14" fill="#4b5563" />
-      <rect x={x + 3} y="84" width="5" height="10" fill="#1f2937" />
-      <rect x={x + 74} y="84" width="5" height="10" fill="#1f2937" />
-      {/* Le boîtier ouvert : carte mère verte, carte graphique, ventilateur RGB. */}
-      <rect x={x + 8} y="30" width="30" height="34" fill="#111827" />
-      <rect x={x + 11} y="33" width="24" height="28" fill="#14532d" />
-      <rect x={x + 13} y="36" width="8" height="8" fill="#9ca3af" />
-      <rect x={x + 23} y="36" width="2" height="9" fill="#e5e7eb" />
-      <rect x={x + 26} y="36" width="2" height="9" fill="#e5e7eb" />
-      <rect x={x + 12} y="49" width="22" height="6" fill="#1f2937" />
-      <rect x={x + 12} y="54" width="22" height="1" fill="#22d3ee">
-        <Anim attributeName="fill" values="#22d3ee;#a855f7;#ec4899;#22d3ee" dur="3s" repeatCount="indefinite" />
-      </rect>
-      {/* Barrettes, tournevis, carton de GPU. */}
-      <rect x={x + 44} y="56" width="14" height="3" fill="#166534" />
-      <rect x={x + 44} y="61" width="14" height="3" fill="#166534" />
-      <rect x={x + 62} y="58" width="12" height="2" fill="#f59e0b" />
-      <rect x={x + 58} y="58" width="4" height="2" fill="#9ca3af" />
-      <rect x={x + 46} y="38" width="28" height="14" fill="#16a34a" />
-      <text x={x + 60} y="48" fontSize="6" textAnchor="middle" fill="#f0fdf4">
-        GPU
-      </text>
-    </g>
-  )
-}
-
-/** Le distributeur : vitrine de snacks et canettes, monnayeur. */
-function Distributeur({ x }: { x: number }) {
-  const snacks = ['#f59e0b', '#ef4444', '#22c55e', '#3b82f6', '#a855f7', '#f472b6']
-  return (
-    <g>
-      <rect x={x} y="16" width="44" height="80" fill="#b91c1c" />
-      <rect x={x + 3} y="20" width="28" height="64" fill="#0f172a" />
-      {[0, 1, 2, 3].map((r) =>
-        [0, 1, 2].map((c) => (
-          <rect key={`${r}${c}`} x={x + 6 + c * 8} y={24 + r * 15} width="6" height="9" fill={snacks[(r * 3 + c) % snacks.length]} />
-        )),
-      )}
-      {[0, 1, 2, 3].map((r) => (
-        <rect key={r} x={x + 3} y={34 + r * 15} width="28" height="2" fill="#94a3b8" />
-      ))}
-      <rect x={x + 34} y="24" width="7" height="14" fill="#111827" />
-      <rect x={x + 35} y="26" width="5" height="3" fill="#22c55e" />
-      {[0, 1, 2].map((r) => (
-        <rect key={r} x={x + 35} y={42 + r * 5} width="5" height="3" fill="#e5e7eb" />
-      ))}
-      <rect x={x + 6} y="87" width="22" height="6" fill="#111827" />
-    </g>
-  )
-}
-
-/** Le frigo vitré, éclairé, rempli de canettes de boisson énergisante. */
-function FrigoVitre({ x }: { x: number }) {
-  const canettes = ['#22c55e', '#0ea5e9', '#f43f5e', '#facc15']
-  return (
-    <g>
-      <rect x={x} y="16" width="54" height="82" fill="#111827" />
-      <rect x={x + 3} y="19" width="48" height="72" fill="#e0f2fe" />
-      {[0, 1, 2, 3].map((r) => (
-        <g key={r}>
-          {Array.from({ length: 7 }, (_, i) => (
-            <rect key={i} x={x + 6 + i * 6} y={22 + r * 17} width="4" height="10" fill={canettes[(i + r) % canettes.length]} />
-          ))}
-          <rect x={x + 3} y={33 + r * 17} width="48" height="2" fill="#94a3b8" />
-        </g>
-      ))}
-      <rect x={x + 44} y="40" width="3" height="20" fill="#9ca3af" />
-      <rect x={x + 6} y="92" width="42" height="4" fill="#0ea5e9" />
-    </g>
-  )
-}
-
-/** Des cartons de composants empilés, en attente de montage ; chacun ouvre sa table de référence. */
-function Cartons({
-  x,
-  y,
-  lien,
-}: {
-  x: number
-  y: number
-  lien: (objet: SceneObject) => { titre: string; faire: () => void; actif: boolean }
-}) {
-  return (
-    <g>
-      <Cliquable {...lien('cpu-box')}>
-        <rect x={x} y={y + 14} width="40" height="26" fill="#a16207" />
-        <rect x={x} y={y + 14} width="40" height="4" fill="#ca8a04" />
-        <text x={x + 20} y={y + 32} fontSize="7" textAnchor="middle" fill="#fef3c7">
-          CPU
-        </text>
-      </Cliquable>
-      <Cliquable {...lien('gpu-box')}>
-        <rect x={x + 6} y={y} width="30" height="16" fill="#15803d" />
-        <rect x={x + 6} y={y} width="30" height="3" fill="#16a34a" />
-        <text x={x + 21} y={y + 12} fontSize="6" textAnchor="middle" fill="#f0fdf4">
-          RTX
-        </text>
-      </Cliquable>
-      <Cliquable {...lien('ram-box')}>
-        <rect x={x + 44} y={y + 22} width="22" height="18" fill="#1d4ed8" />
-        <text x={x + 55} y={y + 34} fontSize="6" textAnchor="middle" fill="#eff6ff">
-          RAM
-        </text>
-      </Cliquable>
     </g>
   )
 }
@@ -1558,22 +944,6 @@ function Records({ snake, casse }: { snake: number; casse: number }) {
       <text x="350" y="234" fontSize="6" textAnchor="end" fill="#67e8f9">
         {pad(casse)}
       </text>
-    </g>
-  )
-}
-
-/** La porte vitrée d'entrée, au bas de la grande salle, et son paillasson. */
-function Porte({ bas }: { bas: number }) {
-  const t = useTextes()
-  return (
-    <g pointerEvents="none">
-      <rect x="472" y={bas - 14} width="56" height="12" fill="#3f3f46" />
-      <rect x="476" y={bas - 12} width="48" height="8" fill="#52525b" />
-      <text x="500" y={bas - 6} fontSize="5.5" textAnchor="middle" fill="#a1a1aa">
-        {t.welcome}
-      </text>
-      <rect x="470" y={bas} width="60" height="10" fill="#7dd3fc" opacity="0.35" />
-      <rect x="499" y={bas} width="2" height="10" fill="#bae6fd" />
     </g>
   )
 }
@@ -2097,149 +1467,6 @@ function Confettis({ hauteur }: { hauteur: number }) {
 
 /* ——— Les postes ——— */
 
-/** L'écran ultra-large ; `bientot` affiche les minutes avant le prochain passage. */
-function Ecran({ cx, dy, statut, bientot }: { cx: number; dy: number; statut: Statut; bientot: number | null }) {
-  const t = useTextes()
-  const travaille = statut === 'au-travail'
-  const l = 54
-  const g = cx - l / 2
-  return (
-    <g>
-      <rect x={cx - 4} y={dy + 10} width="8" height="7" fill="#111827" />
-      <rect x={cx - 12} y={dy + 16} width="24" height="3" fill="#111827" />
-      <rect x={g - 3} y={dy - 15} width={l + 6} height="27" fill="#0b0d10" />
-      {statut === 'absent' ? (
-        <>
-          <rect x={g} y={dy - 12} width={l} height="21" fill="#020617" />
-          {/* Le post-it laissé en partant. */}
-          <g transform={`rotate(-6 ${cx} ${dy})`}>
-            <rect x={cx - 15} y={dy - 10} width="30" height="15" fill="#fde68a" />
-            <rect x={cx - 15} y={dy - 10} width="30" height="3" fill="#fcd34d" />
-            <text x={cx} y={dy + 2} fontSize="7" textAnchor="middle" fill="#78350f">
-              {t.offNote}
-            </text>
-          </g>
-        </>
-      ) : statut === 'en-echec' ? (
-        <>
-          <rect x={g} y={dy - 12} width={l} height="21" fill="#991b1b">
-            <Anim attributeName="opacity" values="1;0.6;1" dur="1s" repeatCount="indefinite" />
-          </rect>
-          <rect x={cx - 2} y={dy - 9} width="4" height="10" fill="#fef2f2" />
-          <rect x={cx - 2} y={dy + 3} width="4" height="4" fill="#fef2f2" />
-        </>
-      ) : travaille ? (
-        <>
-          <rect x={g} y={dy - 12} width={l} height="21" fill="#0b0d10" />
-          {[0, 1, 2, 3].map((i) => {
-            const w = [30, 18, 36, 14][i]
-            return (
-              <rect key={i} x={g + 3 + (i % 2) * 5} y={dy - 9 + i * 5} width={w} height="2" fill={i % 2 ? '#22d3ee' : 'var(--po-accent)'}>
-                <Anim attributeName="width" values={`${etapes(2, w, 5)};${w}`} dur="1.6s" begin={`${i * 0.4}s`} repeatCount="indefinite" />
-              </rect>
-            )
-          })}
-        </>
-      ) : (
-        <>
-          {/* Le bureau du système : un fond dégradé, deux fenêtres. */}
-          <rect x={g} y={dy - 12} width={l} height="21" fill="#312e81" />
-          <rect x={g} y={dy - 2} width={l} height="11" fill="#4338ca" />
-          <rect x={g + 4} y={dy - 9} width="22" height="13" fill="#e0e7ff" />
-          <rect x={g + 4} y={dy - 9} width="22" height="3" fill="#818cf8" />
-          <rect x={g + 30} y={dy - 7} width="20" height="10" fill="#c7d2fe" />
-          <rect x={g} y={dy + 7} width={l} height="2" fill="#1e1b4b" />
-        </>
-      )}
-      {bientot ? (
-        <g>
-          <rect x={g} y={dy + 1} width={l} height="9" fill="#0b1220" />
-          <text x={cx} y={dy + 8} fontSize="7" textAnchor="middle" fill="var(--po-accent)">
-            {t.inMinutes(bientot)}
-          </text>
-          <Anim attributeName="opacity" values="1;0.55;1" dur="2s" repeatCount="indefinite" />
-        </g>
-      ) : null}
-    </g>
-  )
-}
-
-/**
- * La tour sur le bureau, vitrée, avec deux ventilateurs RGB qui tournent tant
- * que l'agent est là. En échec, elle vire au rouge et fume.
- */
-function Tour({
-  x,
-  y,
-  couleur,
-  allumee,
-  fume,
-  tourne,
-}: {
-  x: number
-  y: number
-  couleur: string
-  allumee: boolean
-  fume: boolean
-  /** Les ventilateurs ne tournent que sous la charge : au repos, la tour reste immobile (et ne coûte rien). */
-  tourne: boolean
-}) {
-  return (
-    <g>
-      {fume
-        ? [0, 0.6, 1.2].map((debut, i) => (
-            <rect key={debut} x={x + 6 + i * 3} y={y - 2} width="6" height="6" fill="#9ca3af" opacity="0">
-              <Anim attributeName="y" values={etapes(y - 2, y - 34, 6)} dur="1.8s" begin={`${debut}s`} repeatCount="indefinite" />
-              <Anim attributeName="opacity" values={etapes(0.85, 0, 6)} dur="1.8s" begin={`${debut}s`} repeatCount="indefinite" />
-              <Anim attributeName="width" values={etapes(5, 11, 6)} dur="1.8s" begin={`${debut}s`} repeatCount="indefinite" />
-              <Anim attributeName="height" values={etapes(5, 11, 6)} dur="1.8s" begin={`${debut}s`} repeatCount="indefinite" />
-            </rect>
-          ))
-        : null}
-      <rect x={x} y={y} width="22" height="40" fill="#0b0d10" />
-      <rect x={x + 2} y={y + 2} width="18" height="36" fill="#1e293b" />
-      {[8, 22].map((dy) => (
-        <g key={dy}>
-          <rect x={x + 4} y={y + dy - 5} width="14" height="12" fill={allumee ? couleur : '#334155'} opacity={allumee ? 0.9 : 1} />
-          <rect x={x + 6} y={y + dy - 3} width="10" height="8" fill="#0f172a" />
-          <g transform={`translate(${x + 11} ${y + dy + 1})`}>
-            <rect x="-4" y="-1" width="8" height="2" fill="#64748b">
-              {tourne ? <Anim attributeName="transform" type="rotate" values="0;45;90;135" dur="0.4s" repeatCount="indefinite" /> : null}
-            </rect>
-          </g>
-        </g>
-      ))}
-      {allumee ? (
-        <rect x={x + 2} y={y + 35} width="18" height="2" fill={couleur}>
-          {tourne ? <Anim attributeName="opacity" values="1;0.5;1" dur="2.5s" repeatCount="indefinite" /> : null}
-        </rect>
-      ) : null}
-    </g>
-  )
-}
-
-/** Le clavier mécanique : ses touches arc-en-ciel n'ondulent que quand l'agent tape. */
-function Clavier({ x, y, allume, ondule }: { x: number; y: number; allume: boolean; ondule: boolean }) {
-  const arc = ['#ef4444', '#f59e0b', '#22c55e', '#22d3ee', '#a855f7']
-  return (
-    <g>
-      <rect x={x} y={y} width="36" height="9" fill="#111827" />
-      {arc.map((c, i) => (
-        <rect key={c} x={x + 2 + i * 7} y={y + 2} width="6" height="5" fill={allume ? c : '#374151'} opacity="0.85">
-          {ondule ? (
-            <Anim
-              attributeName="fill"
-              values={[...arc.slice(i), ...arc.slice(0, i), arc[i]].join(';')}
-              dur="2.5s"
-              repeatCount="indefinite"
-            />
-          ) : null}
-        </rect>
-      ))}
-    </g>
-  )
-}
-
 function Poste({
   vue,
   place,
@@ -2262,14 +1489,16 @@ function Poste({
   choisir: () => void
 }) {
   const t = useTextes()
+  const theme = useTheme()
   const { fiche, statut } = vue
   const { cx, dy } = place
   const x = cx - BUREAU.largeur / 2
   const dessus = BUREAU.hauteur - 12
   const chaise = { x: place.siege.pos.x, y: place.siege.pos.y + 4 }
   const chef = place.id === CHEF_ID
-  const accent = chef ? '#e3b95a' : teint(fiche.id).c
+  const accent = chef ? '#e3b95a' : theme.tenue(fiche.id).c
   const allume = statut !== 'absent'
+  const bureau = { cx, dy, x, dessus, statut, accent, bientot, emoji: fiche.emoji }
 
   return (
     <g
@@ -2310,74 +1539,36 @@ function Poste({
         />
       ) : null}
 
-      {chef ? <Fauteuil x={cx} y={place.siege.pos.y} /> : null}
-
-      {/* Le plateau blanc, sa tranche, et la bande LED dessous, à la couleur de l'état. */}
-      <rect x={x} y={dy} width={BUREAU.largeur} height={dessus} fill="#e5e7eb" />
-      <rect x={x} y={dy} width={BUREAU.largeur} height="3" fill="#f9fafb" />
-      <rect x={x} y={dy + dessus} width={BUREAU.largeur} height="12" fill="#c4c8cf" />
-      <rect x={x} y={dy + dessus + 10} width={BUREAU.largeur} height="2" fill={LAMPE_PLAN[statut]}>
-        {statut === 'au-travail' || statut === 'en-echec' ? (
-          <Anim attributeName="opacity" values="1;0.4;1" dur="1.2s" repeatCount="indefinite" />
-        ) : null}
-      </rect>
-      <rect x={x + 3} y={dy + dessus + 12} width="4" height="7" fill="#111827" />
-      <rect x={x + BUREAU.largeur - 7} y={dy + dessus + 12} width="4" height="7" fill="#111827" />
-
       {chef ? (
         <>
-          {/* La plaque, tournée vers la pièce. */}
+          <theme.Fauteuil x={cx} y={place.siege.pos.y} />
+          <theme.BureauChef {...bureau} />
+          {/* La plaque du chef, en laiton, tournée vers la pièce. */}
           <rect x={cx - 42} y={dy + dessus + 1} width="84" height="9" fill="#b8892f" />
           <rect x={cx - 41} y={dy + dessus + 2} width="82" height="7" fill="#e3b95a" />
           <Lampe x={cx - 37} y={dy + dessus + 3} statut={statut} />
           <text x={cx + 3} y={dy + dessus + 8.5} fontSize="8" textAnchor="middle" fill="#4a3412">
             {fiche.nom}
           </text>
-          {/* Deux écrans vus de dos sur le côté, le portable, le téléphone. */}
-          <rect x={x + 6} y={dy - 12} width="30" height="22" fill="#1f2937" />
-          <rect x={x + 8} y={dy - 10} width="26" height="18" fill="#374151" />
-          <rect x={x + 18} y={dy + 10} width="6" height="5" fill="#111827" />
-          <rect x={x + 84} y={dy + 4} width="26" height="18" fill="#d1d5db" />
-          <rect x={x + 86} y={dy + 6} width="22" height="13" fill="#9ca3af" />
-          <rect x={x + 95} y={dy + 11} width="4" height="3" fill="#f9fafb" />
-          <rect x={x + 88} y={dy + 26} width="10" height="7" fill="#111827" />
         </>
       ) : (
         <>
+          <theme.Bureau {...bureau} />
           {/* La tranche porte le nom, avec la lampe. */}
           <Lampe x={x + 6} y={dy + dessus + 3} statut={statut} />
-          <text x={cx + 4} y={dy + dessus + 8.5} fontSize="9" textAnchor="middle" fill="#1f2937" opacity={allume ? 1 : 0.5}>
+          <text x={cx + 4} y={dy + dessus + 8.5} fontSize="9" textAnchor="middle" fill={theme.plaque} opacity={allume ? 1 : 0.5}>
             {fiche.nom}
           </text>
-          <Ecran cx={cx - 4} dy={dy} statut={statut} bientot={bientot} />
           {oublie ? <Poussiere cx={cx} dy={dy} /> : null}
           <PlanteDeBureau x={x - 15} y={dy + 30} fanee={oublie} />
-          <Tour
-            x={x + 94}
-            y={dy - 18}
-            couleur={statut === 'en-echec' ? '#ef4444' : accent}
-            allumee={allume}
-            fume={statut === 'en-echec'}
-            tourne={statut === 'au-travail'}
-          />
-          <Clavier x={cx - 22} y={dy + 22} allume={allume} ondule={statut === 'au-travail'} />
-          <rect x={cx + 18} y={dy + 20} width="12" height="13" fill="#111827" />
-          <rect x={cx + 22} y={dy + 23} width="4" height="6" fill="#e5e7eb" />
-          {/* La tasse et l'emoji de l'agent, en sticker sur le plateau. */}
-          <rect x={x + 8} y={dy + 22} width="8" height="9" fill="#111827" />
-          <rect x={x + 16} y={dy + 24} width="3" height="4" fill="#111827" />
-          <rect x={x + 9} y={dy + 23} width="6" height="2" fill="#6b3a1e" />
-          <text x={x + 12} y={dy + 13} fontSize="10" textAnchor="middle">
-            {fiche.emoji}
-          </text>
 
-          {/* Le fauteuil gamer : l'assise seule quand l'agent y est (son dossier passe devant lui), repoussé sinon. */}
+          {/* Le siège : l'assise seule quand l'agent y est (son dossier passe devant lui), repoussé sinon. */}
           {occupe ? (
-            <Assise x={chaise.x} y={chaise.y} couleur={accent} />
+            <theme.Assise x={chaise.x} y={chaise.y} couleur={accent} />
           ) : (
             <g transform="translate(9 3)">
-              <Assise x={chaise.x} y={chaise.y} couleur={accent} />
-              <Dossier x={chaise.x} y={chaise.y} couleur={accent} />
+              <theme.Assise x={chaise.x} y={chaise.y} couleur={accent} />
+              <theme.Dossier x={chaise.x} y={chaise.y} couleur={accent} />
             </g>
           )}
         </>
@@ -2395,47 +1586,6 @@ function Lampe({ x, y, statut }: { x: number; y: number; statut: Statut }) {
     </rect>
   )
 }
-
-/** Le fauteuil gamer du chef, derrière son bureau : noir et laiton, le dossier haut au-dessus de sa tête. */
-function Fauteuil({ x, y }: { x: number; y: number }) {
-  return (
-    <g>
-      <rect x={x - 16} y={y - 34} width="32" height="42" fill="#0b0d10" />
-      <rect x={x - 13} y={y - 31} width="26" height="36" fill="#1f2937" />
-      <rect x={x - 11} y={y - 31} width="4" height="36" fill="#e3b95a" />
-      <rect x={x + 7} y={y - 31} width="4" height="36" fill="#e3b95a" />
-      <rect x={x - 6} y={y - 28} width="12" height="5" fill="#111827" />
-      <rect x={x - 20} y={y - 8} width="6" height="16" fill="#0b0d10" />
-      <rect x={x + 14} y={y - 8} width="6" height="16" fill="#0b0d10" />
-    </g>
-  )
-}
-
-function Assise({ x, y, couleur }: { x: number; y: number; couleur: string }) {
-  return (
-    <g>
-      <rect x={x - 11} y={y - 12} width="22" height="12" fill="#1f2937" />
-      <rect x={x - 11} y={y - 12} width="3" height="12" fill={couleur} />
-      <rect x={x + 8} y={y - 12} width="3" height="12" fill={couleur} />
-    </g>
-  )
-}
-
-/** Le dossier du fauteuil gamer, vu de dos : noir, deux bandes de couleur, l'appui-tête. */
-function Dossier({ x, y, couleur }: { x: number; y: number; couleur: string }) {
-  return (
-    <g>
-      <rect x={x - 13} y={y + 2} width="26" height="10" fill="#0b0d10" />
-      <rect x={x - 11} y={y + 4} width="22" height="7" fill="#1f2937" />
-      <rect x={x - 9} y={y + 4} width="3" height="7" fill={couleur} />
-      <rect x={x + 6} y={y + 4} width="3" height="7" fill={couleur} />
-      <rect x={x - 2} y={y + 12} width="4" height="3" fill="#111827" />
-      <rect x={x - 10} y={y + 15} width="20" height="3" fill="#0b0d10" />
-    </g>
-  )
-}
-
-/* ——— Les bonshommes ——— */
 
 type Direction = 'haut' | 'bas' | 'gauche' | 'droite'
 
@@ -2493,57 +1643,6 @@ function grilleSprite(sens: Direction, temps: number, assise: Assise, etire: boo
   return miroir ? g.map((l) => [...l].reverse().join('')) : g
 }
 
-const CHEMISES = [
-  '#3b82f6',
-  '#10b981',
-  '#e11d48',
-  '#8b5cf6',
-  '#f59e0b',
-  '#0ea5e9',
-  '#14b8a6',
-  '#f97316',
-  '#6366f1',
-  '#84cc16',
-  '#ec4899',
-  '#475569',
-]
-const CHEVEUX = ['#2a1d14', '#5a3a22', '#c8a165', '#111111', '#8a4b2a', '#e5e5e5', '#b45309']
-const PEAUX = ['#f1c9a5', '#d9a57a', '#a86f48', '#7a4a2c', '#f5d6bf']
-const PANTALONS = ['#334155', '#1e3a8a', '#44403c', '#3f3f46', '#365314']
-
-function hachage(id: string) {
-  let h = 7
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0
-  return h
-}
-
-/** Un agent sur deux travaille casque sur les oreilles ; le chef, jamais. */
-const porteCasque = (id: string) => id !== CHEF_ID && !estInvite(id) && ((hachage(id) >> 16) & 1) === 1
-
-/** Chacun garde son sweat et sa coupe d'une visite à l'autre. */
-function teint(id: string): Record<string, string> {
-  if (id === CHEF_ID) {
-    return { h: '#9ca3af', s: '#f1c9a5', e: '#1c1917', c: '#111827', C: '#1f2937', t: '#e3b95a', k: '#111827', p: '#1f2937', b: '#e5e7eb' }
-  }
-  // Le livreur, en uniforme marron et casquette.
-  if (id.startsWith('livreur:')) {
-    return { h: '#5b3a1a', s: '#d9a57a', e: '#1c1917', c: '#7c4a1e', C: '#5b3a1a', t: '#facc15', k: '#111827', p: '#5b3a1a', b: '#111827' }
-  }
-  const h = hachage(id)
-  const sweat = CHEMISES[h % CHEMISES.length]
-  return {
-    h: CHEVEUX[(h >> 4) % CHEVEUX.length],
-    s: PEAUX[(h >> 8) % PEAUX.length],
-    e: '#1c1917',
-    c: sweat,
-    C: `color-mix(in oklab, ${sweat} 70%, black)`,
-    t: '#f8fafc',
-    k: '#111827',
-    p: PANTALONS[(h >> 12) % PANTALONS.length],
-    b: '#f8fafc',
-  }
-}
-
 const CONTOUR = Object.fromEntries([...'hsectCkpb'].map((c) => [c, '#0b0d10']))
 
 /** Le bonhomme, contour sombre compris. Mémorisé : il ne change qu'au pas suivant. */
@@ -2560,7 +1659,8 @@ const Sprite = memo(function Sprite({
   assise: Assise
   etire: boolean
 }) {
-  const grille = grilleSprite(sens, temps, assise, etire, porteCasque(id))
+  const theme = useTheme()
+  const grille = grilleSprite(sens, temps, assise, etire, theme.casque(id))
   return (
     <>
       {[
@@ -2573,7 +1673,7 @@ const Sprite = memo(function Sprite({
           <Pixels grille={grille} couleurs={CONTOUR} />
         </g>
       ))}
-      <Pixels grille={grille} couleurs={teint(id)} />
+      <Pixels grille={grille} couleurs={theme.tenue(id)} />
     </>
   )
 })

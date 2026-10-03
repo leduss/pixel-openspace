@@ -42,6 +42,21 @@
           "path": "registry/pixel-openspace/seasons.ts",
           "type": "registry:component",
           "target": "components/pixel-openspace/seasons.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/primitives.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/primitives.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/theme.ts",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/theme.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/themes/geek.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/themes/geek.tsx"
         }
       ]
     }
