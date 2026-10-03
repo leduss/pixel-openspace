@@ -64,7 +64,56 @@ export function Bureau() {
 }
 ```
 
-Le composant suit ses props : relis l'état de tes tâches (toutes les quelques secondes, c'est assez) et passe-le-lui. La scène réagit aux changements : qui se met au travail s'assoit, qui finit s'étire et dit son `lastMessage` dans une bulle.
+Le composant suit ses props : la salle se redessine à partir de ce que tu lui passes.
+
+### Lui donner tes tâches
+
+Expose l'état de tes tâches, relis-le toutes les quelques secondes et passe-le au composant. Quand un état change, la salle réagit : la tâche s'assoit pour travailler, ou se lève, s'étire et dit sa dernière ligne de journal dans une bulle. Les deux fichiers ci-dessous servent de point de départ : une route d'API qui lit tes tâches, et une page qui la relit.
+
+```ts
+// app/api/jobs/route.ts
+export async function GET() {
+  const jobs = await db.job.findMany()
+  return Response.json(
+    jobs.map((job) => ({
+      id: job.id,
+      name: job.name,
+      emoji: job.emoji,
+      status: job.running ? 'working' : job.lastExitCode ? 'failed' : 'ok',
+      lastRun: job.lastRunAt,
+      nextRun: job.nextRunAt,
+      lastMessage: job.lastLogLine,
+    })),
+  )
+}
+```
+
+```tsx
+// app/office/page.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import { PixelOpenspace } from '@/components/pixel-openspace/pixel-openspace'
+import type { Agent } from '@/components/pixel-openspace/types'
+
+export default function Office() {
+  const [agents, setAgents] = useState<Agent[]>([])
+
+  useEffect(() => {
+    const load = () => fetch('/api/jobs').then((r) => r.json()).then(setAgents)
+    load()
+    const timer = setInterval(load, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <PixelOpenspace
+      agents={agents}
+      onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
+    />
+  )
+}
+```
 
 ### Les états d'un agent
 

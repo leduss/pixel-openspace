@@ -118,6 +118,11 @@ export const TEXTES = {
         'Pumpkins and a ghost all October, a Christmas tree and garlands all December, hidden eggs and a hopping bunny at Easter.',
       ],
       ['The office cat', 'Naps on whichever desk was left empty.'],
+      ['The day timeline', 'Under the room, one dot per run since midnight, red when it failed. Pass each job its runs.'],
+      [
+        'A settings gear',
+        'Whoever watches the room renames the sign, picks the weather city, the theme and the language, and turns things on or off. Saved in their browser.',
+      ],
       ['Alerts and sound', 'Browser notifications when a job fails, 8-bit beeps for starts and failures. Both off until you turn them on.'],
     ],
     faitA: 'Made at ',
@@ -182,6 +187,14 @@ export const TEXTES = {
       ['Visiteurs et livreurs', 'Augmente un compteur et quelqu’un entre : un visiteur salue le chef, un livreur dépose un colis.'],
       ['Les saisons', 'Citrouilles et fantôme tout octobre, sapin et guirlandes tout décembre, œufs cachés et lapin qui bondit à Pâques.'],
       ['Le chat de l’atelier', 'Fait la sieste sur le bureau resté vide.'],
+      [
+        'La frise de la journée',
+        'Sous la salle, un point par passage depuis minuit, rouge s’il a raté. Passe à chaque tâche ses passages.',
+      ],
+      [
+        'Une roue dentée de réglages',
+        'Qui regarde la salle renomme l’enseigne, choisit la ville de la météo, le thème et la langue, et allume ou coupe le reste. Gardé dans son navigateur.',
+      ],
       [
         'Alertes et son',
         'Une notification du navigateur quand une tâche plante, des bips 8 bits aux départs et aux échecs. Les deux coupés tant que tu ne les allumes pas.',

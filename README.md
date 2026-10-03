@@ -64,7 +64,56 @@ export function Office() {
 }
 ```
 
-The component is driven by its props: poll your jobs’ state (every few seconds is plenty) and pass it down. The room reacts to the changes: whoever starts working sits down, whoever finishes stretches and says its `lastMessage` in a speech bubble.
+The component is driven by its props: the room redraws itself from whatever you pass it.
+
+### Feed it your jobs
+
+Expose your jobs’ state, poll it every few seconds and pass it down. When a status changes, the room reacts: the job sits down to work, or stands up, stretches and says its last log line in a speech bubble. The two files below are a starting point: an API route that reads your jobs, and a page that polls it.
+
+```ts
+// app/api/jobs/route.ts
+export async function GET() {
+  const jobs = await db.job.findMany()
+  return Response.json(
+    jobs.map((job) => ({
+      id: job.id,
+      name: job.name,
+      emoji: job.emoji,
+      status: job.running ? 'working' : job.lastExitCode ? 'failed' : 'ok',
+      lastRun: job.lastRunAt,
+      nextRun: job.nextRunAt,
+      lastMessage: job.lastLogLine,
+    })),
+  )
+}
+```
+
+```tsx
+// app/office/page.tsx
+'use client'
+
+import { useEffect, useState } from 'react'
+import { PixelOpenspace } from '@/components/pixel-openspace/pixel-openspace'
+import type { Agent } from '@/components/pixel-openspace/types'
+
+export default function Office() {
+  const [agents, setAgents] = useState<Agent[]>([])
+
+  useEffect(() => {
+    const load = () => fetch('/api/jobs').then((r) => r.json()).then(setAgents)
+    load()
+    const timer = setInterval(load, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
+  return (
+    <PixelOpenspace
+      agents={agents}
+      onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
+    />
+  )
+}
+```
 
 ### Agent statuses
 
