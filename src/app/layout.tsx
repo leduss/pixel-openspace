@@ -11,6 +11,8 @@ const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'] })
 const cookie = Cookie({ variable: '--font-cookie', weight: '400', subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  // L'adresse publique : les images d'aperçu (opengraph-image.png) s'y résolvent en liens complets.
+  metadataBase: new URL('https://pixel-openspace.vercel.app'),
   title: 'pixel-openspace — your cron jobs, at their desks',
   description:
     'An open source shadcn/ui component that shows your scheduled jobs and AI agents as pixel-art employees in an open space. For Next.js and React.',

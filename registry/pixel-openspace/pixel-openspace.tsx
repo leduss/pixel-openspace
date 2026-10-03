@@ -13,7 +13,7 @@ import { changerPreferences } from './preferences'
 import { useDansLeNavigateur, usePreferences } from './navigateur'
 import { Reglages, useMeteoDuLieu } from './settings'
 import { fete } from './seasons'
-import type { Agent, OpenSpaceProps, SceneObject } from './types'
+import type { Agent, OpenSpaceProps, SceneObject, WallTile } from './types'
 import { type Equipe, type Pose, type Vue, bientot, heureCourte, obscurite, oublie, poses, posesAuBureau, versVue } from './vue'
 import { THEMES, ThemeContexte } from './contexte'
 import { Carte } from './card'
@@ -63,6 +63,19 @@ function ecrire(cle: string, valeur: string) {
 
 const CHEF_DECOR = (t: Texts): Agent => ({ id: CHEF_ID, name: t.leadName, emoji: '🧑‍💼', role: t.leadRole, status: 'ok' })
 
+/** L'écran mural quand on ne lui donne rien : combien de tâches, combien au travail, en échec, en retard. */
+function ecranParDefaut(agents: Array<Agent>, t: Texts): Array<WallTile> {
+  const compte = (statut: Agent['status']) => agents.filter((a) => a.status === statut).length
+  const echecs = compte('failed')
+  const retards = compte('late')
+  return [
+    { label: t.wall.jobs, value: agents.length, tone: 'info' },
+    { label: t.wall.running, value: compte('working'), tone: 'ok' },
+    { label: t.wall.failed, value: echecs, tone: echecs ? 'alert' : 'neutral' },
+    { label: t.wall.late, value: retards, tone: retards ? 'warn' : 'neutral' },
+  ]
+}
+
 /**
  * The open space. Pass your agents (and optionally a lead, wall tiles,
  * announcements and the weather); update the props as their state changes and
@@ -74,7 +87,7 @@ export function PixelOpenspace({
   agents,
   lead,
   title = 'PIXEL OPENSPACE',
-  wall = [],
+  wall,
   announcements = [],
   weather = null,
   visitors = 0,
@@ -528,7 +541,7 @@ export function PixelOpenspace({
                 >
                   <DefsCommunes />
                   <theme.Decor hauteur={lePlan.hauteur} titre={enseigne} liens={objectLinks} aller={aller} jouer={setJeu} />
-                  <EcranMural tuiles={wall} />
+                  <EcranMural tuiles={wall ?? ecranParDefaut(agents, t)} />
                   <TableauBlanc prochains={prochains} />
                   <Records snake={records.snake} casse={records.casse} />
                   <ColisDeposes nombre={deposes} bas={lePlan.hauteur - 20} />

@@ -54,6 +54,18 @@ describe('PixelOpenspace', () => {
     expect(screen.getByText(/1 failed/)).toBeTruthy()
   })
 
+  it('compte les agents sur l’écran mural quand on ne lui donne rien', () => {
+    const { container } = render(<PixelOpenspace agents={AGENTS} now={MAINTENANT} />)
+    const textes = [...container.querySelectorAll('text')].map((e) => e.textContent)
+    expect(textes).toEqual(expect.arrayContaining(['JOBS', 'RUNNING', 'FAILED', 'LATE']))
+  })
+
+  it('laisse l’écran mural éteint avec wall={[]}', () => {
+    const { container } = render(<PixelOpenspace agents={AGENTS} now={MAINTENANT} wall={[]} />)
+    const textes = [...container.querySelectorAll('text')].map((e) => e.textContent)
+    expect(textes).not.toContain('JOBS')
+  })
+
   it('cache la frise avec timeline={false}', () => {
     render(<PixelOpenspace agents={AGENTS} now={MAINTENANT} timeline={false} />)
     expect(screen.queryByText('Today')).toBeNull()

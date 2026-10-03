@@ -14,6 +14,12 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.1.2 · 2026-10-03
+
+### Ajouté
+
+- Sans prop `wall`, l'écran mural compte tes agents : le total, ceux au travail, en échec, en retard. Passe `wall={[]}` pour le laisser éteint.
+
 ## 0.1.1 · 2026-10-03
 
 ### Corrigé

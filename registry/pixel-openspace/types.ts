@@ -90,7 +90,7 @@ export type OpenSpaceProps = {
   lead?: Agent
   /** The neon sign on the main room wall. */
   title?: string
-  /** Up to four tiles on the big wall screen. */
+  /** Up to four tiles on the big wall screen. Without it, the screen counts your agents: total, running, failed, late. Pass `[]` to leave it dark. */
   wall?: Array<WallTile>
   /** What the lead announces in front of the wall screen after its rounds. */
   announcements?: Array<string>

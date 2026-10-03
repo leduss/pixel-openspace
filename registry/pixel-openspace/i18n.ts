@@ -65,6 +65,8 @@ export type Texts = {
     done: string
   }
   sceneLabel: string
+  /** Les tuiles de l'écran mural quand on ne lui en donne pas. */
+  wall: { jobs: string; running: string; failed: string; late: string }
   phrases: Phrases
   objects: Record<
     'workbench' | 'tv' | 'server-rack' | 'vending-machine' | 'fridge' | 'cpu-box' | 'gpu-box' | 'ram-box' | 'snake' | 'breakout',
@@ -167,6 +169,7 @@ const EN: Texts = {
     done: 'Done',
   },
   sceneLabel: 'The agents’ open space',
+  wall: { jobs: 'Jobs', running: 'Running', failed: 'Failed', late: 'Late' },
   phrases: {
     relaunch: 'Relaunching you!',
     anyTrouble: 'Any trouble?',
@@ -274,6 +277,7 @@ const FR: Texts = {
     done: 'Terminé',
   },
   sceneLabel: 'L’open space des agents',
+  wall: { jobs: 'Tâches', running: 'En cours', failed: 'En échec', late: 'En retard' },
   phrases: {
     relaunch: 'Je te relance !',
     anyTrouble: 'Un souci ?',

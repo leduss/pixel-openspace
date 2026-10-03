@@ -6,7 +6,7 @@ Every agent gets a desk. Whoever is running sits down and types, screen lit up. 
 
 **[Try the live demo](https://pixel-openspace.vercel.app)** · [🇫🇷 Lire en français](./README.fr.md)
 
-![The pixel-openspace demo: jobs start, fail and recover across the four themes](./public/docs/demo.gif)
+![The pixel-openspace demo: jobs start, fail and recover across the five themes](./public/docs/demo.gif)
 
 There are two ways to use it:
 
@@ -134,7 +134,7 @@ export default function Office() {
 | `agents` | `Agent[]` | Five desks per row, rows added as needed |
 | `lead` | `Agent` | The lead in the glass office; a decorative one sits there if none is given |
 | `title` | `string` | The sign on the main room wall |
-| `wall` | `WallTile[]` | Up to four tiles on the big wall screen (`label`, `value`, `tone`, `progress`) |
+| `wall` | `WallTile[]` | Up to four tiles on the big wall screen (`label`, `value`, `tone`, `progress`). Without it, the screen counts your agents; `[]` leaves it dark |
 | `announcements` | `string[]` | What the lead announces in front of the wall screen after its rounds |
 | `weather` | `Weather \| null` | The sky behind the lead’s window: `clear`, `clouds`, `fog`, `rain`, `snow`, `storm` |
 | `visitors` | `number` | A counter: each time it goes up, a visitor walks in to greet the lead |

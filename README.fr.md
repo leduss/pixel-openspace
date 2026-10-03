@@ -6,7 +6,7 @@ Chaque agent a son bureau. Celui qui tourne s'assoit et tape, l'écran allumé. 
 
 **[Essayer la démo en ligne](https://pixel-openspace.vercel.app/fr)** · [🇬🇧 Read in English](./README.md)
 
-![La démo de pixel-openspace : des tâches démarrent, plantent et repartent, dans les quatre thèmes](./public/docs/demo.gif)
+![La démo de pixel-openspace : des tâches démarrent, plantent et repartent, dans les cinq thèmes](./public/docs/demo.gif)
 
 Deux façons de s'en servir :
 
@@ -134,7 +134,7 @@ export default function Office() {
 | `agents` | `Agent[]` | Cinq bureaux par rangée, des rangées ajoutées au besoin |
 | `lead` | `Agent` | Le chef, dans le bureau vitré ; un chef de décor s'y installe si tu n'en donnes pas |
 | `title` | `string` | L'enseigne au mur de la grande salle |
-| `wall` | `WallTile[]` | Jusqu'à quatre tuiles sur le grand écran mural (`label`, `value`, `tone`, `progress`) |
+| `wall` | `WallTile[]` | Jusqu'à quatre tuiles sur le grand écran mural (`label`, `value`, `tone`, `progress`). Sans elle, l'écran compte tes agents ; `[]` le laisse éteint |
 | `announcements` | `string[]` | Ce que le chef annonce devant l'écran mural après sa tournée |
 | `weather` | `Weather \| null` | Le ciel derrière la fenêtre du chef : `clear`, `clouds`, `fog`, `rain`, `snow`, `storm` |
 | `visitors` | `number` | Un compteur : chaque fois qu'il monte, un visiteur entre saluer le chef |
