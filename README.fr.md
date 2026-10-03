@@ -120,6 +120,7 @@ Le serveur n'écoute que sur `127.0.0.1:4747` et ouvre ton navigateur. Les optio
 | `-x, --exclude <texte>` | Cache les tâches dont le nom contient ce texte (répétable) |
 | `-t, --theme <nom>` | `geek`, `eighties`, `gym` ou `modern` ; `?theme=gym` dans l'adresse marche aussi |
 | `-l, --lang <en\|fr>` | La langue de la salle (par défaut, celle du système) |
+| `-w, --weather <lieu>` | La vraie météo derrière la fenêtre du chef, par [Open-Meteo](https://open-meteo.com) : une ville ou `latitude,longitude` |
 | `--allow-run` | Laisse le bouton « Lancer » démarrer une tâche (`launchctl kickstart`, `systemctl start`) ; désactivé par défaut |
 | `--json` | Affiche les tâches trouvées et s'arrête |
 
@@ -130,6 +131,7 @@ Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, d
   "title": "MON ATELIER",
   "theme": "eighties",
   "language": "fr",
+  "weather": "Lanton",
   "match": ["atelier"],
   "agents": {
     "fr.atelier.sauvegarde": { "name": "Sauvegarde", "emoji": "💾", "role": "Sauvegarde la base sur S3" },

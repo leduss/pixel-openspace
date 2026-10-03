@@ -1,4 +1,17 @@
-import type { Agent, Language } from '@/registry/pixel-openspace/types'
+import type { Agent, Language, Weather } from '@/registry/pixel-openspace/types'
+
+/** Les ciels à essayer dans la fenêtre du chef, avec une température de saison ; la nuit, c'est un ciel clair sans soleil. */
+export const CIELS = {
+  clear: { temperature: 24, sky: 'clear', day: true },
+  clouds: { temperature: 19, sky: 'clouds', day: true },
+  fog: { temperature: 11, sky: 'fog', day: true },
+  rain: { temperature: 14, sky: 'rain', day: true },
+  snow: { temperature: -2, sky: 'snow', day: true },
+  storm: { temperature: 17, sky: 'storm', day: true },
+  night: { temperature: 12, sky: 'clear', day: false },
+} satisfies Record<string, Omit<Weather, 'place'>>
+
+export type Ciel = keyof typeof CIELS
 
 const dans = (minutes: number) => new Date(Date.now() + minutes * 60_000).toISOString()
 const ilYa = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString()
@@ -9,6 +22,8 @@ export const MOTS = {
     essayer: 'Try it:',
     theme: 'Theme',
     themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern' },
+    ciel: 'Sky',
+    cieux: { clear: 'Sun', clouds: 'Clouds', fog: 'Fog', rain: 'Rain', snow: 'Snow', storm: 'Storm', night: 'Night' },
     lancer: 'Start Invoices',
     finir: 'Finish it',
     finiMessage: '3 invoices sent',
@@ -29,6 +44,8 @@ export const MOTS = {
     essayer: 'Essaie :',
     theme: 'Thème',
     themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne' },
+    ciel: 'Ciel',
+    cieux: { clear: 'Soleil', clouds: 'Nuages', fog: 'Brouillard', rain: 'Pluie', snow: 'Neige', storm: 'Orage', night: 'Nuit' },
     lancer: 'Lancer Factures',
     finir: 'La terminer',
     finiMessage: '3 factures envoyées',

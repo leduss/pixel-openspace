@@ -14,11 +14,14 @@ import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import type { Agent, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
 import paquet from '../package.json'
+import { suivreMeteo } from './meteo'
 import { lireCron, lireLaunchd, lireSystemd, relancer, type Filtre, type Source, type Tache } from './sources'
 
 /** Le fichier de réglages, tout optionnel. */
 export type Reglages = {
   title?: string
+  /** La météo derrière la fenêtre du chef : une ville ou « latitude,longitude ». */
+  weather?: string
   language?: Language
   theme?: ThemeName
   sources?: Array<Source>
@@ -45,6 +48,7 @@ Options:
   -t, --theme <name>    geek, eighties, gym or modern (default geek)
   -l, --lang <en|fr>    Language of the room (default: from your system)
       --title <text>    The name on the wall
+  -w, --weather <place> Real weather behind the lead's window: a city or "lat,lon" (Open-Meteo)
       --config <file>   Settings file (default ./pixel-openspace.json, then ~/.config/pixel-openspace/config.json)
       --allow-run       Let the Run button start a job (launchctl kickstart / systemctl start)
       --json            Print the jobs as JSON and exit
@@ -139,6 +143,7 @@ function principal() {
       config: { type: 'string' },
       'allow-run': { type: 'boolean' },
       json: { type: 'boolean' },
+      weather: { type: 'string', short: 'w' },
       'no-open': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
@@ -155,12 +160,14 @@ function principal() {
     theme: (o.theme as ThemeName | undefined) ?? fichier.theme,
     language: (o.lang as Language | undefined) ?? fichier.language,
     title: o.title ?? fichier.title,
+    weather: o.weather ?? fichier.weather,
     allowRun: o['allow-run'] ?? fichier.allowRun ?? false,
   }
   const langue = reglages.language ?? langueSysteme()
 
   if (o.json) return console.log(JSON.stringify(collecter(reglages, langue), null, 2))
 
+  const meteo = reglages.weather ? suivreMeteo(reglages.weather, langue) : null
   const page = join(dirname(fileURLToPath(import.meta.url)), 'app')
   const port = Number(o.port ?? reglages.port ?? 4747)
   // Lire launchd prend un instant par tâche : l'état est gardé deux secondes.
@@ -183,6 +190,7 @@ function principal() {
           allowRun: reglages.allowRun,
           agents: liste.map(versAgent),
           wall: mur(liste, langue),
+          weather: meteo?.lire() ?? null,
         }),
       )
     }

@@ -6,9 +6,17 @@
 import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { PixelOpenspace } from '../../registry/pixel-openspace/pixel-openspace'
-import type { Agent, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
+import type { Agent, Language, ThemeName, WallTile, Weather } from '../../registry/pixel-openspace/types'
 
-type Etat = { title: string; language: Language; theme: ThemeName; allowRun: boolean; agents: Array<Agent>; wall: Array<WallTile> }
+type Etat = {
+  title: string
+  language: Language
+  theme: ThemeName
+  allowRun: boolean
+  agents: Array<Agent>
+  wall: Array<WallTile>
+  weather: Weather | null
+}
 
 const THEMES: Array<ThemeName> = ['geek', 'eighties', 'gym', 'modern']
 
@@ -57,6 +65,7 @@ function App() {
         agents={etat.agents}
         title={etat.title}
         wall={etat.wall}
+        weather={etat.weather}
         language={etat.language}
         theme={theme}
         onRun={etat.allowRun ? relancer : undefined}

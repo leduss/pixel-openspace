@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { PixelOpenspace } from '@/registry/pixel-openspace/pixel-openspace'
-import { MOTS, equipe } from '@/data/demo'
+import { CIELS, MOTS, equipe, type Ciel } from '@/data/demo'
 import type { AgentStatus, Language, ThemeName } from '@/registry/pixel-openspace/types'
 
 export function Demo({ langue }: { langue: Language }) {
@@ -14,6 +14,7 @@ export function Demo({ langue }: { langue: Language }) {
   const [livraisons, setLivraisons] = useState(0)
   const [fete, setFete] = useState(false)
   const [theme, setTheme] = useState<ThemeName>('geek')
+  const [ciel, setCiel] = useState<Ciel>('clouds')
 
   const changer = (id: string, status: AgentStatus, lastMessage?: string) =>
     setAgents((liste) =>
@@ -67,7 +68,7 @@ export function Demo({ langue }: { langue: Language }) {
           { label: m.mur[3], value: '62 %', progress: 0.62 },
         ]}
         announcements={[m.annonce]}
-        weather={{ temperature: 19, sky: 'clouds', day: true, place: 'Bordeaux' }}
+        weather={{ ...CIELS[ciel], place: 'Lanton' }}
         onRun={(agent) => {
           changer(agent.id, 'working')
           setTimeout(() => changer(agent.id, 'ok', m.aLaMain), 5_000)
@@ -86,6 +87,23 @@ export function Demo({ langue }: { langue: Language }) {
               onClick={() => setTheme(nom)}
             >
               {m.themes[nom]}
+            </Button>
+          ))}
+        </ButtonGroup>
+      </div>
+      {/* Le ciel derrière la fenêtre du chef : ce que la prop weather sait dessiner. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-sm text-muted-foreground">{m.ciel}</span>
+        <ButtonGroup aria-label={m.ciel}>
+          {(Object.keys(CIELS) as Array<Ciel>).map((nom) => (
+            <Button
+              key={nom}
+              size="sm"
+              variant={ciel === nom ? 'default' : 'outline'}
+              aria-pressed={ciel === nom}
+              onClick={() => setCiel(nom)}
+            >
+              {m.cieux[nom]}
             </Button>
           ))}
         </ButtonGroup>

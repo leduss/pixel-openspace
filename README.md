@@ -120,6 +120,7 @@ The server listens on `127.0.0.1:4747` only and opens your browser. The useful o
 | `-x, --exclude <text>` | Hide jobs whose name contains this text (repeatable) |
 | `-t, --theme <name>` | `geek`, `eighties`, `gym` or `modern`; `?theme=gym` in the address works too |
 | `-l, --lang <en\|fr>` | Language of the room (default: your system’s) |
+| `-w, --weather <place>` | Real weather behind the lead’s window, from [Open-Meteo](https://open-meteo.com): a city or `latitude,longitude` |
 | `--allow-run` | Let the “Run now” button start a job (`launchctl kickstart`, `systemctl start`); off by default |
 | `--json` | Print the jobs it found and exit |
 
@@ -130,6 +131,7 @@ Every option can also live in a `pixel-openspace.json` file, in the current fold
   "title": "ACME OPS",
   "theme": "eighties",
   "language": "en",
+  "weather": "Lanton",
   "match": ["acme"],
   "agents": {
     "com.acme.backup": { "name": "Backup", "emoji": "💾", "role": "Dumps the database to S3" },
