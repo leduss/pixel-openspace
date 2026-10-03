@@ -63,6 +63,10 @@ export type Theme = {
   CafeQuiCoule?: ComponentType
   /** Les lumières du décor dans la nuit. */
   lumieres: Array<Lumiere>
+  /** Le voile de la nuit : sa couleur, et son opacité au plus noir (bleu nuit à 0,62 par défaut). */
+  nuit?: { couleur: string; opacite: number }
+  /** Se promène-t-il une tasse à la main ? */
+  tasse?: (id: string) => boolean
   /** Une lumière de plus par poste occupé (une tour RGB…). */
   lumierePoste?: (cx: number, dy: number, accent: string) => Array<Lumiere>
 }

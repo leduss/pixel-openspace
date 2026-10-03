@@ -710,7 +710,7 @@ export function PixelOpenspace({
                       />
                     ))}
 
-                  <Nuit niveau={nuit} lumieres={lumieres} hauteur={lePlan.hauteur} />
+                  <Nuit niveau={nuit} lumieres={lumieres} hauteur={lePlan.hauteur} voile={theme.nuit} />
                   {celebrate ? <Confettis hauteur={lePlan.hauteur} /> : null}
 
                   {/* Les étiquettes et les bulles, au-dessus de tout, même la nuit. */}
@@ -831,8 +831,20 @@ function Carte({
  * avec un trou doux autour de chaque écran allumé. Les LED, les néons et les
  * écrans au travail jettent en plus une lueur de leur couleur.
  */
-function Nuit({ niveau, lumieres, hauteur }: { niveau: number; lumieres: Array<Lumiere>; hauteur: number }) {
+function Nuit({
+  niveau,
+  lumieres,
+  hauteur,
+  voile = { couleur: '#0a1033', opacite: 0.62 },
+}: {
+  niveau: number
+  lumieres: Array<Lumiere>
+  hauteur: number
+  voile?: { couleur: string; opacite: number }
+}) {
   if (!niveau) return null
+  // L'obscurité va jusqu'à 0,62 ; le thème choisit jusqu'où son voile descend.
+  const opacite = (niveau / 0.62) * voile.opacite
   return (
     <g pointerEvents="none" shapeRendering="auto">
       <defs>
@@ -856,7 +868,7 @@ function Nuit({ niveau, lumieres, hauteur }: { niveau: number; lumieres: Array<L
           ))}
         </mask>
       </defs>
-      <rect width={LARGEUR} height={hauteur} fill="#0a1033" opacity={niveau} mask="url(#nuit-masque)" />
+      <rect width={LARGEUR} height={hauteur} fill={voile.couleur} opacity={opacite} mask="url(#nuit-masque)" />
       {lumieres.map((l, i) =>
         l.couleur ? (
           <ellipse key={i} cx={l.x} cy={l.y + 16} rx={l.r * 0.85} ry={l.r * 0.65} fill={`url(#lueur-${i})`} opacity={niveau / 0.62} />
@@ -1712,6 +1724,7 @@ function cadrage(pose: Pose) {
 }
 
 function Personnage({ id, pose, etire, choisir }: { id: string; pose: Pose; etire: boolean; choisir?: (id: string) => void }) {
+  const theme = useTheme()
   const temps = pose.marche ? 1 + (Math.floor(pose.pas / 170) % 2) : 0
   const { haut, bas } = cadrage(pose)
   return (
@@ -1725,6 +1738,14 @@ function Personnage({ id, pose, etire, choisir }: { id: string; pose: Pose; etir
             <rect x="3" y="17" width="18" height="12" fill="#b45309" />
             <rect x="3" y="17" width="18" height="3" fill="#d97706" />
             <rect x="10" y="17" width="4" height="12" fill="#fde68a" />
+          </g>
+        ) : !pose.assise && theme.tasse?.(id) ? (
+          /* La tasse, tenue à la main droite. */
+          <g>
+            <rect x="18" y="19" width="6" height="7" fill="#0b0d10" />
+            <rect x="19" y="20" width="4" height="5" fill="#fafaf9" />
+            <rect x="24" y="21" width="2" height="3" fill="#0b0d10" />
+            <rect x="19" y="20" width="4" height="1" fill="#6b3a1e" />
           </g>
         ) : null}
       </g>

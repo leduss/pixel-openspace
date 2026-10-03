@@ -2,7 +2,7 @@
 
 /*
  * Le thème moderne épuré, le seul en clair : parquet de chêne, murs blancs,
- * bureaux assis-debout et écrans fins, beaucoup de plantes. Le chef a sa
+ * bureaux assis-debout et portables, beaucoup de plantes. Le chef a sa
  * bibliothèque en chêne et ses lettres noires au mur ; l'espace détente, son
  * écran de présentation, son canapé vert sauge, sa table de ping-pong et ses
  * bornes ; la cuisine ouverte, son îlot, sa machine à espresso, sa fontaine à
@@ -375,16 +375,21 @@ function CartonsKraft({
 
 /* ——— Les postes ——— */
 
-/** L'écran fin, blanc, posé sur son pied ; ce qu'il affiche dit l'état de son agent. */
-function EcranFin({ cx, dy, statut, bientot }: { cx: number; dy: number; statut: Statut; bientot: number | null }) {
+/** Le portable, coque alu, ouvert sur le bureau ; ce que son écran affiche dit l'état de son agent. */
+function Portable({ cx, dy, statut, bientot }: { cx: number; dy: number; statut: Statut; bientot: number | null }) {
   const t = useTextes()
   const l = 52
   const g = cx - l / 2
   return (
     <g>
-      <rect x={cx - 3} y={dy + 8} width="6" height="8" fill="#d6d3d1" />
-      <rect x={cx - 12} y={dy + 15} width="24" height="3" fill="#d6d3d1" />
-      <rect x={g - 2} y={dy - 16} width={l + 4} height="26" fill="#e7e5e4" />
+      {/* Le clavier du portable, puis la coque de l'écran. */}
+      <rect x={g - 6} y={dy + 10} width={l + 12} height="9" fill="#a8a29e" />
+      <rect x={g - 5} y={dy + 10} width={l + 10} height="7" fill="#d6d3d1" />
+      {[0, 1].map((rang) => (
+        <rect key={rang} x={g} y={dy + 11 + rang * 3} width={l} height="2" fill="#a8a29e" />
+      ))}
+      <rect x={cx - 7} y={dy + 17} width="14" height="2" fill="#c4c0bc" />
+      <rect x={g - 2} y={dy - 16} width={l + 4} height="26" fill="#d6d3d1" />
       {statut === 'absent' ? (
         <>
           <rect x={g} y={dy - 14} width={l} height="20" fill={ENCRE} />
@@ -464,14 +469,12 @@ function PlateauChene({ x, dy, dessus }: { x: number; dy: number; dessus: number
   )
 }
 
-/** Le poste : écran fin, clavier blanc, souris, carnet, tasse en céramique, une petite plante grasse. */
+/** Le poste : le portable, une souris, carnet, tasse en céramique, une petite plante grasse. */
 function BureauModerne({ cx, dy, x, dessus, statut, bientot, emoji }: PropsBureau) {
   return (
     <g>
       <PlateauChene x={x} dy={dy} dessus={dessus} />
-      <EcranFin cx={cx - 4} dy={dy} statut={statut} bientot={bientot} />
-      <rect x={cx - 22} y={dy + 22} width="36" height="8" fill="#fafaf9" />
-      <rect x={cx - 20} y={dy + 25} width="32" height="2" fill="#e7e5e4" />
+      <Portable cx={cx - 4} dy={dy} statut={statut} bientot={bientot} />
       <rect x={cx + 20} y={dy + 23} width="5" height="7" fill="#fafaf9" />
       <rect x={x + 90} y={dy + 6} width="18" height="14" fill="#44403c" />
       <rect x={x + 92} y={dy + 6} width="2" height="14" fill="#f97316" />
@@ -603,6 +606,10 @@ export const THEME_MODERNE: Theme = {
   casque: casqueBlanc,
   CafeQuiCoule: CafeModerne,
   lumieres: LUMIERES_MODERNE,
+  // La nuit claire : un crépuscule bleu ardoise, plus léger que les autres thèmes.
+  nuit: { couleur: '#1e293b', opacite: 0.42 },
+  // Le chef, sans cravate, sa tasse à la main.
+  tasse: (id) => id === CHEF_ID,
   // Une lampe de bureau chaude au-dessus de chaque poste.
   lumierePoste: (cx, dy) => [{ x: cx, y: dy + 10, r: 55, couleur: '#fde68a' }],
 }
