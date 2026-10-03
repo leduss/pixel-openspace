@@ -14,6 +14,16 @@ npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.1.3 · 2026-10-03
+
+### Corrigé
+
+- L'étiquette « Nouveau poste » tient son texte, dans toutes les langues et même dans une police de secours plus large que Pixelify Sans.
+
+### Modifié
+
+- Une commande d'installation plus courte : `npx shadcn@latest add leduss/pixel-openspace/pixel-openspace`.
+
 ## 0.1.2 · 2026-10-03
 
 ### Ajouté

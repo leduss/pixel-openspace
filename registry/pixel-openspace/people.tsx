@@ -46,6 +46,7 @@ export function Poste({
   const allume = statut !== 'absent'
   const bureau = { cx, dy, x, dessus, statut, accent, bientot, emoji: fiche.emoji }
 
+  const largeurMontage = Math.max(68, t.newDesk.length * 5 + 16)
   return (
     <g
       role="button"
@@ -63,10 +64,19 @@ export function Poste({
     >
       <title>{`${fiche.nom} — ${t.statuses[statut]}`}</title>
       {monte ? (
+        // Le cadre suit la longueur du texte, et le texte tient dans le cadre même dans une police de secours plus large.
         <g>
-          <rect x={cx - 34} y={dy - 36} width="68" height="14" fill="#1b1410" />
-          <rect x={cx - 33} y={dy - 35} width="66" height="12" fill="var(--po-accent)" />
-          <text x={cx} y={dy - 26} fontSize="8" textAnchor="middle" fill="#1b1410">
+          <rect x={cx - largeurMontage / 2} y={dy - 36} width={largeurMontage} height="14" fill="#1b1410" />
+          <rect x={cx - largeurMontage / 2 + 1} y={dy - 35} width={largeurMontage - 2} height="12" fill="var(--po-accent)" />
+          <text
+            x={cx}
+            y={dy - 26}
+            fontSize="8"
+            textAnchor="middle"
+            fill="#1b1410"
+            textLength={largeurMontage - 10}
+            lengthAdjust="spacingAndGlyphs"
+          >
             {t.newDesk}
           </text>
           <Anim attributeName="opacity" values="1;0.4;1" dur="0.8s" repeatCount="indefinite" />

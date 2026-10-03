@@ -14,6 +14,16 @@ npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.1.3 · 2026-10-03
+
+### Fixed
+
+- The “New desk” sign fits its text, in any language and even in a fallback font wider than Pixelify Sans.
+
+### Changed
+
+- Shorter install command: `npx shadcn@latest add leduss/pixel-openspace/pixel-openspace`.
+
 ## 0.1.2 · 2026-10-03
 
 ### Added
