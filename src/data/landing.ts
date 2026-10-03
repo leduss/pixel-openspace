@@ -4,9 +4,6 @@ import type { Language } from '@/registry/pixel-openspace/types'
 
 export const DEPOT = 'https://github.com/leduss/pixel-openspace'
 export const CAFE = 'https://buymeacoffee.com/leduss'
-/** Le bouton de Buy Me a Coffee, en image : son script passe par document.write, que React n'exécute pas. */
-export const boutonCafe = (texte: string) =>
-  `https://img.buymeacoffee.com/button-api/?text=${encodeURIComponent(texte)}&emoji=%E2%98%95&slug=leduss&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff`
 export const INSTALL = 'npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json'
 
 /* La couleur de la lampe de chaque état, la même que dans la salle. */

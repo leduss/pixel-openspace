@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
-import { boutonCafe, CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import type { Language } from '@/registry/pixel-openspace/types'
 
 /** Les deux exemples de code, en onglets : la route d'API, puis la page. */
@@ -57,6 +57,21 @@ function ChoixLangue({ langue, libelle }: { langue: Language; libelle: string })
   )
 }
 
+/** Le bouton jaune de Buy Me a Coffee, avec ses couleurs et sa police Cookie, sans le compteur de soutiens de leur image. */
+function BoutonCafe({ texte }: { texte: string }) {
+  return (
+    <a
+      href={CAFE}
+      className="inline-flex h-10 w-fit items-center gap-2 rounded-lg border border-black bg-[#ffdd00] px-4 font-[family-name:var(--font-cookie)] text-2xl leading-none text-black transition-colors hover:bg-[#ffe633] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+    >
+      <span aria-hidden="true" className="font-sans text-lg">
+        ☕
+      </span>
+      {texte}
+    </a>
+  )
+}
+
 /** La landing, dans la langue de sa page. */
 export function Landing({ langue }: { langue: Language }) {
   const t = TEXTES[langue]
@@ -87,10 +102,7 @@ export function Landing({ langue }: { langue: Language }) {
               <Button size="lg" nativeButton={false} render={<a href={DEPOT} />}>
                 {t.etoile}
               </Button>
-              <a href={CAFE} className="rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={boutonCafe(t.cafe)} alt={t.cafe} className="h-10 w-auto" />
-              </a>
+              <BoutonCafe texte={t.cafe} />
               <Badge variant="outline">MIT</Badge>
               <p className="text-sm text-muted-foreground">{t.licence}</p>
             </div>
@@ -206,11 +218,8 @@ export function Landing({ langue }: { langue: Language }) {
           <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href={DEPOT} />}>
             {t.source}
           </Button>
-          {' · '}
-          <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href={CAFE} />}>
-            {t.cafe}
-          </Button>
         </p>
+        <BoutonCafe texte={t.cafe} />
       </footer>
     </main>
   )
