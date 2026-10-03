@@ -2,6 +2,8 @@
 
 What changed in pixel-openspace, newest first. Each version is also a [GitHub release](https://github.com/leduss/pixel-openspace/releases): watch the repository (Watch → Custom → Releases) to hear about new ones.
 
+[🇫🇷 Lire en français](./CHANGELOG.fr.md)
+
 ## Updating
 
 The component is copied into your project, so updating means copying it again:
