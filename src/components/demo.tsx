@@ -126,39 +126,28 @@ export function Demo() {
     return () => clearInterval(t)
   }, [])
 
+  const essais: Array<{ label: string; faire: () => void; variant?: 'default' | 'secondary' | 'outline' | 'destructive' }> = [
+    { label: 'Start Invoices', faire: () => changer('invoices', 'working') },
+    { label: 'Finish it', faire: () => changer('invoices', 'ok', '3 invoices sent'), variant: 'secondary' },
+    { label: 'Break Inbox', faire: () => changer('emails', 'failed', 'LLM quota exceeded'), variant: 'destructive' },
+    { label: 'Fix it', faire: () => changer('emails', 'ok', 'back to normal'), variant: 'secondary' },
+    { label: 'Let a visitor in', faire: () => setVisiteurs((n) => n + 1), variant: 'outline' },
+    { label: 'Deliver a parcel', faire: () => setLivraisons((n) => n + 1), variant: 'outline' },
+    { label: fete ? 'Stop the confetti' : 'Throw confetti', faire: () => setFete((f) => !f), variant: 'outline' },
+    {
+      label: langue === 'en' ? 'En français' : 'In English',
+      faire: () => setLangue((l) => (l === 'en' ? 'fr' : 'en')),
+      variant: 'outline',
+    },
+  ]
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        <Button size="sm" onClick={() => changer('invoices', 'working')}>
-          ▶ Start “Invoices”
-        </Button>
-        <Button size="sm" variant="secondary" onClick={() => changer('invoices', 'ok', '3 invoices sent')}>
-          ✓ Finish it
-        </Button>
-        <Button size="sm" variant="destructive" onClick={() => changer('emails', 'failed', 'LLM quota exceeded')}>
-          ✕ Make “Inbox” fail
-        </Button>
-        <Button size="sm" variant="secondary" onClick={() => changer('emails', 'ok', 'back to normal')}>
-          ↺ Recover it
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => setVisiteurs((n) => n + 1)}>
-          🚪 A visitor
-        </Button>
-        <Button size="sm" variant="outline" onClick={() => setLivraisons((n) => n + 1)}>
-          📦 A delivery
-        </Button>
-        <Button size="sm" variant={fete ? 'secondary' : 'outline'} onClick={() => setFete((f) => !f)}>
-          🎉 Confetti
-        </Button>
-        <Button size="sm" variant="ghost" onClick={() => setLangue((l) => (l === 'en' ? 'fr' : 'en'))}>
-          {langue === 'en' ? '🇫🇷 Français' : '🇬🇧 English'}
-        </Button>
-      </div>
-
       <PixelOpenspace
         agents={agents}
         language={langue}
         title="ACME OPS"
+        toolbar={false}
         visitors={visiteurs}
         deliveries={livraisons}
         celebrate={fete}
@@ -175,6 +164,14 @@ export function Demo() {
           setTimeout(() => changer(agent.id, 'ok', 'run by hand, all good'), 5_000)
         }}
       />
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-sm text-muted-foreground">Try it:</span>
+        {essais.map((e) => (
+          <Button key={e.label} size="sm" variant={e.variant ?? 'default'} onClick={e.faire}>
+            {e.label}
+          </Button>
+        ))}
+      </div>
     </div>
   )
 }
