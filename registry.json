@@ -17,7 +17,8 @@
         "kbd",
         "switch",
         "label",
-        "separator"
+        "separator",
+        "input"
       ],
       "files": [
         {

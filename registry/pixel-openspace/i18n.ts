@@ -31,6 +31,7 @@ export type Texts = {
     open: string
     title: string
     description: string
+    sign: string
     theme: string
     themes: Record<'geek' | 'eighties' | 'gym' | 'modern', string>
     language: string
@@ -118,6 +119,7 @@ const EN: Texts = {
     open: 'Settings',
     title: 'Settings',
     description: 'Saved in this browser only.',
+    sign: 'Sign on the wall',
     theme: 'Theme',
     themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern' },
     language: 'Language',
@@ -210,6 +212,7 @@ const FR: Texts = {
     open: 'Réglages',
     title: 'Réglages',
     description: 'Enregistrés dans ce navigateur seulement.',
+    sign: 'Enseigne au mur',
     theme: 'Thème',
     themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne' },
     language: 'Langue',

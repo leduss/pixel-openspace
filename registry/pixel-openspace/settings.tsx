@@ -11,6 +11,7 @@ import { useId, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -19,6 +20,7 @@ import type { Language, ThemeName } from './types'
 
 /** Ce que le visiteur a changé ; ce qu'il n'a pas touché suit les props. */
 export type Preferences = {
+  title?: string
   theme?: ThemeName
   language?: Language
   seasonal?: boolean
@@ -104,6 +106,8 @@ function Choix<T extends string>({
 }
 
 export function Reglages({
+  titre,
+  titreOrigine,
   theme,
   langue,
   saisons,
@@ -117,6 +121,9 @@ export function Reglages({
   basculerAlertes,
   reinitialiser,
 }: {
+  /** L'enseigne choisie par le visiteur, vide s'il garde celle des props. */
+  titre: string
+  titreOrigine: string
   theme: ThemeName
   langue: Language
   saisons: boolean
@@ -133,6 +140,7 @@ export function Reglages({
   const t = useTextes().settings
   // Ouverte et fermée à la main, sans `asChild` ni `render` : la même fenêtre marche avec les styles shadcn Radix et Base UI.
   const [ouverte, setOuverte] = useState(false)
+  const idTitre = useId()
   return (
     <Dialog open={ouverte} onOpenChange={setOuverte}>
       <Button variant="outline" size="icon-sm" aria-label={t.open} title={t.open} onClick={() => setOuverte(true)}>
@@ -144,6 +152,16 @@ export function Reglages({
           <DialogDescription>{t.description}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor={idTitre}>{t.sign}</Label>
+            <Input
+              id={idTitre}
+              value={titre}
+              placeholder={titreOrigine}
+              maxLength={24}
+              onChange={(e) => changer({ title: e.target.value || undefined })}
+            />
+          </div>
           <Choix nom={t.theme} options={THEMES.map((n) => [n, t.themes[n]])} valeur={theme} changer={(v) => changer({ theme: v })} />
           <Choix nom={t.language} options={LANGUES} valeur={langue} changer={(v) => changer({ language: v })} />
           <Separator />

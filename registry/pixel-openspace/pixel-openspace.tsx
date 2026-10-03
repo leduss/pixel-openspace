@@ -262,6 +262,7 @@ export function PixelOpenspace({
       return apres
     })
   const language = preferences.language ?? langueProp
+  const enseigne = preferences.title?.trim() || title
   const nomTheme = preferences.theme ?? themeProp
   const seasonal = preferences.seasonal ?? saisonsProp
   const assombrir = preferences.night ?? true
@@ -659,6 +660,8 @@ export function PixelOpenspace({
                 {t.fullscreen}
               </Button>
               <Reglages
+                titre={preferences.title ?? ''}
+                titreOrigine={title}
                 theme={nomTheme}
                 langue={language}
                 saisons={seasonal}
@@ -698,7 +701,7 @@ export function PixelOpenspace({
                   aria-label={t.sceneLabel}
                 >
                   <DefsCommunes />
-                  <theme.Decor hauteur={lePlan.hauteur} titre={title} liens={objectLinks} aller={aller} jouer={setJeu} />
+                  <theme.Decor hauteur={lePlan.hauteur} titre={enseigne} liens={objectLinks} aller={aller} jouer={setJeu} />
                   <EcranMural tuiles={wall} />
                   <TableauBlanc prochains={prochains} />
                   <Records snake={records.snake} casse={records.casse} />
