@@ -59,6 +59,8 @@ export type Texts = {
     nightHint: string
     motion: string
     motionHint: string
+    timeline: string
+    timelineHint: string
     reset: string
     done: string
   }
@@ -159,6 +161,8 @@ const EN: Texts = {
     nightHint: 'The room dims in the evening and the screens glow.',
     motion: 'People walk around',
     motionHint: 'Off: everybody stays at their desk, which saves CPU.',
+    timeline: 'Day timeline',
+    timelineHint: 'Under the room, one dot per run since midnight.',
     reset: 'Reset',
     done: 'Done',
   },
@@ -264,6 +268,8 @@ const FR: Texts = {
     nightHint: 'La salle s’assombrit le soir et les écrans s’allument.',
     motion: 'Les bonshommes circulent',
     motionHint: 'Désactivé : chacun reste à son bureau, et le processeur se repose.',
+    timeline: 'Frise de la journée',
+    timelineHint: 'Sous la salle, un point par passage depuis minuit.',
     reset: 'Réinitialiser',
     done: 'Terminé',
   },

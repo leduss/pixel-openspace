@@ -242,7 +242,7 @@ export function PixelOpenspace({
   visitors = 0,
   deliveries = 0,
   celebrate = false,
-  timeline = true,
+  timeline: friseProp = true,
   language: langueProp = 'en',
   theme: themeProp = 'geek',
   seasonal: saisonsProp = true,
@@ -276,6 +276,7 @@ export function PixelOpenspace({
   const seasonal = preferences.seasonal ?? saisonsProp
   const assombrir = preferences.night ?? true
   const mouvement = preferences.motion ?? true
+  const timeline = preferences.timeline ?? friseProp
 
   const t = TEXTS[language]
   const theme = THEMES[nomTheme] ?? THEME_GEEK
@@ -679,6 +680,7 @@ export function PixelOpenspace({
                 saisons={seasonal}
                 nuit={assombrir}
                 mouvement={mouvement}
+                frise={timeline}
                 son={son}
                 alertes={alertes}
                 alertesBloquees={alertesBloquees}

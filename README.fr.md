@@ -148,7 +148,7 @@ Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, d
 - Un tableau blanc avec les cinq prochains passages, une horloge à l'heure, le chat de l'atelier qui dort sur les bureaux vides.
 - Les saisons : Halloween tout octobre, Noël tout décembre, et Pâques les deux semaines avant le lundi de Pâques, avec ses œufs cachés et son lapin.
 - Le jour et la nuit : la salle s'assombrit le soir, et les tours RGB, les néons, les lampes et les écrans s'allument.
-- Une roue dentée de réglages : qui regarde la salle renomme l'enseigne au mur, choisit la ville dont la vraie météo s'affiche à la fenêtre (par [Open-Meteo](https://open-meteo.com), sans clé), le thème et la langue, active le son 8 bits et les alertes du navigateur, coupe les saisons, la nuit ou les allées et venues. Ses choix restent dans son navigateur et passent avant les props.
+- Une roue dentée de réglages : qui regarde la salle renomme l'enseigne au mur, choisit la ville dont la vraie météo s'affiche à la fenêtre (par [Open-Meteo](https://open-meteo.com), sans clé), le thème et la langue, active le son 8 bits et les alertes du navigateur, coupe les saisons, la nuit, les allées et venues ou la frise de la journée. Ses choix restent dans son navigateur et passent avant les props.
 - Une notification du navigateur quand un agent tombe en échec, et un son 8 bits pour les départs, les échecs et les visiteurs (à activer).
 - `prefers-reduced-motion` est respecté : tout le monde reste à sa place.
 

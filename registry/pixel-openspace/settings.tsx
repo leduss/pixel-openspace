@@ -29,6 +29,7 @@ export type Preferences = {
   seasonal?: boolean
   night?: boolean
   motion?: boolean
+  timeline?: boolean
 }
 
 /** Où en est la recherche du lieu choisi dans les réglages. */
@@ -159,6 +160,7 @@ export function Reglages({
   saisons,
   nuit,
   mouvement,
+  frise,
   son,
   alertes,
   alertesBloquees,
@@ -179,6 +181,7 @@ export function Reglages({
   saisons: boolean
   nuit: boolean
   mouvement: boolean
+  frise: boolean
   son: boolean
   alertes: boolean
   alertesBloquees: boolean
@@ -205,7 +208,7 @@ export function Reglages({
       <Button variant="outline" size="icon-sm" aria-label={t.open} title={t.open} onClick={() => setOuverte(true)}>
         <SettingsIcon />
       </Button>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[90svh] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t.title}</DialogTitle>
           <DialogDescription>{t.description}</DialogDescription>
@@ -248,6 +251,7 @@ export function Reglages({
           <Interrupteur nom={t.seasonal} aide={t.seasonalHint} actif={saisons} changer={(v) => changer({ seasonal: v })} />
           <Interrupteur nom={t.night} aide={t.nightHint} actif={nuit} changer={(v) => changer({ night: v })} />
           <Interrupteur nom={t.motion} aide={t.motionHint} actif={mouvement} changer={(v) => changer({ motion: v })} />
+          <Interrupteur nom={t.timeline} aide={t.timelineHint} actif={frise} changer={(v) => changer({ timeline: v })} />
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={reinitialiser}>
