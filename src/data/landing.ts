@@ -169,8 +169,8 @@ export const TEXTES = {
       'Rien de tout ça n’est nécessaire pour surveiller tes tâches. C’est là parce qu’un bureau qu’on regarde tous les jours doit être un endroit agréable.',
     details: [
       [
-        'Deux thèmes',
-        'Un open space geek aux tours RGB, ou un bureau d’entreprise de 1986 : lambris, écrans cathodiques vert phosphore, téléphones à cadran.',
+        'Trois thèmes',
+        'Un open space geek aux tours RGB, un bureau d’entreprise de 1986 aux écrans cathodiques vert phosphore, ou une salle de sport où chaque tâche pédale sur son vélo.',
       ],
       ['Deux bornes d’arcade', 'Snake des composants et Casse-puces, jouables toutes les deux. Les records sont affichés au mur.'],
       ['Un écran mural', 'Jusqu’à quatre chiffres à toi : tâches du jour, erreurs, file d’attente, budget.'],
