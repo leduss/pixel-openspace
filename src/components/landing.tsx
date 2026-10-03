@@ -7,8 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
-import { LogoCafe } from '@/components/logo-cafe'
-import { CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { boutonCafe, CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import type { Language } from '@/registry/pixel-openspace/types'
 
 /** Les deux exemples de code, en onglets : la route d'API, puis la page. */
@@ -88,10 +87,10 @@ export function Landing({ langue }: { langue: Language }) {
               <Button size="lg" nativeButton={false} render={<a href={DEPOT} />}>
                 {t.etoile}
               </Button>
-              <Button size="lg" variant="outline" nativeButton={false} render={<a href={CAFE} />}>
-                <LogoCafe className="size-4" />
-                {t.cafe}
-              </Button>
+              <a href={CAFE} className="rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={boutonCafe(t.cafe)} alt={t.cafe} className="h-10 w-auto" />
+              </a>
               <Badge variant="outline">MIT</Badge>
               <p className="text-sm text-muted-foreground">{t.licence}</p>
             </div>
