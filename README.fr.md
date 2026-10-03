@@ -20,7 +20,7 @@ Deux façons de s'en servir :
 Dans un projet où shadcn/ui est en place :
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json
+npx shadcn@latest add leduss/pixel-openspace/pixel-openspace
 ```
 
 Les fichiers arrivent dans `components/pixel-openspace/`. Les étiquettes de la scène utilisent [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) par la variable CSS `--font-pixel` ; avec Next.js :
@@ -37,7 +37,7 @@ const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'] })
 Le code vit dans ton projet : mettre à jour, c'est relancer la même commande avec `--overwrite`. Tes retouches dans `components/pixel-openspace/` sont remplacées. Ce qui a changé est dans le [journal des versions](./CHANGELOG.fr.md).
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json --overwrite
+npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 ```
 
 ### Utiliser

@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "pixel-openspace",
-  "homepage": "https://github.com/leduss/pixel-openspace",
+  "homepage": "https://pixel-openspace.vercel.app",
   "items": [
     {
       "name": "pixel-openspace",

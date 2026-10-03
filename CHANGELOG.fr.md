@@ -9,7 +9,7 @@ Ce qui a changé dans pixel-openspace, le plus récent en haut. Chaque version e
 Le composant est copié dans ton projet : mettre à jour, c'est le copier à nouveau.
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json --overwrite
+npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 ```
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.

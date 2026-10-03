@@ -20,7 +20,7 @@ There are two ways to use it:
 In a project with shadcn/ui set up:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json
+npx shadcn@latest add leduss/pixel-openspace/pixel-openspace
 ```
 
 The files land in `components/pixel-openspace/`. The labels in the room use [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) through a `--font-pixel` CSS variable; with Next.js:
@@ -37,7 +37,7 @@ const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'] })
 The code lives in your project, so updating means running the same command again with `--overwrite`. Your own edits in `components/pixel-openspace/` are replaced. What changed is in the [changelog](./CHANGELOG.md).
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json --overwrite
+npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 ```
 
 ### Use
