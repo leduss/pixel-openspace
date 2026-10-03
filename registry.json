@@ -72,6 +72,11 @@
           "path": "registry/pixel-openspace/themes/gym.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/themes/gym.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/themes/modern.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/themes/modern.tsx"
         }
       ]
     }

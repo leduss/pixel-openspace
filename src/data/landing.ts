@@ -103,8 +103,8 @@ export const TEXTES = {
     aussiTexte: 'None of this is needed to watch your jobs. It is there because an office you look at every day should be a nice place.',
     details: [
       [
-        'Three themes',
-        'A geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, or a gym where every job rides an exercise bike.',
+        'Four themes',
+        'A geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, a gym where every job rides an exercise bike, or a bright modern office in light oak with standing desks and a ping-pong table.',
       ],
       ['Two arcade cabinets', 'Component Snake and Chip Breaker, both playable. High scores hang on the wall.'],
       ['A wall screen', 'Up to four numbers of your own: jobs today, errors, queue size, budget.'],
@@ -169,8 +169,8 @@ export const TEXTES = {
       'Rien de tout ça n’est nécessaire pour surveiller tes tâches. C’est là parce qu’un bureau qu’on regarde tous les jours doit être un endroit agréable.',
     details: [
       [
-        'Trois thèmes',
-        'Un open space geek aux tours RGB, un bureau d’entreprise de 1986 aux écrans cathodiques vert phosphore, ou une salle de sport où chaque tâche pédale sur son vélo.',
+        'Quatre thèmes',
+        'Un open space geek aux tours RGB, un bureau d’entreprise de 1986 aux écrans cathodiques vert phosphore, une salle de sport où chaque tâche pédale sur son vélo, ou un bureau moderne et lumineux, chêne clair, bureaux assis-debout et table de ping-pong.',
       ],
       ['Deux bornes d’arcade', 'Snake des composants et Casse-puces, jouables toutes les deux. Les records sont affichés au mur.'],
       ['Un écran mural', 'Jusqu’à quatre chiffres à toi : tâches du jour, erreurs, file d’attente, budget.'],

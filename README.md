@@ -78,7 +78,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | `deliveries` | `number` | A counter: each time it goes up, a courier drops a parcel by the boxes |
 | `celebrate` | `boolean` | Confetti over the whole room |
 | `language` | `'en' \| 'fr'` | Everything written and said in the room |
-| `theme` | `'geek' \| 'eighties' \| 'gym'` | The look of the room: a geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, or a gym where every job rides an exercise bike (default `'geek'`) |
+| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern'` | The look of the room: a geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, a gym where every job rides an exercise bike, or a bright modern office in light oak with standing desks and a ping-pong table (default `'geek'`) |
 | `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
 | `nightHours` | `[number, number]` | When everybody stays at their desk (default `[22, 6]`) |
 | `toolbar` | `boolean` | Sound, browser alerts and fullscreen buttons (default `true`) |
