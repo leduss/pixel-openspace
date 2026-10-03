@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 
 /** A shell command with a button that copies it, and says so. */
-export function CopyCommand({ command }: { command: string }) {
+export function CopyCommand({ command, copy = 'Copy', copied: dejaCopie = 'Copied' }: { command: string; copy?: string; copied?: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <div className="flex w-full max-w-full items-stretch overflow-hidden rounded-lg border bg-card">
@@ -21,7 +21,7 @@ export function CopyCommand({ command }: { command: string }) {
           setTimeout(() => setCopied(false), 2000)
         }}
       >
-        {copied ? 'Copied' : 'Copy'}
+        {copied ? dejaCopie : copy}
       </Button>
     </div>
   )

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: 'pixel-openspace — your cron jobs, at their desks',
   description:
     'An open source shadcn/ui component that shows your scheduled jobs and AI agents as pixel-art employees in an open space. For Next.js and React.',
+  alternates: { languages: { en: '/', fr: '/fr' } },
 }
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
