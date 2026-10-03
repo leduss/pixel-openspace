@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import { Atkinson_Hyperlegible, Cookie, Geist_Mono, Pixelify_Sans } from 'next/font/google'
 import './globals.css'
@@ -22,7 +23,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`dark ${atkinson.variable} ${geistMono.variable} ${pixel.variable} ${cookie.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        {/* Les visites, sans cookie : d'où viennent les gens, pour savoir quelle annonce a marché. */}
+        <Analytics />
+      </body>
     </html>
   )
 }
