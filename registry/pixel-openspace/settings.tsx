@@ -7,19 +7,10 @@
  */
 
 import { SettingsIcon } from 'lucide-react'
-import { useId, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -140,11 +131,13 @@ export function Reglages({
   reinitialiser: () => void
 }) {
   const t = useTextes().settings
+  // Ouverte et fermée à la main, sans `asChild` ni `render` : la même fenêtre marche avec les styles shadcn Radix et Base UI.
+  const [ouverte, setOuverte] = useState(false)
   return (
-    <Dialog>
-      <DialogTrigger render={<Button variant="outline" size="icon-sm" aria-label={t.open} title={t.open} />}>
+    <Dialog open={ouverte} onOpenChange={setOuverte}>
+      <Button variant="outline" size="icon-sm" aria-label={t.open} title={t.open} onClick={() => setOuverte(true)}>
         <SettingsIcon />
-      </DialogTrigger>
+      </Button>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t.title}</DialogTitle>
@@ -171,7 +164,7 @@ export function Reglages({
           <Button variant="ghost" onClick={reinitialiser}>
             {t.reset}
           </Button>
-          <DialogClose render={<Button />}>{t.done}</DialogClose>
+          <Button onClick={() => setOuverte(false)}>{t.done}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

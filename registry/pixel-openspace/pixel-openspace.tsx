@@ -807,7 +807,8 @@ function Carte({
   const travaille = statut === 'au-travail'
   return (
     <Card
-      size="sm"
+      // L'attribut plutôt que la prop : la carte compacte du style Base UI, sans gêner le style Radix qui ne la connaît pas.
+      data-size="sm"
       className="absolute z-10 w-72 shadow-xl"
       style={{
         left: `${(ancre.x / LARGEUR) * 100}%`,
