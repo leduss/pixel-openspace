@@ -1,0 +1,25 @@
+# À chaque push et pull request : lint, types, tests, construction du serveur
+# local, et un registre publié qui correspond bien aux sources.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bunx tsc --noEmit -p .
+      - run: bun run test
+      - run: bun run cli:build
+      # public/r/pixel-openspace.json est ce que les gens installent : il doit sortir tel quel des sources.
+      - name: Le registre est à jour
+        run: |
+          bunx shadcn build
+          git diff --exit-code public/r || (echo "::error::public/r est périmé : lance bun run registry:build et commite le résultat" && exit 1)

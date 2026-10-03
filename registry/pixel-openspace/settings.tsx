@@ -15,22 +15,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { LONGUEUR_ENSEIGNE, THEMES, type Preferences } from './preferences'
 import { useTextes } from './primitives'
 import type { Language, ThemeName, Weather } from './types'
 import { lireMeteo, localiser, type Endroit } from './weather'
-
-/** Ce que le visiteur a changé ; ce qu'il n'a pas touché suit les props. */
-export type Preferences = {
-  title?: string
-  /** Le lieu de la météo à la fenêtre, à la place de celle des props. */
-  weatherPlace?: string
-  theme?: ThemeName
-  language?: Language
-  seasonal?: boolean
-  night?: boolean
-  motion?: boolean
-  timeline?: boolean
-}
 
 /** Où en est la recherche du lieu choisi dans les réglages. */
 export type EtatMeteo = { etat: 'aucun' } | { etat: 'recherche' } | { etat: 'introuvable' } | { etat: 'trouve'; meteo: Weather }
@@ -72,27 +60,7 @@ export function useMeteoDuLieu(lieu: string | undefined, langue: Language): Etat
   return etat
 }
 
-const CLE = 'pixel-openspace:settings'
-
-export function lirePreferences(): Preferences {
-  try {
-    return JSON.parse(localStorage.getItem(CLE) ?? '{}') as Preferences
-  } catch {
-    return {}
-  }
-}
-
-export function ecrirePreferences(preferences: Preferences) {
-  try {
-    if (Object.keys(preferences).length) localStorage.setItem(CLE, JSON.stringify(preferences))
-    else localStorage.removeItem(CLE)
-  } catch {
-    /* Navigation privée ou stockage bloqué : le réglage vaut pour cette visite. */
-  }
-}
-
-const THEMES: Array<ThemeName> = ['geek', 'eighties', 'gym', 'modern']
-const LANGUES: Array<[Language, string]> = [
+const NOMS_LANGUES: Array<[Language, string]> = [
   ['en', 'English'],
   ['fr', 'Français'],
 ]
@@ -220,7 +188,7 @@ export function Reglages({
               id={idTitre}
               value={titre}
               placeholder={titreOrigine}
-              maxLength={24}
+              maxLength={LONGUEUR_ENSEIGNE}
               onChange={(e) => changer({ title: e.target.value || undefined })}
             />
           </div>
@@ -237,7 +205,7 @@ export function Reglages({
             ) : null}
           </div>
           <Choix nom={t.theme} options={THEMES.map((n) => [n, t.themes[n]])} valeur={theme} changer={(v) => changer({ theme: v })} />
-          <Choix nom={t.language} options={LANGUES} valeur={langue} changer={(v) => changer({ language: v })} />
+          <Choix nom={t.language} options={NOMS_LANGUES} valeur={langue} changer={(v) => changer({ language: v })} />
           <Separator />
           <Interrupteur nom={t.sound} aide={t.soundHint} actif={son} changer={basculerSon} />
           <Interrupteur

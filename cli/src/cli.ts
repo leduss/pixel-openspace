@@ -13,6 +13,7 @@ import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 import type { Agent, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
+import { LANGUES, THEMES } from '../../registry/pixel-openspace/preferences'
 import paquet from '../package.json'
 import { suivreMeteo } from './meteo'
 import { lireCron, lireLaunchd, lireSystemd, relancer, type Filtre, type Source, type Tache } from './sources'
@@ -163,6 +164,15 @@ function principal() {
     weather: o.weather ?? fichier.weather,
     allowRun: o['allow-run'] ?? fichier.allowRun ?? false,
   }
+  // Une faute dans le thème ou la langue s'arrête ici, avec un message, plutôt que dans la page.
+  if (reglages.theme && !THEMES.includes(reglages.theme)) {
+    console.error(`pixel-openspace: unknown theme "${reglages.theme}", pick one of ${THEMES.join(', ')}`)
+    process.exit(1)
+  }
+  if (reglages.language && !LANGUES.includes(reglages.language)) {
+    console.error(`pixel-openspace: unknown language "${reglages.language}", pick one of ${LANGUES.join(', ')}`)
+    process.exit(1)
+  }
   const langue = reglages.language ?? langueSysteme()
 
   if (o.json) return console.log(JSON.stringify(collecter(reglages, langue), null, 2))
@@ -177,7 +187,18 @@ function principal() {
     return cache.taches
   }
 
+  /*
+   * Contre le rebinding DNS : un site qui ferait pointer son nom vers 127.0.0.1
+   * deviendrait « même origine » et pourrait lire les tâches, voire les lancer.
+   * Seules les adresses locales du serveur sont servies.
+   */
+  const hotes = new Set([`127.0.0.1:${port}`, `localhost:${port}`, `[::1]:${port}`])
+
   const serveur = createServer((req, res) => {
+    if (!hotes.has(req.headers.host ?? '')) {
+      res.writeHead(421, { 'content-type': 'text/plain' })
+      return res.end('pixel-openspace only answers on 127.0.0.1')
+    }
     const url = new URL(req.url ?? '/', 'http://localhost')
     if (url.pathname === '/api/state' && req.method === 'GET') {
       const liste = taches()

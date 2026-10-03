@@ -14,6 +14,21 @@ npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/m
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.1.1 · 2026-10-03
+
+### Corrigé
+
+- Le serveur local ne répond plus qu'aux requêtes adressées à `127.0.0.1` ou `localhost`, ce qui bloque le rebinding DNS : un autre site aurait sinon pu lire tes tâches et, avec `--allow-run`, les lancer.
+- Le serveur local s'arrête avec un message clair sur un `--theme` ou une `--lang` inconnus, au lieu d'une page cassée.
+- Une `language` inconnue retombe sur l'anglais, et un `status` inconnu s'affiche comme `ok` avec un avertissement en développement, au lieu de faire planter la salle.
+- Les réglages gardés dans le navigateur sont vérifiés champ par champ : une valeur abîmée ou d'une ancienne version est ignorée.
+- L'infobulle de l'horloge du chef suit la langue de la salle.
+- Deux passages au même instant ne se télescopent plus sur la frise de la journée.
+
+### Ajouté
+
+- L'intégration continue sur GitHub : lint, types, tests, construction du serveur local, et vérification que le registre publié correspond aux sources.
+
 ## 0.1.0 · 2026-10-03
 
 La première version.

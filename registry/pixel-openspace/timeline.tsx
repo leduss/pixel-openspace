@@ -61,9 +61,9 @@ export function Frise({ agents, maintenant, choisir }: { agents: Array<Agent>; m
                 {[6, 12, 18].map((h) => (
                   <span key={h} className="absolute inset-y-0 w-px bg-border" style={{ left: `${(h / 24) * 100}%` }} />
                 ))}
-                {passages.map((r) => (
+                {passages.map((r, i) => (
                   <span
-                    key={r.at}
+                    key={`${r.at}-${i}`}
                     title={`${heure(r.at)} · ${r.message || t.timeline.run}`}
                     className={`absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2 ring-background ${
                       r.ok === false ? 'bg-red-500' : 'bg-emerald-500'

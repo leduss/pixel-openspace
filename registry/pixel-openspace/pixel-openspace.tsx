@@ -41,7 +41,8 @@ import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
 import { Frise } from './timeline'
-import { ecrirePreferences, lirePreferences, Reglages, useMeteoDuLieu, type Preferences } from './settings'
+import { ecrirePreferences, lirePreferences, type Preferences } from './preferences'
+import { Reglages, useMeteoDuLieu } from './settings'
 import { THEME_GYM } from './themes/gym'
 import { THEME_MODERNE } from './themes/modern'
 import { fete, type Fete } from './seasons'
@@ -74,6 +75,20 @@ const STATUT: Record<AgentStatus, Statut> = {
   'on-demand': 'a-la-demande',
 }
 
+const signales = new Set<string>()
+
+/** Le statut de la scène ; un statut inconnu compte comme « ok », signalé une fois en développement. */
+function statutDe(a: Agent): Statut {
+  const statut = STATUT[a.status]
+  if (statut) return statut
+  const cle = `${a.id}:${a.status}`
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production' && !signales.has(cle)) {
+    signales.add(cle)
+    console.warn(`pixel-openspace: unknown status "${a.status}" for agent "${a.id}", shown as "ok".`)
+  }
+  return 'a-jour'
+}
+
 function versVue(a: Agent, id = a.id): Vue {
   return {
     fiche: {
@@ -85,7 +100,7 @@ function versVue(a: Agent, id = a.id): Vue {
       vieillitApresH: a.staleAfterHours ?? (a.status === 'on-demand' ? 24 * 7 : 72),
     },
     brut: { dernierMessage: a.lastMessage ?? null, dernierPassage: a.lastRun ?? null },
-    statut: STATUT[a.status],
+    statut: statutDe(a),
     prochain: a.nextRun ?? null,
     source: a,
   }
@@ -278,7 +293,8 @@ export function PixelOpenspace({
   const mouvement = preferences.motion ?? true
   const timeline = preferences.timeline ?? friseProp
 
-  const t = TEXTS[language]
+  // Une langue inconnue (une faute de frappe, un projet en JavaScript) retombe sur l'anglais.
+  const t = TEXTS[language] ?? TEXTS.en
   const theme = THEMES[nomTheme] ?? THEME_GEEK
   const equipe: Equipe = {
     chef: versVue(lead ?? CHEF_DECOR(t), CHEF_ID),
@@ -1276,6 +1292,7 @@ const SONS = {
  * trotteuse tourne seule, calée sur la seconde d'ouverture de la page.
  */
 function Horloge({ maintenant, ouverture }: { maintenant: number; ouverture: number }) {
+  const t = useTextes()
   const cx = 302
   const cy = 36
   const d = new Date(maintenant)
@@ -1293,7 +1310,7 @@ function Horloge({ maintenant, ouverture }: { maintenant: number; ouverture: num
   )
   return (
     <g pointerEvents="none">
-      <title>{d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</title>
+      <title>{d.toLocaleTimeString(t.locale, { hour: '2-digit', minute: '2-digit' })}</title>
       <circle cx={cx} cy={cy} r="14" fill="#111827" shapeRendering="auto" />
       <circle cx={cx} cy={cy} r="12" fill="#f8fafc" shapeRendering="auto" />
       {Array.from({ length: 12 }, (_, i) => (
