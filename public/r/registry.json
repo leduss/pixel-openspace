@@ -27,6 +27,41 @@
           "target": "components/pixel-openspace/pixel-openspace.tsx"
         },
         {
+          "path": "registry/pixel-openspace/vue.ts",
+          "type": "registry:lib",
+          "target": "components/pixel-openspace/vue.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/contexte.ts",
+          "type": "registry:lib",
+          "target": "components/pixel-openspace/contexte.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/card.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/card.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/decor.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/decor.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/festivities.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/festivities.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/people.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/people.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/sound.ts",
+          "type": "registry:lib",
+          "target": "components/pixel-openspace/sound.ts"
+        },
+        {
           "path": "registry/pixel-openspace/engine.ts",
           "type": "registry:component",
           "target": "components/pixel-openspace/engine.ts"
