@@ -45,6 +45,8 @@ export type Texts = {
     replay: string
     help: Record<'snake' | 'breakout', string>
     keys: string
+    toPlay: string
+    toClose: string
     title: Record<'snake' | 'breakout', string>
   }
   catNap: string
@@ -128,6 +130,8 @@ const EN: Texts = {
     replay: 'Press PLAY to replay',
     help: { snake: 'Arrows or W A S D', breakout: 'Arrows, A D or the mouse' },
     keys: 'Enter to play · Esc to close',
+    toPlay: 'to play',
+    toClose: 'to close',
     title: { snake: 'COMPONENT SNAKE', breakout: 'CHIP BREAKER' },
   },
   catNap: 'The office cat is napping',
@@ -201,6 +205,8 @@ const FR: Texts = {
     replay: 'Appuie sur JOUER pour rejouer',
     help: { snake: 'Flèches ou Z Q S D', breakout: 'Flèches, Q D ou la souris' },
     keys: 'Entrée pour jouer · Échap pour fermer',
+    toPlay: 'pour jouer',
+    toClose: 'pour fermer',
     title: { snake: 'SNAKE DES COMPOSANTS', breakout: 'CASSE-PUCES' },
   },
   catNap: 'Le chat de l’atelier fait la sieste',

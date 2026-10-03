@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
 import { PixelOpenspace } from '@/registry/pixel-openspace/pixel-openspace'
 import { MOTS, equipe } from '@/data/demo'
 import type { AgentStatus, Language } from '@/registry/pixel-openspace/types'
@@ -30,14 +31,21 @@ export function Demo({ langue }: { langue: Language }) {
     return () => clearInterval(t)
   }, [langue])
 
-  const essais: Array<{ label: string; faire: () => void; variant?: 'default' | 'secondary' | 'outline' | 'destructive' }> = [
-    { label: m.lancer, faire: () => changer('invoices', 'working') },
-    { label: m.finir, faire: () => changer('invoices', 'ok', m.finiMessage), variant: 'secondary' },
-    { label: m.casser, faire: () => changer('emails', 'failed', m.casseMessage), variant: 'destructive' },
-    { label: m.reparer, faire: () => changer('emails', 'ok', m.repareMessage), variant: 'secondary' },
-    { label: m.visiteur, faire: () => setVisiteurs((n) => n + 1), variant: 'outline' },
-    { label: m.colis, faire: () => setLivraisons((n) => n + 1), variant: 'outline' },
-    { label: fete ? m.stopConfettis : m.confettis, faire: () => setFete((f) => !f), variant: 'outline' },
+  type Essai = { label: string; faire: () => void; variant?: 'default' | 'secondary' | 'outline' | 'destructive' }
+  const groupes: Array<Array<Essai>> = [
+    [
+      { label: m.lancer, faire: () => changer('invoices', 'working'), variant: 'default' },
+      { label: m.finir, faire: () => changer('invoices', 'ok', m.finiMessage) },
+    ],
+    [
+      { label: m.casser, faire: () => changer('emails', 'failed', m.casseMessage), variant: 'destructive' },
+      { label: m.reparer, faire: () => changer('emails', 'ok', m.repareMessage) },
+    ],
+    [
+      { label: m.visiteur, faire: () => setVisiteurs((n) => n + 1) },
+      { label: m.colis, faire: () => setLivraisons((n) => n + 1) },
+      { label: fete ? m.stopConfettis : m.confettis, faire: () => setFete((f) => !f), variant: fete ? 'secondary' : 'outline' },
+    ],
   ]
 
   return (
@@ -63,12 +71,17 @@ export function Demo({ langue }: { langue: Language }) {
           setTimeout(() => changer(agent.id, 'ok', m.aLaMain), 5_000)
         }}
       />
+      {/* Les essais, groupés par ce qu'ils font : une tâche qui tourne, une tâche qui plante, la vie de la salle. */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="mr-1 text-sm text-muted-foreground">{m.essayer}</span>
-        {essais.map((e) => (
-          <Button key={e.label} size="sm" variant={e.variant ?? 'default'} onClick={e.faire}>
-            {e.label}
-          </Button>
+        {groupes.map((groupe, i) => (
+          <ButtonGroup key={i}>
+            {groupe.map((e) => (
+              <Button key={e.label} size="sm" variant={e.variant ?? 'outline'} onClick={e.faire}>
+                {e.label}
+              </Button>
+            ))}
+          </ButtonGroup>
         ))}
       </div>
     </div>

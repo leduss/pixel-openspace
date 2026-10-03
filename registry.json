@@ -10,7 +10,12 @@
       "description": "A pixel-art open space where your scheduled jobs and AI agents come to work: they sit and type while running, wander to the coffee machine when idle, and their PC smokes when they fail.",
       "registryDependencies": [
         "button",
-        "card"
+        "card",
+        "badge",
+        "toggle",
+        "button-group",
+        "dialog",
+        "kbd"
       ],
       "files": [
         {

@@ -2,7 +2,10 @@
 
 import { createContext, memo, useContext, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ButtonGroup } from '@/components/ui/button-group'
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Toggle } from '@/components/ui/toggle'
 import { JeuArcade, lireRecord, type Jeu } from './arcade'
 import {
   BUREAU,
@@ -609,17 +612,17 @@ export function PixelOpenspace({
           style={{ '--po-accent': '#e8b923', ...style } as CSSProperties}
         >
           {toolbar ? (
-            <div className="flex flex-wrap justify-end gap-2">
-              <Button variant={alertes ? 'secondary' : 'outline'} size="sm" onClick={basculerAlertes} aria-pressed={alertes}>
+            <ButtonGroup className="self-end">
+              <Toggle variant="outline" size="sm" pressed={alertes} onPressedChange={() => void basculerAlertes()}>
                 {alertes ? t.alertsOn : t.alertsOff}
-              </Button>
-              <Button variant={son ? 'secondary' : 'outline'} size="sm" onClick={basculerSon} aria-pressed={son}>
+              </Toggle>
+              <Toggle variant="outline" size="sm" pressed={son} onPressedChange={basculerSon}>
                 {son ? t.sound : t.soundOff}
-              </Button>
+              </Toggle>
               <Button variant="outline" size="sm" onClick={basculerPleinEcran}>
                 {t.fullscreen}
               </Button>
-            </div>
+            </ButtonGroup>
           ) : null}
 
           <div
@@ -751,38 +754,44 @@ function Carte({
   return (
     <Card
       size="sm"
-      className="absolute z-10 w-64 shadow-xl"
+      className="absolute z-10 w-72 shadow-xl"
       style={{
         left: `${(ancre.x / LARGEUR) * 100}%`,
         top: `${((dessous ? ancre.bas : ancre.haut) / hauteur) * 100}%`,
         transform: dessous ? `translate(${horizontal}, 10px)` : `translate(${horizontal}, calc(-100% - 10px))`,
       }}
     >
-      <CardContent className="flex flex-col gap-1.5 text-xs">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-semibold">
-            <span aria-hidden>{fiche.emoji}</span> {fiche.nom}
-          </p>
-          <button type="button" onClick={fermer} className="text-muted-foreground hover:text-foreground" aria-label={t.close}>
+      <CardHeader>
+        <CardTitle>
+          <span aria-hidden>{fiche.emoji}</span> {fiche.nom}
+        </CardTitle>
+        {fiche.role ? <CardDescription>{fiche.role}</CardDescription> : null}
+        <CardAction>
+          <Button variant="ghost" size="icon-xs" onClick={fermer} aria-label={t.close}>
             ✕
-          </button>
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge variant={statut === 'en-echec' ? 'destructive' : 'secondary'}>
+            <span className="size-1.5 rounded-full" style={{ background: LAMPE_PLAN[statut] }} />
+            {t.statuses[statut]}
+          </Badge>
+          {fiche.rythme ? <Badge variant="outline">{fiche.rythme}</Badge> : null}
         </div>
-        <p>
-          <span className="inline-block size-2 rounded-full align-middle" style={{ background: LAMPE_PLAN[statut] }} />{' '}
-          <span className="font-medium">{t.statuses[statut]}</span>
-          {fiche.rythme ? <span className="text-muted-foreground"> · {fiche.rythme}</span> : null}
-        </p>
         <p className="text-muted-foreground">
           {t.lastRun} {depuis(brut.dernierPassage, maintenant, t)}
           {prochain ? ` · ${t.nextRun} ${heureCourte(prochain, maintenant, t.locale)}` : ''}
         </p>
         {brut.dernierMessage && statut !== 'absent' ? (
-          <p className="line-clamp-2 rounded bg-muted px-2 py-1 font-mono text-[0.65rem]">{brut.dernierMessage}</p>
+          <p className="line-clamp-2 rounded-md bg-muted px-2 py-1 font-mono text-[0.65rem]">{brut.dernierMessage}</p>
         ) : null}
-        {lancer ? (
+      </CardContent>
+      {lancer ? (
+        <CardFooter>
           <Button
             size="sm"
-            className="mt-1 self-start"
             disabled={enCours || travaille}
             onClick={async () => {
               setEnCours(true)
@@ -795,8 +804,8 @@ function Carte({
           >
             {enCours ? t.launching : travaille ? t.running : t.runNow}
           </Button>
-        ) : null}
-      </CardContent>
+        </CardFooter>
+      ) : null}
     </Card>
   )
 }

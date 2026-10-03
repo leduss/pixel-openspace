@@ -1,6 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Kbd } from '@/components/ui/kbd'
 import type { Texts } from './i18n'
 
 /** Les jeux des deux bornes du coin gaming. */
@@ -74,7 +78,7 @@ export function JeuArcade({ jeu, textes, fermer }: { jeu: Jeu; textes: Texts; fe
   const titre = textes.arcade.title[jeu === 'snake' ? 'snake' : 'breakout']
   const aide = textes.arcade.help[jeu === 'snake' ? 'snake' : 'breakout']
   const borne = BORNES[jeu]
-  const toile = useRef<HTMLCanvasElement>(null)
+  const [toile, setToile] = useState<HTMLCanvasElement | null>(null)
   const [score, setScore] = useState(0)
   const [record, setRecord] = useState(0)
   const [phase, setPhase] = useState<'titre' | 'jeu' | 'perdu'>('titre')
@@ -87,7 +91,7 @@ export function JeuArcade({ jeu, textes, fermer }: { jeu: Jeu; textes: Texts; fe
 
   /* Hors partie, l'écran titre ; en partie, le jeu tourne jusqu'à la défaite. */
   useEffect(() => {
-    const ctx = toile.current?.getContext('2d')
+    const ctx = toile?.getContext('2d')
     if (!ctx) return
     if (phase !== 'jeu') {
       ecranTitre(ctx, jeu, phase === 'perdu', textes)
@@ -111,7 +115,7 @@ export function JeuArcade({ jeu, textes, fermer }: { jeu: Jeu; textes: Texts; fe
         setPhase('perdu')
       },
     })
-  }, [phase, partie, jeu, borne, textes])
+  }, [phase, partie, jeu, borne, textes, toile])
 
   const jouer = () => {
     setScore(0)
@@ -121,7 +125,6 @@ export function JeuArcade({ jeu, textes, fermer }: { jeu: Jeu; textes: Texts; fe
 
   useEffect(() => {
     const touche = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') fermer()
       if ((e.key === 'Enter' || e.key === ' ') && phase !== 'jeu') {
         e.preventDefault()
         jouer()
@@ -132,41 +135,28 @@ export function JeuArcade({ jeu, textes, fermer }: { jeu: Jeu; textes: Texts; fe
   })
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={fermer}>
-      <div
-        role="dialog"
-        aria-label={titre}
-        className={`rounded-2xl border-4 p-4 shadow-2xl ${borne.cadre} ${borne.fond}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-3 flex items-center justify-between gap-6 font-mono text-xs">
-          <span className={`font-bold tracking-widest ${borne.accent}`}>{titre}</span>
-          <button type="button" onClick={fermer} className="text-zinc-400 hover:text-white" aria-label={textes.close}>
-            ✕
-          </button>
-        </div>
-        <canvas ref={toile} width={COTE} height={COTE} className="block rounded border-2 border-black [image-rendering:pixelated]" />
-        <div className="mt-3 flex items-center justify-between gap-4 font-mono text-xs text-zinc-300">
-          <span>
+    <Dialog open onOpenChange={(ouverte) => !ouverte && fermer()}>
+      <DialogContent className={`w-auto max-w-none border-4 sm:max-w-none ${borne.cadre} ${borne.fond}`}>
+        <DialogHeader>
+          <DialogTitle className={`font-mono tracking-widest ${borne.accent}`}>{titre}</DialogTitle>
+        </DialogHeader>
+        <canvas ref={setToile} width={COTE} height={COTE} className="block rounded border-2 border-black [image-rendering:pixelated]" />
+        <DialogFooter className="flex-row items-center justify-between gap-4 sm:justify-between">
+          <Badge variant="secondary" className="font-mono">
             {textes.arcade.score} {String(score).padStart(3, '0')}
-          </span>
-          <button
-            type="button"
-            onClick={jouer}
-            disabled={phase === 'jeu'}
-            className="rounded border-b-4 border-red-900 bg-red-600 px-4 py-1 font-bold tracking-widest text-white transition-transform active:translate-y-0.5 active:border-b-2 disabled:opacity-40"
-          >
+          </Badge>
+          <Button onClick={jouer} disabled={phase === 'jeu'} className="font-bold tracking-widest">
             {textes.arcade.play}
-          </button>
-          <span>
+          </Button>
+          <Badge variant="outline" className="font-mono">
             {textes.arcade.record} {String(record).padStart(3, '0')}
-          </span>
-        </div>
-        <p className="mt-2 text-center font-mono text-[0.65rem] text-zinc-500">
-          {aide} · {textes.arcade.keys}
+          </Badge>
+        </DialogFooter>
+        <p className="text-center text-xs text-muted-foreground">
+          {aide} · <Kbd>Enter</Kbd> {textes.arcade.toPlay} · <Kbd>Esc</Kbd> {textes.arcade.toClose}
         </p>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

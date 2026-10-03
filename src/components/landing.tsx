@@ -1,17 +1,36 @@
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
+import { Card } from '@/components/ui/card'
+import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from '@/components/ui/item'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
 import { DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import type { Language } from '@/registry/pixel-openspace/types'
 
-function Code({ titre, code }: { titre: string; code: string }) {
+/** Les deux exemples de code, en onglets : la route d'API, puis la page. */
+function Exemples({ onglets }: { onglets: Array<{ titre: string; code: string }> }) {
   return (
-    <figure className="flex min-w-0 flex-col overflow-hidden rounded-lg border bg-card">
-      <figcaption className="border-b px-4 py-2 text-sm text-muted-foreground">{titre}</figcaption>
-      <pre className="overflow-x-auto p-4 font-mono text-[0.78rem] leading-relaxed">
-        <code>{code}</code>
-      </pre>
-    </figure>
+    <Card className="max-w-3xl gap-0 py-0">
+      <Tabs defaultValue={onglets[0].titre}>
+        <TabsList className="m-2">
+          {onglets.map((o) => (
+            <TabsTrigger key={o.titre} value={o.titre}>
+              {o.titre}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {onglets.map((o) => (
+          <TabsContent key={o.titre} value={o.titre}>
+            <pre className="overflow-x-auto border-t p-4 font-mono text-[0.78rem] leading-relaxed">
+              <code>{o.code}</code>
+            </pre>
+          </TabsContent>
+        ))}
+      </Tabs>
+    </Card>
   )
 }
 
@@ -22,22 +41,19 @@ function ChoixLangue({ langue, libelle }: { langue: Language; libelle: string })
     { code: 'fr', href: '/fr', texte: 'FR' },
   ]
   return (
-    <div role="group" aria-label={libelle} className="flex overflow-hidden rounded-lg border">
+    <ButtonGroup aria-label={libelle}>
       {liens.map((l) => (
-        <a
+        <Button
           key={l.code}
-          href={l.href}
-          hrefLang={l.code}
-          lang={l.code}
-          aria-current={l.code === langue ? 'page' : undefined}
-          className={`px-2.5 py-1 text-xs font-bold transition-colors ${
-            l.code === langue ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-          }`}
+          size="sm"
+          variant={l.code === langue ? 'default' : 'outline'}
+          nativeButton={false}
+          render={<a href={l.href} hrefLang={l.code} lang={l.code} aria-current={l.code === langue ? 'page' : undefined} />}
         >
           {l.texte}
-        </a>
+        </Button>
       ))}
-    </div>
+    </ButtonGroup>
   )
 }
 
@@ -50,12 +66,12 @@ export function Landing({ langue }: { langue: Language }) {
       <header className="flex items-center justify-between gap-4 py-6">
         <span className="font-heading text-lg">pixel-openspace</span>
         <nav className="flex items-center gap-1 text-sm">
-          <a className="hidden rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground sm:block" href="#setup">
+          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" nativeButton={false} render={<a href="#setup" />}>
             {t.installer}
-          </a>
-          <a className="rounded-md px-3 py-1.5 text-muted-foreground hover:text-foreground" href={DEPOT}>
+          </Button>
+          <Button variant="ghost" size="sm" nativeButton={false} render={<a href={DEPOT} />}>
             GitHub
-          </a>
+          </Button>
           <ChoixLangue langue={langue} libelle={t.langue} />
         </nav>
       </header>
@@ -71,6 +87,7 @@ export function Landing({ langue }: { langue: Language }) {
               <Button size="lg" nativeButton={false} render={<a href={DEPOT} />}>
                 {t.etoile}
               </Button>
+              <Badge variant="outline">MIT</Badge>
               <p className="text-sm text-muted-foreground">{t.licence}</p>
             </div>
           </div>
@@ -78,8 +95,10 @@ export function Landing({ langue }: { langue: Language }) {
         <Demo langue={langue} />
       </section>
 
+      <Separator />
+
       {/* Le tableau d'affichage du hall. */}
-      <section className="grid gap-10 border-t py-20 lg:grid-cols-[1fr_1.6fr]">
+      <section className="grid gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
         <div className="flex max-w-[45ch] flex-col gap-4">
           <h2 className="font-heading text-3xl sm:text-4xl">{t.lireTitre}</h2>
           <p className="leading-relaxed text-muted-foreground">{t.lireTexte}</p>
@@ -101,8 +120,10 @@ export function Landing({ langue }: { langue: Language }) {
         </dl>
       </section>
 
+      <Separator />
+
       {/* Les trois étapes : c'est une vraie suite, d'où les numéros. */}
-      <section id="setup" className="flex scroll-mt-6 flex-col gap-12 border-t py-20">
+      <section id="setup" className="flex scroll-mt-6 flex-col gap-12 py-20">
         <h2 className="font-heading text-3xl sm:text-4xl">{t.etapesTitre}</h2>
         <ol className="flex flex-col gap-14">
           <li className="grid gap-4 lg:grid-cols-[3rem_1fr] lg:gap-6">
@@ -128,10 +149,12 @@ export function Landing({ langue }: { langue: Language }) {
             <div className="flex min-w-0 flex-col gap-4">
               <h3 className="text-xl font-bold">{t.etape2}</h3>
               <p className="max-w-[65ch] leading-relaxed text-muted-foreground">{t.etape2Texte}</p>
-              <div className="grid max-w-3xl gap-4">
-                <Code titre={t.route} code={ROUTE} />
-                <Code titre={t.page} code={PAGE} />
-              </div>
+              <Exemples
+                onglets={[
+                  { titre: t.route, code: ROUTE },
+                  { titre: t.page, code: PAGE },
+                ]}
+              />
             </div>
           </li>
           <li className="grid gap-4 lg:grid-cols-[3rem_1fr] lg:gap-6">
@@ -144,35 +167,41 @@ export function Landing({ langue }: { langue: Language }) {
         </ol>
       </section>
 
+      <Separator />
+
       {/* Les petites choses de la salle. */}
-      <section className="grid gap-10 border-t py-20 lg:grid-cols-[1fr_1.6fr]">
+      <section className="grid gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
         <div className="flex max-w-[45ch] flex-col gap-4">
           <h2 className="font-heading text-3xl sm:text-4xl">{t.aussiTitre}</h2>
           <p className="leading-relaxed text-muted-foreground">{t.aussiTexte}</p>
         </div>
-        <dl className="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+        <ItemGroup className="grid gap-3 sm:grid-cols-2">
           {t.details.map(([quoi, detail]) => (
-            <div key={quoi} className="flex flex-col gap-1">
-              <dt className="font-bold">{quoi}</dt>
-              <dd className="text-sm leading-relaxed text-muted-foreground">{detail}</dd>
-            </div>
+            <Item key={quoi} variant="outline">
+              <ItemContent>
+                <ItemTitle>{quoi}</ItemTitle>
+                <ItemDescription className="line-clamp-none">{detail}</ItemDescription>
+              </ItemContent>
+            </Item>
           ))}
-        </dl>
+        </ItemGroup>
       </section>
 
-      <footer className="flex flex-col gap-2 border-t py-10 text-sm text-muted-foreground sm:flex-row sm:justify-between">
+      <Separator />
+
+      <footer className="flex flex-col gap-2 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
           {t.faitA}
-          <a className="underline underline-offset-4 hover:text-foreground" href="https://montematour.fr">
+          <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href="https://montematour.fr" />}>
             Monte Ma Tour
-          </a>
+          </Button>
           {t.atelier}
         </p>
         <p>
           {t.mit}
-          <a className="underline underline-offset-4 hover:text-foreground" href={DEPOT}>
+          <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href={DEPOT} />}>
             {t.source}
-          </a>
+          </Button>
         </p>
       </footer>
     </main>
