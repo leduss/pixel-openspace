@@ -6,7 +6,7 @@ Chaque agent a son bureau. Celui qui tourne s'assoit et tape, l'écran allumé. 
 
 [🇬🇧 Read in English](./README.md)
 
-![La démo de pixel-openspace](./public/docs/screenshot.png)
+![La démo de pixel-openspace : des tâches démarrent, plantent et repartent, dans les quatre thèmes](./public/docs/demo.gif)
 
 C'est un composant [shadcn/ui](https://ui.shadcn.com) pour Next.js et React : le code est copié dans ton projet, habillé par tes propres `Button` et `Card`.
 

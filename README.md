@@ -6,7 +6,7 @@ Every agent gets a desk. Whoever is running sits down and types, screen lit up. 
 
 [🇫🇷 Lire en français](./README.fr.md)
 
-![The pixel-openspace demo](./public/docs/screenshot.png)
+![The pixel-openspace demo: jobs start, fail and recover across the four themes](./public/docs/demo.gif)
 
 It is a [shadcn/ui](https://ui.shadcn.com) component for Next.js and React: the code is copied into your project, styled by your own `Button` and `Card`.
 
