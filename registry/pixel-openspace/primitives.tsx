@@ -222,3 +222,13 @@ export function DefsCommunes() {
     </defs>
   )
 }
+
+/**
+ * Un nombre stable tiré d'un identifiant : il choisit les cheveux, la peau et
+ * la tenue d'un agent, qui restent les mêmes d'une visite à l'autre.
+ */
+export function hacher(id: string, graine: number, facteur: number) {
+  let h = graine
+  for (const c of id) h = (h * facteur + c.charCodeAt(0)) >>> 0
+  return h
+}

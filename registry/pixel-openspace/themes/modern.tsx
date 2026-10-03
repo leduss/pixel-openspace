@@ -11,7 +11,7 @@
  */
 
 import { BUREAU, CHEF_ID, estInvite, type CoinDePause, type Statut } from '../engine'
-import { Anim, Cliquable, MUR_SALLE, Plante, etapes, useTextes, type Lumiere } from '../primitives'
+import { Anim, Cliquable, MUR_SALLE, Plante, etapes, useTextes, hacher, type Lumiere } from '../primitives'
 import type { PropsBureau, PropsDecor, PropsSiege, Theme } from '../theme'
 import { Arcade, BorneCasseBriques, Porte } from './geek'
 import type { SceneObject } from '../types'
@@ -549,11 +549,8 @@ const CHEVEUX = ['#2a1d14', '#5a3a22', '#c8a165', '#111111', '#8a4b2a', '#e5e5e5
 const PEAUX = ['#f1c9a5', '#d9a57a', '#a86f48', '#7a4a2c', '#f5d6bf']
 const BAS = ['#d6c4a1', '#a8a29e', '#1e3a8a', '#44403c', '#e7e5e4']
 
-function hachage(id: string) {
-  let h = 17
-  for (const c of id) h = (h * 41 + c.charCodeAt(0)) >>> 0
-  return h
-}
+/** Le nombre de cet agent dans ce thème : chaque thème a sa graine, pour des tenues qui changent d'un thème à l'autre. */
+const hachage = (id: string) => hacher(id, 17, 41)
 
 /** T-shirts pastel, chinos, baskets blanches ; le chef en surchemise bleu marine. */
 function tenueModerne(id: string): Record<string, string> {

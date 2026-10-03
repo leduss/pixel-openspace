@@ -9,7 +9,20 @@
  */
 
 import { BUREAU, COINS_GEEK, estInvite, CHEF_ID, type Statut } from '../engine'
-import { ACCENT, Anim, Cliquable, LAMPE_PLAN, MUR_SALLE, Neon, Plante, allerRetour, etapes, useTextes, type Lumiere } from '../primitives'
+import {
+  ACCENT,
+  Anim,
+  Cliquable,
+  LAMPE_PLAN,
+  MUR_SALLE,
+  Neon,
+  Plante,
+  allerRetour,
+  etapes,
+  useTextes,
+  type Lumiere,
+  hacher,
+} from '../primitives'
 import type { PropsBureau, Theme } from '../theme'
 import type { Jeu } from '../arcade'
 import type { SceneObject } from '../types'
@@ -653,11 +666,8 @@ export const CHEVEUX = ['#2a1d14', '#5a3a22', '#c8a165', '#111111', '#8a4b2a', '
 export const PEAUX = ['#f1c9a5', '#d9a57a', '#a86f48', '#7a4a2c', '#f5d6bf']
 export const PANTALONS = ['#334155', '#1e3a8a', '#44403c', '#3f3f46', '#365314']
 
-export function hachage(id: string) {
-  let h = 7
-  for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0
-  return h
-}
+/** Le nombre de cet agent dans ce thème : chaque thème a sa graine, pour des tenues qui changent d'un thème à l'autre. */
+export const hachage = (id: string) => hacher(id, 7, 31)
 
 /** Un agent sur deux travaille casque sur les oreilles ; le chef, jamais. */
 export const porteCasque = (id: string) => id !== CHEF_ID && !estInvite(id) && ((hachage(id) >> 16) & 1) === 1
