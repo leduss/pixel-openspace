@@ -84,6 +84,10 @@ Le composant vit dans `registry/pixel-openspace/`, la démo dans `src/`.
 
 Né dans l'atelier de [Monte Ma Tour](https://montematour.fr), montage de PC sur mesure sur le Bassin d'Arcachon, pour garder un œil sur les tâches qui font tourner l'activité.
 
+## Soutenir
+
+Si pixel-openspace égaie ton écran, tu peux [m'offrir un café](https://buymeacoffee.com/leduss) ☕. Ça paie les heures passées à dessiner de nouveaux thèmes.
+
 ## Licence
 
 [MIT](./LICENSE)

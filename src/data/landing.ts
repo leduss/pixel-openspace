@@ -3,6 +3,7 @@ import type { Language } from '@/registry/pixel-openspace/types'
 /* Le contenu de la landing : liens, commande d'installation, exemples de code et textes, en anglais et en français. */
 
 export const DEPOT = 'https://github.com/leduss/pixel-openspace'
+export const CAFE = 'https://buymeacoffee.com/leduss'
 export const INSTALL = 'npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json'
 
 /* La couleur de la lampe de chaque état, la même que dans la salle. */
@@ -67,6 +68,7 @@ export const TEXTES = {
     intro:
       'pixel-openspace shows your scheduled jobs and AI agents as a pixel-art office. Running jobs sit down and type, idle ones go get coffee, and when one fails its PC starts to smoke and the lead walks over.',
     etoile: 'Star it on GitHub',
+    cafe: 'Buy me a coffee',
     licence: 'A shadcn/ui component for Next.js and React. Free and open source under the MIT license.',
     lireTitre: 'Read the room',
     lireTexte:
@@ -132,6 +134,7 @@ export const TEXTES = {
     intro:
       'pixel-openspace montre tes tâches planifiées et tes agents IA comme un bureau en pixel art. Ceux qui tournent s’assoient et tapent, les désœuvrés vont au café, et quand l’un plante, son PC se met à fumer et le chef vient le voir.',
     etoile: 'Une étoile sur GitHub',
+    cafe: 'M’offrir un café',
     licence: 'Un composant shadcn/ui pour Next.js et React. Gratuit et open source, sous licence MIT.',
     lireTitre: 'Lire la salle',
     lireTexte:

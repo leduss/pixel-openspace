@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
-import { DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import type { Language } from '@/registry/pixel-openspace/types'
 
 /** Les deux exemples de code, en onglets : la route d'API, puis la page. */
@@ -86,6 +86,9 @@ export function Landing({ langue }: { langue: Language }) {
             <div className="flex flex-wrap items-center gap-3">
               <Button size="lg" nativeButton={false} render={<a href={DEPOT} />}>
                 {t.etoile}
+              </Button>
+              <Button size="lg" variant="outline" nativeButton={false} render={<a href={CAFE} />}>
+                ☕ {t.cafe}
               </Button>
               <Badge variant="outline">MIT</Badge>
               <p className="text-sm text-muted-foreground">{t.licence}</p>
@@ -201,6 +204,10 @@ export function Landing({ langue }: { langue: Language }) {
           {t.mit}
           <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href={DEPOT} />}>
             {t.source}
+          </Button>
+          {' · '}
+          <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href={CAFE} />}>
+            {t.cafe}
           </Button>
         </p>
       </footer>

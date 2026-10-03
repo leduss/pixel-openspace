@@ -116,6 +116,10 @@ The component lives in `registry/pixel-openspace/`; the demo in `src/`.
 
 Born in the workshop of [Monte Ma Tour](https://montematour.fr), a custom PC builder on the Bassin d’Arcachon, to keep an eye on the jobs running the business. The code speaks French inside: that is where it grew up.
 
+## Support
+
+If pixel-openspace brightens your screen, you can [buy me a coffee](https://buymeacoffee.com/leduss) ☕. It pays for the hours spent drawing new themes.
+
 ## License
 
 [MIT](./LICENSE)
