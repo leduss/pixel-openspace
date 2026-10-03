@@ -1,4 +1,4 @@
-import type { Agent, Language, Weather } from '@/registry/pixel-openspace/types'
+import type { Agent, AgentRun, Language, Weather } from '@/registry/pixel-openspace/types'
 
 /** Les ciels à essayer dans la fenêtre du chef, avec une température de saison ; la nuit, c'est un ciel clair sans soleil. */
 export const CIELS = {
@@ -15,6 +15,22 @@ export type Ciel = keyof typeof CIELS
 
 const dans = (minutes: number) => new Date(Date.now() + minutes * 60_000).toISOString()
 const ilYa = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString()
+
+/**
+ * Les passages d'aujourd'hui pour la frise : le dernier il y a `dernier`
+ * minutes, puis un tous les `pas` minutes en remontant jusqu'à minuit. Les
+ * rangs listés dans `rates` (0 pour le dernier) ont échoué.
+ */
+function passages(dernier: number, pas: number, message: string, rates: Array<number> = []): Array<AgentRun> {
+  const minuit = new Date()
+  minuit.setHours(0, 0, 0, 0)
+  const liste: Array<AgentRun> = []
+  for (let rang = 0, t = Date.now() - dernier * 60_000; t >= minuit.getTime(); rang++, t -= pas * 60_000) {
+    liste.unshift({ at: new Date(t).toISOString(), ok: !rates.includes(rang), message })
+    if (!Number.isFinite(pas)) break
+  }
+  return liste
+}
 
 /* Ce que dit la démo, dans les deux langues de la page. */
 export const MOTS = {
@@ -74,6 +90,7 @@ export function equipe(langue: Language): Array<Agent> {
       lastRun: ilYa(400),
       nextRun: dans(600),
       lastMessage: fr ? '3,2 Go chiffrés, envoyés en 41 s' : '3.2 GB encrypted, uploaded in 41 s',
+      runs: passages(400, Infinity, fr ? '3,2 Go chiffrés' : '3.2 GB encrypted'),
     },
     {
       id: 'invoices',
@@ -85,6 +102,7 @@ export function equipe(langue: Language): Array<Agent> {
       lastRun: ilYa(20),
       nextRun: dans(8),
       lastMessage: fr ? '2 factures envoyées' : '2 invoices sent',
+      runs: passages(20, 60, fr ? 'factures envoyées' : 'invoices sent'),
     },
     {
       id: 'scraper',
@@ -96,6 +114,7 @@ export function equipe(langue: Language): Array<Agent> {
       lastRun: ilYa(1),
       nextRun: dans(29),
       lastMessage: fr ? '128 prix lus, 3 ont changé' : '128 prices read, 3 changed',
+      runs: passages(1, 30, fr ? 'prix relevés' : 'prices read', [7, 8]),
     },
     {
       id: 'emails',
@@ -107,6 +126,7 @@ export function equipe(langue: Language): Array<Agent> {
       lastRun: ilYa(3),
       nextRun: dans(2),
       lastMessage: fr ? '4 mails triés, 1 urgent' : '4 emails sorted, 1 urgent',
+      runs: passages(3, 5, fr ? 'mails triés' : 'emails sorted'),
     },
     {
       id: 'deploy',
@@ -117,6 +137,11 @@ export function equipe(langue: Language): Array<Agent> {
       schedule: fr ? 'à chaque push' : 'on push',
       lastRun: ilYa(12),
       lastMessage: fr ? 'échec du build : erreur de type dans checkout.ts' : 'build failed: type error in checkout.ts',
+      runs: [
+        ...passages(380, Infinity, fr ? 'déployé' : 'deployed'),
+        ...passages(200, Infinity, fr ? 'déployé' : 'deployed'),
+        ...passages(12, Infinity, fr ? 'échec du build' : 'build failed', [0]),
+      ],
     },
     {
       id: 'reports',
@@ -138,6 +163,7 @@ export function equipe(langue: Language): Array<Agent> {
       schedule: fr ? 'chaque jour à 9 h 30' : 'daily at 9:30',
       lastRun: ilYa(90),
       nextRun: dans(60 * 22),
+      runs: passages(90, Infinity, fr ? 'vues relevées' : 'views read'),
     },
     {
       id: 'audit',
@@ -158,6 +184,7 @@ export function equipe(langue: Language): Array<Agent> {
       role: fr ? 'Redimensionne les photos envoyées' : 'Resizes uploaded photos',
       status: 'on-demand',
       lastRun: ilYa(300),
+      runs: passages(300, Infinity, fr ? '12 photos' : '12 photos'),
     },
     {
       id: 'legacy',

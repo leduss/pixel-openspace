@@ -789,7 +789,8 @@ export function PixelOpenspace({
               ) : null}
             </div>
           </div>
-          {timeline && agents.some((a) => a.runs?.length) ? (
+          {/* Comme la scène, la frise attend le navigateur : ses points dépendent de l'heure. */}
+          {pret && timeline && agents.some((a) => a.runs?.length) ? (
             <Frise agents={lead ? [lead, ...agents] : agents} maintenant={maintenant} choisir={setChoisi} />
           ) : null}
           {jeu ? <JeuArcade key={jeu} jeu={jeu} textes={t} fermer={() => setJeu(null)} /> : null}

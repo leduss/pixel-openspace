@@ -17,7 +17,13 @@ export function Demo({ langue }: { langue: Language }) {
 
   const changer = (id: string, status: AgentStatus, lastMessage?: string) =>
     setAgents((liste) =>
-      liste.map((a) => (a.id === id ? { ...a, status, ...(lastMessage ? { lastMessage, lastRun: new Date().toISOString() } : {}) } : a)),
+      liste.map((a) => {
+        if (a.id !== id) return a
+        if (!lastMessage) return { ...a, status }
+        // Un passage qui se termine laisse son point sur la frise, rouge s'il a planté.
+        const at = new Date().toISOString()
+        return { ...a, status, lastMessage, lastRun: at, runs: [...(a.runs ?? []), { at, ok: status !== 'failed', message: lastMessage }] }
+      }),
     )
 
   /* La démo vit toute seule : toutes les 12 secondes, un agent se met au travail, puis finit. */
