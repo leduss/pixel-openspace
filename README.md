@@ -32,6 +32,14 @@ const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'] })
 // …and add pixel.variable to <html className>
 ```
 
+### Update
+
+The code lives in your project, so updating means running the same command again with `--overwrite`. Your own edits in `components/pixel-openspace/` are replaced. What changed is in the [changelog](./CHANGELOG.md).
+
+```bash
+npx shadcn@latest add https://raw.githubusercontent.com/leduss/pixel-openspace/main/public/r/pixel-openspace.json --overwrite
+```
+
 ### Use
 
 ```tsx
