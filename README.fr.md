@@ -88,6 +88,8 @@ Né dans l'atelier de [Monte Ma Tour](https://montematour.fr), montage de PC sur
 
 Si pixel-openspace égaie ton écran, tu peux [m'offrir un café](https://buymeacoffee.com/leduss) ☕. Ça paie les heures passées à dessiner de nouveaux thèmes.
 
+<a href="https://buymeacoffee.com/leduss"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="48"></a>
+
 ## Licence
 
 [MIT](./LICENSE)

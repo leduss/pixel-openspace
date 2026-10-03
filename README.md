@@ -120,6 +120,8 @@ Born in the workshop of [Monte Ma Tour](https://montematour.fr), a custom PC bui
 
 If pixel-openspace brightens your screen, you can [buy me a coffee](https://buymeacoffee.com/leduss) ☕. It pays for the hours spent drawing new themes.
 
+<a href="https://buymeacoffee.com/leduss"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="48"></a>
+
 ## License
 
 [MIT](./LICENSE)

@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
+import { LogoCafe } from '@/components/logo-cafe'
 import { CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import type { Language } from '@/registry/pixel-openspace/types'
 
@@ -88,7 +89,8 @@ export function Landing({ langue }: { langue: Language }) {
                 {t.etoile}
               </Button>
               <Button size="lg" variant="outline" nativeButton={false} render={<a href={CAFE} />}>
-                ☕ {t.cafe}
+                <LogoCafe className="size-4" />
+                {t.cafe}
               </Button>
               <Badge variant="outline">MIT</Badge>
               <p className="text-sm text-muted-foreground">{t.licence}</p>
