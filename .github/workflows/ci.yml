@@ -15,7 +15,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
-      - run: bunx tsc --noEmit -p .
+      # next typegen écrit les types des routes (LayoutProps…) que tsc attend.
+      - run: bun run typecheck
       - run: bun run test
       - run: bun run cli:build
       # public/r/pixel-openspace.json est ce que les gens installent : il doit sortir tel quel des sources.
