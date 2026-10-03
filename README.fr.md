@@ -59,6 +59,7 @@ Les états (`working`, `ok`, `late`, `failed`, `off`, `never`, `on-demand`) et t
 
 - Deux bornes d'arcade jouables, **Snake des composants** et **Casse-puces**, avec leurs records au mur.
 - Un tableau blanc avec les cinq prochains passages, une horloge à l'heure, le chat de l'atelier qui dort sur les bureaux vides.
+- Les saisons : Halloween tout octobre, Noël tout décembre, et Pâques les deux semaines avant le lundi de Pâques, avec ses œufs cachés et son lapin.
 - Le jour et la nuit : la salle s'assombrit le soir, et les tours RGB, les néons et les écrans s'allument.
 - Une notification du navigateur quand un agent tombe en échec, et un son 8 bits pour les départs, les échecs et les visiteurs (à activer).
 - `prefers-reduced-motion` est respecté : tout le monde reste à sa place.

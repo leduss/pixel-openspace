@@ -22,6 +22,7 @@ import {
   type Statut,
 } from './engine'
 import { TEXTS, type Texts } from './i18n'
+import { fete, type Fete } from './seasons'
 import type { Agent, AgentStatus, OpenSpaceProps, SceneObject, WallTile, Weather } from './types'
 
 /*
@@ -1593,12 +1594,24 @@ function ColisDeposes({ nombre, bas }: { nombre: number; bas: number }) {
 }
 
 /** Les fêtes : Halloween tout le mois d'octobre, Noël tout le mois de décembre. */
-type Fete = 'halloween' | 'noel' | null
 
-function fete(maintenant: number): Fete {
-  const mois = new Date(maintenant).getMonth()
-  return mois === 9 ? 'halloween' : mois === 11 ? 'noel' : null
-}
+/* Pâques : un œuf, le poussin, le lapin de profil. */
+const OEUF = ['..ee..', '.eeee.', 'ebbbbe', 'eeeeee', 'ewewew', '.eeee.', '..ee..']
+const POUSSIN = ['.yy...', 'yyey..', 'yyyyo.', '.yyy..', '.o.o..']
+const LAPIN = ['.....gw.gw', '.....gw.gw', '....wwwwww', 'w..wwwwwep', 'wwwwwwwwww', '.wwwwwwww.', '.ww....ww.']
+/* Où sont cachés les œufs, et de quelles couleurs : x, y (ou « bas », au pied du mur du fond), fond, rayure, points. */
+const OEUFS: Array<[number, number | 'bas', string, string, string]> = [
+  [44, 182, '#f9a8d4', '#f472b6', '#fdf2f8'],
+  [318, 96, '#7c2d12', '#facc15', '#92400e'],
+  [470, 182, '#a5f3fc', '#22d3ee', '#ecfeff'],
+  [610, 176, '#7c2d12', '#facc15', '#92400e'],
+  [846, 46, '#bbf7d0', '#4ade80', '#f0fdf4'],
+  [962, 176, '#ddd6fe', '#a78bfa', '#f5f3ff'],
+  [70, 300, '#fde68a', '#f59e0b', '#fffbeb'],
+  [955, 470, '#7c2d12', '#facc15', '#92400e'],
+  [420, 'bas', '#fecdd3', '#fb7185', '#fff1f2'],
+  [690, 'bas', '#a5f3fc', '#38bdf8', '#ecfeff'],
+]
 
 const CITROUILLE = ['...g....', '.oooooo.', 'ooyooyoo', 'oooooooo', 'oyyyyyyo', '.oooooo.']
 const FANTOME = ['.www.', 'wwwww', 'wewew', 'wwwww', 'wwwww', 'w.w.w']
@@ -1666,6 +1679,40 @@ function Fetes({ quoi, bas }: { quoi: Fete; bas: number }) {
             dur="6s"
             repeatCount="indefinite"
           />
+        </g>
+      </g>
+    )
+  }
+  if (quoi === 'paques') {
+    const bas2 = bas - 36
+    return (
+      <g pointerEvents="none">
+        {/* Les œufs cachés : peints en pastel, ou en chocolat dans leur papier doré. */}
+        {OEUFS.map(([x, y, base, rayure, points], i) => (
+          <g key={i} transform={`translate(${x} ${y === 'bas' ? bas2 : y})`}>
+            <Pixels grille={OEUF} couleurs={{ e: base, b: rayure, w: points }} u={3} />
+          </g>
+        ))}
+        {/* Le poussin perché sur le tableau blanc du chef. */}
+        <g transform="translate(108 92)">
+          <Pixels grille={POUSSIN} couleurs={{ y: '#fde047', e: '#111827', o: '#fb923c' }} u={3} />
+        </g>
+        {/* Le lapin qui traverse la grande salle, par petits bonds. */}
+        <g>
+          <Anim
+            attributeName="transform"
+            type="translate"
+            values={etapes(-40, LARGEUR + 10, 48)
+              .split(';')
+              .map((x) => `${x} ${bas - 50}`)
+              .join(';')}
+            dur="18s"
+            repeatCount="indefinite"
+          />
+          <g>
+            <Anim attributeName="transform" type="translate" values="0 0;0 -7;0 -4;0 0" dur="0.6s" repeatCount="indefinite" />
+            <Pixels grille={LAPIN} couleurs={{ w: '#f5f5f4', g: '#d6d3d1', e: '#111827', p: '#f9a8d4' }} />
+          </g>
         </g>
       </g>
     )

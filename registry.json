@@ -8,7 +8,10 @@
       "type": "registry:block",
       "title": "Pixel Openspace",
       "description": "A pixel-art open space where your scheduled jobs and AI agents come to work: they sit and type while running, wander to the coffee machine when idle, and their PC smokes when they fail.",
-      "registryDependencies": ["button", "card"],
+      "registryDependencies": [
+        "button",
+        "card"
+      ],
       "files": [
         {
           "path": "registry/pixel-openspace/pixel-openspace.tsx",
@@ -34,6 +37,11 @@
           "path": "registry/pixel-openspace/types.ts",
           "type": "registry:component",
           "target": "components/pixel-openspace/types.ts"
+        },
+        {
+          "path": "registry/pixel-openspace/seasons.ts",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/seasons.ts"
         }
       ]
     }

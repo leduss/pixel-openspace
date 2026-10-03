@@ -78,7 +78,7 @@ The component is driven by its props: poll your jobs’ state (every few seconds
 | `deliveries` | `number` | A counter: each time it goes up, a courier drops a parcel by the boxes |
 | `celebrate` | `boolean` | Confetti over the whole room |
 | `language` | `'en' \| 'fr'` | Everything written and said in the room |
-| `seasonal` | `boolean` | Halloween all October, Christmas all December (default `true`) |
+| `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
 | `nightHours` | `[number, number]` | When everybody stays at their desk (default `[22, 6]`) |
 | `toolbar` | `boolean` | Sound, browser alerts and fullscreen buttons (default `true`) |
 | `objectLinks` | `Partial<Record<SceneObject, string>>` | Make the workbench, TV, server rack, vending machine, fridge or parts boxes clickable |

@@ -87,7 +87,7 @@ export type OpenSpaceProps = {
   /** Confetti over the whole room: a birthday, a launch, a record month. */
   celebrate?: boolean
   language?: Language
-  /** Halloween all October, Christmas all December. Default true. */
+  /** Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday. Default true. */
   seasonal?: boolean
   /** From what hour to what hour everybody stays at their desk. Default [22, 6]. */
   nightHours?: [number, number]

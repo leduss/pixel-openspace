@@ -83,7 +83,7 @@ export const TEXTES = {
     etapesTitre: 'Set it up in three steps',
     etape1: 'Add the component',
     etape1Texte: [
-      'The shadcn CLI copies five files into your ',
+      'The shadcn CLI copies six files into your ',
       'components',
       ' folder, yours to read and change. The labels in the room use Pixelify Sans: load it with ',
       'next/font',
@@ -107,7 +107,10 @@ export const TEXTES = {
       ['The lead', 'Does its rounds while it runs, then reports in front of the wall screen and reads your announcements.'],
       ['A window on the weather', 'Sun, rain, snow or storm, day or night, with the temperature you pass it.'],
       ['Visitors and couriers', 'Bump a counter and someone walks in: a visitor greets the lead, a courier drops a parcel.'],
-      ['Seasons', 'Pumpkins and a ghost all October, a Christmas tree and garlands all December.'],
+      [
+        'Seasons',
+        'Pumpkins and a ghost all October, a Christmas tree and garlands all December, hidden eggs and a hopping bunny at Easter.',
+      ],
       ['The office cat', 'Naps on whichever desk was left empty.'],
       ['Alerts and sound', 'Browser notifications when a job fails, 8-bit beeps for starts and failures. Both off until you turn them on.'],
     ],
@@ -141,7 +144,7 @@ export const TEXTES = {
     etapesTitre: 'L’installer en trois étapes',
     etape1: 'Ajouter le composant',
     etape1Texte: [
-      'Le CLI de shadcn copie cinq fichiers dans ton dossier ',
+      'Le CLI de shadcn copie six fichiers dans ton dossier ',
       'components',
       ', à toi de les lire et de les modifier. Les étiquettes de la salle utilisent Pixelify Sans : charge-la avec ',
       'next/font',
@@ -166,7 +169,7 @@ export const TEXTES = {
       ['Le chef', 'Fait sa ronde quand il tourne, puis son rapport devant l’écran mural, et lit tes annonces.'],
       ['Une fenêtre sur la météo', 'Soleil, pluie, neige ou orage, de jour comme de nuit, avec la température que tu lui donnes.'],
       ['Visiteurs et livreurs', 'Augmente un compteur et quelqu’un entre : un visiteur salue le chef, un livreur dépose un colis.'],
-      ['Les saisons', 'Citrouilles et fantôme tout octobre, sapin et guirlandes tout décembre.'],
+      ['Les saisons', 'Citrouilles et fantôme tout octobre, sapin et guirlandes tout décembre, œufs cachés et lapin qui bondit à Pâques.'],
       ['Le chat de l’atelier', 'Fait la sieste sur le bureau resté vide.'],
       [
         'Alertes et son',
