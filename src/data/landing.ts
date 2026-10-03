@@ -102,7 +102,10 @@ export const TEXTES = {
     aussiTitre: 'Also in the room',
     aussiTexte: 'None of this is needed to watch your jobs. It is there because an office you look at every day should be a nice place.',
     details: [
-      ['Two themes', 'A geek open space with RGB towers, or a 1986 corporate office: wood panelling, green-phosphor CRTs, rotary phones.'],
+      [
+        'Three themes',
+        'A geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, or a gym where every job rides an exercise bike.',
+      ],
       ['Two arcade cabinets', 'Component Snake and Chip Breaker, both playable. High scores hang on the wall.'],
       ['A wall screen', 'Up to four numbers of your own: jobs today, errors, queue size, budget.'],
       ['The lead', 'Does its rounds while it runs, then reports in front of the wall screen and reads your announcements.'],

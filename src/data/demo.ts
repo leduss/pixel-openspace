@@ -8,7 +8,7 @@ export const MOTS = {
   en: {
     essayer: 'Try it:',
     theme: 'Theme',
-    themes: { geek: 'Geek', eighties: '1980s' },
+    themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym' },
     lancer: 'Start Invoices',
     finir: 'Finish it',
     finiMessage: '3 invoices sent',
@@ -28,7 +28,7 @@ export const MOTS = {
   fr: {
     essayer: 'Essaie :',
     theme: 'Thème',
-    themes: { geek: 'Geek', eighties: 'Années 80' },
+    themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport' },
     lancer: 'Lancer Factures',
     finir: 'La terminer',
     finiMessage: '3 factures envoyées',

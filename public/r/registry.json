@@ -67,6 +67,11 @@
           "path": "registry/pixel-openspace/themes/eighties.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/themes/eighties.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/themes/gym.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/themes/gym.tsx"
         }
       ]
     }

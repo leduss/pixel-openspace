@@ -41,6 +41,7 @@ import {
 import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
 import { THEME_GEEK } from './themes/geek'
+import { THEME_GYM } from './themes/gym'
 import { fete, type Fete } from './seasons'
 import type { Agent, AgentStatus, OpenSpaceProps, SceneObject, ThemeName, WallTile, Weather } from './types'
 
@@ -91,7 +92,7 @@ function versVue(a: Agent, id = a.id): Vue {
 type Equipe = { chef: Vue; agents: Array<Vue> }
 
 /* Les thèmes disponibles, par leur nom public. */
-const THEMES: Record<ThemeName, Theme> = { geek: THEME_GEEK, eighties: THEME_80 }
+const THEMES: Record<ThemeName, Theme> = { geek: THEME_GEEK, eighties: THEME_80, gym: THEME_GYM }
 
 /* Le thème de la scène, à portée des postes et des bonshommes. */
 const ThemeContexte = createContext<Theme>(THEME_GEEK)
