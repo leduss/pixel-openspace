@@ -81,7 +81,9 @@ export function Landing({ langue }: { langue: Language }) {
   return (
     <main lang={langue} className="mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6">
       <header className="flex items-center justify-between gap-4 py-6">
-        <span className="font-heading text-lg">pixel-openspace</span>
+        {/* Le logo officiel, en version sombre : la landing ne connaît que le thème sombre. */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- un SVG statique, rien à optimiser */}
+        <img src="/docs/logo-sombre.svg" alt="pixel-openspace" width={204} height={48} className="h-12 w-auto" />
         <nav className="flex items-center gap-1 text-sm">
           <Button variant="ghost" size="sm" className="hidden sm:inline-flex" nativeButton={false} render={<a href="#setup" />}>
             {t.installer}

@@ -1,4 +1,9 @@
-# pixel-openspace
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/docs/logo-sombre.svg">
+    <img alt="pixel-openspace" src="public/docs/logo.svg" height="84">
+  </picture>
+</h1>
 
 **A pixel-art open space where your scheduled jobs and AI agents come to work.**
 
