@@ -79,6 +79,9 @@ export type Language = 'en' | 'fr'
 /** The look of the room: a geek open space today, a corporate office around 1986, or a gym where every job rides an exercise bike. */
 export type ThemeName = 'geek' | 'eighties' | 'gym' | 'modern' | 'kitchen'
 
+/** How many desks per row. */
+export type Columns = 4 | 5 | 6
+
 export type OpenSpaceProps = {
   /** Up to five per row; rows are added as needed. */
   agents: Array<Agent>
@@ -106,6 +109,8 @@ export type OpenSpaceProps = {
   language?: Language
   /** The look of the room: furniture, outfits, break corners. Default 'geek'. */
   theme?: ThemeName
+  /** How many desks per row: 4, 5 or 6. Default 5. */
+  columns?: Columns
   /** Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday. Default true. */
   seasonal?: boolean
   /** From what hour to what hour everybody stays at their desk. Default [22, 6]. */

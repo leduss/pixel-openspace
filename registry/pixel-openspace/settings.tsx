@@ -15,9 +15,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
-import { LONGUEUR_ENSEIGNE, THEMES, type Preferences } from './preferences'
+import { COLONNES, LONGUEUR_ENSEIGNE, THEMES, type Preferences } from './preferences'
 import { useTextes } from './primitives'
-import type { Language, ThemeName, Weather } from './types'
+import type { Columns, Language, ThemeName, Weather } from './types'
 import { lireMeteo, localiser, type Endroit } from './weather'
 
 /** Où en est la recherche du lieu choisi dans les réglages. */
@@ -121,6 +121,7 @@ export function Reglages({
   lieuOrigine,
   etatMeteo,
   theme,
+  colonnes,
   langue,
   saisons,
   nuit,
@@ -142,6 +143,7 @@ export function Reglages({
   lieuOrigine?: string
   etatMeteo: EtatMeteo
   theme: ThemeName
+  colonnes: Columns
   langue: Language
   saisons: boolean
   nuit: boolean
@@ -202,6 +204,12 @@ export function Reglages({
             ) : null}
           </div>
           <Choix nom={t.theme} options={THEMES.map((n) => [n, t.themes[n]])} valeur={theme} changer={(v) => changer({ theme: v })} />
+          <Choix
+            nom={t.columns}
+            options={COLONNES.map((n) => [String(n) as `${Columns}`, String(n)])}
+            valeur={String(colonnes) as `${Columns}`}
+            changer={(v) => changer({ columns: Number(v) as Columns })}
+          />
           <Choix nom={t.language} options={NOMS_LANGUES} valeur={langue} changer={(v) => changer({ language: v })} />
           <Separator />
           <Interrupteur nom={t.sound} aide={t.soundHint} actif={son} changer={basculerSon} />

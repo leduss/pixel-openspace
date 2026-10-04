@@ -14,6 +14,12 @@ npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.2.0 · 2026-10-04
+
+### Ajouté
+
+- Le nombre de bureaux par rangée : 4, 5 ou 6, par la prop `columns` (`5` par défaut) ou dans les réglages, sous « Bureaux par rangée ». Les rangées restent centrées dans la salle, et les allées suivent : personne ne traverse un bureau.
+
 ## 0.1.3 · 2026-10-03
 
 ### Corrigé

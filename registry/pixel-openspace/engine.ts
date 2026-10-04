@@ -8,6 +8,7 @@
  * haut, 90 vers la droite.
  */
 
+import type { Columns } from './types'
 import { TEXTS, type Phrases } from './i18n'
 
 /** An agent's state, as the engine reads it. */
@@ -25,11 +26,14 @@ export type Lieu = { nom: string; pos: Point; acces: Array<Point>; face: number;
 export type Etape = { lieu: Lieu; pause: number; dire?: string }
 
 export const LARGEUR = 1000
-const COLONNES = 5
 /** Le plateau d'un bureau. */
 export const BUREAU = { largeur: 120, hauteur: 50 }
-const PAS = 175
-const X0 = 150
+/**
+ * L'écart entre deux bureaux voisins, selon le nombre de colonnes. Les rangées
+ * restent centrées dans la salle ; à six, le couloir entre deux bureaux se
+ * resserre, mais laisse encore passer quelqu'un.
+ */
+const PAS: Record<Columns, number> = { 4: 200, 5: 175, 6: 152 }
 const HAUT = 300
 const RANGEE = 170
 /** L'allée du haut, qui longe le bureau du chef et le coin café. */
@@ -81,11 +85,19 @@ export const COINS_GEEK: Array<CoinDePause> = [
   { nom: 'pouf-droite', x: 538, y: 146, assis: true },
 ]
 
-export function plan(ids: Array<string>, phrases: Phrases = TEXTS.en.phrases, coins: Array<CoinDePause> = COINS_GEEK): Plan {
-  const rangees = Math.max(1, Math.ceil(ids.length / COLONNES))
+export function plan(
+  ids: Array<string>,
+  phrases: Phrases = TEXTS.en.phrases,
+  coins: Array<CoinDePause> = COINS_GEEK,
+  colonnes: Columns = 5,
+): Plan {
+  const pas = PAS[colonnes] ?? PAS[5]
+  const parRangee = PAS[colonnes] ? colonnes : 5
+  const x0 = LARGEUR / 2 - ((parRangee - 1) * pas) / 2
+  const rangees = Math.max(1, Math.ceil(ids.length / parRangee))
   const bureaux = ids.map((id, i) => {
-    const cx = X0 + (i % COLONNES) * PAS
-    const dy = HAUT + Math.floor(i / COLONNES) * RANGEE
+    const cx = x0 + (i % parRangee) * pas
+    const dy = HAUT + Math.floor(i / parRangee) * RANGEE
     const allee = dy + 108
     return {
       id,
@@ -146,7 +158,7 @@ export function plan(ids: Array<string>, phrases: Phrases = TEXTS.en.phrases, co
     entree: { nom: 'entree', pos: { x: 500, y: hauteur - 26 }, acces: [{ x: 500, y: derniereAllee }], face: 0 },
     cartons: { nom: 'cartons', pos: { x: 140, y: hauteur - 46 }, acces: [{ x: 140, y: derniereAllee }], face: -90 },
     ecranMural: { nom: 'ecran-mural', pos: { x: 130, y: ALLEE_HAUT + 4 }, acces: [{ x: 130, y: ALLEE_HAUT }], face: 0 },
-    couloirs: Array.from({ length: COLONNES + 1 }, (_, k) => X0 - PAS / 2 + k * PAS),
+    couloirs: Array.from({ length: parRangee + 1 }, (_, k) => x0 - pas / 2 + k * pas),
   }
 }
 

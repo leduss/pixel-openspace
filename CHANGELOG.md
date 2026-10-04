@@ -14,6 +14,12 @@ npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.2.0 · 2026-10-04
+
+### Added
+
+- Desks per row: 4, 5 or 6, through the `columns` prop (default `5`) or in the settings, under “Desks per row”. Rows stay centered in the room and the aisles follow: nobody walks through a desk.
+
 ## 0.1.3 · 2026-10-03
 
 ### Fixed

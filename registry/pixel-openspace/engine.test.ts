@@ -45,6 +45,31 @@ describe('trajet', () => {
   })
 })
 
+describe('plan', () => {
+  const douze = Array.from({ length: 12 }, (_, i) => `agent-${i}`)
+
+  it('range cinq bureaux par rangée par défaut', () => {
+    expect(new Set(plan(douze, FR).bureaux.map((b) => b.dy)).size).toBe(3)
+  })
+
+  for (const colonnes of [4, 5, 6] as const) {
+    it(`à ${colonnes} par rangée : centré, dans la salle, et chaque bureau rejoint chaque autre`, () => {
+      const p = plan(douze, FR, undefined, colonnes)
+      const premiere = p.bureaux.filter((b) => b.dy === p.bureaux[0].dy)
+      expect(premiere).toHaveLength(colonnes)
+      const [gauche, droite] = [premiere[0].cx - BUREAU.largeur / 2, premiere.at(-1)!.cx + BUREAU.largeur / 2]
+      expect(gauche).toBeGreaterThan(0)
+      expect(droite).toBeLessThan(1000)
+      expect(gauche + droite).toBe(1000)
+      for (const de of [p.chef, ...p.bureaux]) {
+        for (const vers of p.bureaux) {
+          expect(traverseUnBureau([de.siege.pos, ...trajet(de.siege, vers.visite, p.couloirs)], p)).toBe(false)
+        }
+      }
+    })
+  }
+})
+
 describe('avancer', () => {
   const p = plan(['a', 'b'], FR)
   const toujours = () => 0

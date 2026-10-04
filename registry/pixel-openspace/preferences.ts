@@ -4,7 +4,7 @@
  * version est ignorée plutôt que de faire planter la salle.
  */
 
-import type { Language, ThemeName } from './types'
+import type { Columns, Language, ThemeName } from './types'
 
 /** Ce que le visiteur a changé ; ce qu'il n'a pas touché suit les props. */
 export type Preferences = {
@@ -13,6 +13,7 @@ export type Preferences = {
   weatherPlace?: string
   theme?: ThemeName
   language?: Language
+  columns?: Columns
   seasonal?: boolean
   night?: boolean
   motion?: boolean
@@ -21,6 +22,7 @@ export type Preferences = {
 
 export const THEMES: Array<ThemeName> = ['geek', 'eighties', 'gym', 'modern', 'kitchen']
 export const LANGUES: Array<Language> = ['en', 'fr']
+export const COLONNES: Array<Columns> = [4, 5, 6]
 export const LONGUEUR_ENSEIGNE = 24
 
 const INTERRUPTEURS = ['seasonal', 'night', 'motion', 'timeline'] as const
@@ -34,6 +36,7 @@ export function nettoyerPreferences(brut: unknown): Preferences {
   if (typeof b.weatherPlace === 'string' && b.weatherPlace.trim()) p.weatherPlace = b.weatherPlace
   if (THEMES.includes(b.theme as ThemeName)) p.theme = b.theme as ThemeName
   if (LANGUES.includes(b.language as Language)) p.language = b.language as Language
+  if (COLONNES.includes(b.columns as Columns)) p.columns = b.columns as Columns
   for (const cle of INTERRUPTEURS) if (typeof b[cle] === 'boolean') p[cle] = b[cle]
   return p
 }

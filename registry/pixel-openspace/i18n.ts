@@ -47,6 +47,7 @@ export type Texts = {
     weatherFound: (place: string, temperature: number) => string
     theme: string
     themes: Record<ThemeName, string>
+    columns: string
     language: string
     sound: string
     soundHint: string
@@ -151,6 +152,7 @@ const EN: Texts = {
     weatherFound: (place, temperature) => `${place}: ${temperature} °C right now, from Open-Meteo.`,
     theme: 'Theme',
     themes: { geek: 'Geek', eighties: '1980s', gym: 'Gym', modern: 'Modern', kitchen: 'Kitchen' },
+    columns: 'Desks per row',
     language: 'Language',
     sound: '8-bit sound',
     soundHint: 'A jingle when a job starts, fails, or a visitor comes in.',
@@ -259,6 +261,7 @@ const FR: Texts = {
     weatherFound: (place, temperature) => `${place} : ${temperature} °C en ce moment, d’après Open-Meteo.`,
     theme: 'Thème',
     themes: { geek: 'Geek', eighties: 'Années 80', gym: 'Salle de sport', modern: 'Moderne', kitchen: 'Cuisine' },
+    columns: 'Bureaux par rangée',
     language: 'Langue',
     sound: 'Son 8 bits',
     soundHint: 'Une ritournelle quand une tâche démarre, plante, ou qu’un visiteur entre.',

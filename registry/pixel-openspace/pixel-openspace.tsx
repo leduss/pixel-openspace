@@ -96,6 +96,7 @@ export function PixelOpenspace({
   timeline: friseProp = true,
   language: langueProp = 'en',
   theme: themeProp = 'geek',
+  columns: colonnesProp = 5,
   seasonal: saisonsProp = true,
   nightHours = [22, 6],
   toolbar = true,
@@ -115,6 +116,7 @@ export function PixelOpenspace({
   const etatMeteo = useMeteoDuLieu(preferences.weatherPlace, language)
   const meteo = etatMeteo.etat === 'trouve' ? etatMeteo.meteo : weather
   const nomTheme = preferences.theme ?? themeProp
+  const colonnes = preferences.columns ?? colonnesProp
   const seasonal = preferences.seasonal ?? saisonsProp
   const assombrir = preferences.night ?? true
   const mouvement = preferences.motion ?? true
@@ -299,7 +301,7 @@ export function PixelOpenspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- on ne réagit qu'à ce qui se voit : états, messages, compteurs
   }, [empreinteEquipe, visitors, deliveries])
 
-  const lePlan = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
+  const lePlan = plan(cle ? cle.split(',') : [], t.phrases, theme.coins, colonnes)
   const [sceneAnimee, setScene] = useState<Record<string, Pose>>(() => posesAuBureau(lePlan))
   // Les déplacements coupés, chacun reste assis à son bureau.
   const scene = mouvement ? sceneAnimee : posesAuBureau(lePlan)
@@ -316,7 +318,7 @@ export function PixelOpenspace({
 
   useEffect(() => {
     if (!mouvement || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins)
+    const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins, colonnes)
     // Chacun se lève à son heure, pas tous ensemble.
     let marcheurs = [...[p.chef, ...p.bureaux].map((b) => marcheur(b.id, b.siege, 2_000 + Math.random() * 60_000)), chat(p)]
     let numero = 0
@@ -403,8 +405,8 @@ export function PixelOpenspace({
       cancelAnimationFrame(image)
       clearTimeout(attente)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- la boucle ne repart que si les bureaux, la langue, le thème ou les déplacements changent
-  }, [cle, language, nomTheme, mouvement])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- la boucle ne repart que si les bureaux, leur disposition, la langue, le thème ou les déplacements changent
+  }, [cle, colonnes, language, nomTheme, mouvement])
 
   const tous = [equipe.chef, ...equipe.agents]
   const postes = [{ vue: equipe.chef, place: lePlan.chef }, ...equipe.agents.map((vue, i) => ({ vue, place: lePlan.bureaux[i] }))]
@@ -504,6 +506,7 @@ export function PixelOpenspace({
                 lieuOrigine={weather?.place}
                 etatMeteo={etatMeteo}
                 theme={nomTheme}
+                colonnes={colonnes}
                 langue={language}
                 saisons={seasonal}
                 nuit={assombrir}
