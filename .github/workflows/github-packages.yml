@@ -1,0 +1,38 @@
+# À chaque release GitHub : le CLI publié aussi sur GitHub Packages, pour qu'il
+# apparaisse dans la colonne « Packages » du dépôt.
+#
+# npm reste la source : `npx pixel-openspace` passe par npmjs.com. GitHub
+# Packages n'accepte qu'un nom au compte du dépôt, d'où @leduss/pixel-openspace,
+# renommé ici au moment de publier sans toucher à cli/package.json.
+name: GitHub Packages
+
+on:
+  release:
+    types: [published]
+  # À la main, pour publier la version en cours sans attendre la prochaine release.
+  workflow_dispatch:
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@leduss'
+      - run: bun install --frozen-lockfile
+      - run: bun run cli:build
+      - name: Publier @leduss/pixel-openspace
+        working-directory: cli
+        run: |
+          npm pkg set name=@leduss/pixel-openspace
+          npm pkg set publishConfig.registry=https://npm.pkg.github.com
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
