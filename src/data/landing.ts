@@ -4,7 +4,7 @@ import type { Language } from '@/registry/pixel-openspace/types'
 
 export const DEPOT = 'https://github.com/leduss/pixel-openspace'
 export const CAFE = 'https://buymeacoffee.com/leduss'
-export const INSTALL = 'npx shadcn@latest add leduss/pixel-openspace/pixel-openspace'
+export const INSTALL = 'npx shadcn@latest add @pixel-openspace/pixel-openspace'
 
 /* La couleur de la lampe de chaque état, la même que dans la salle. */
 export const LAMPES: Record<string, string> = {

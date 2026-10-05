@@ -5,6 +5,12 @@
   </picture>
 </h1>
 
+<p>
+  <a href="https://www.npmjs.com/package/pixel-openspace"><img alt="npm" src="https://img.shields.io/npm/v/pixel-openspace?color=e8b923&label=npm"></a>
+  <a href="https://ui.shadcn.com/docs/directory"><img alt="shadcn/ui registry" src="https://img.shields.io/badge/shadcn%2Fui-%40pixel--openspace-14110d"></a>
+  <a href="./LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-5b6472"></a>
+</p>
+
 **A pixel-art open space where your scheduled jobs and AI agents come to work.**
 
 Every agent gets a desk. Whoever is running sits down and types, screen lit up. Idle ones wander off to the coffee machine, the arcade cabinets or a colleague’s desk. A failed job’s PC starts smoking and the lead walks over and stays until it recovers. Late ones doze, forgotten ones see their plant wilt and dust settle on their screen.
@@ -22,10 +28,10 @@ There are two ways to use it:
 
 ### Install
 
-In a project with shadcn/ui set up:
+In a project with shadcn/ui set up. pixel-openspace is listed in the [shadcn/ui registry directory](https://ui.shadcn.com/docs/directory), so the short name works:
 
 ```bash
-npx shadcn@latest add leduss/pixel-openspace/pixel-openspace
+npx shadcn@latest add @pixel-openspace/pixel-openspace
 ```
 
 The files land in `components/pixel-openspace/`. The labels in the room use [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans) through a `--font-pixel` CSS variable; with Next.js:
@@ -42,7 +48,7 @@ const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'] })
 The code lives in your project, so updating means running the same command again with `--overwrite`. Your own edits in `components/pixel-openspace/` are replaced. What changed is in the [changelog](./CHANGELOG.md).
 
 ```bash
-npx shadcn@latest add leduss/pixel-openspace/pixel-openspace --overwrite
+npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 ```
 
 ### Use
