@@ -9,6 +9,7 @@ import { THEME_GEEK } from './themes/geek'
 import { THEME_GYM } from './themes/gym'
 import { THEME_CUISINE } from './themes/kitchen'
 import { THEME_MODERNE } from './themes/modern'
+import { THEME_NEON } from './themes/neon'
 import type { ThemeName } from './types'
 
 /* Les thèmes disponibles, par leur nom public. */
@@ -18,6 +19,7 @@ export const THEMES: Record<ThemeName, Theme> = {
   gym: THEME_GYM,
   modern: THEME_MODERNE,
   kitchen: THEME_CUISINE,
+  neon: THEME_NEON,
 }
 
 /* Le thème de la scène, à portée des postes et des bonshommes. */

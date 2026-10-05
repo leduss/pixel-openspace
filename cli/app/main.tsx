@@ -7,6 +7,7 @@ import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { PixelOpenspace } from '../../registry/pixel-openspace/pixel-openspace'
 import type { Agent, Language, ThemeName, WallTile, Weather } from '../../registry/pixel-openspace/types'
+import { THEMES as THEMES_COMPOSANT } from '../../registry/pixel-openspace/preferences'
 
 type Etat = {
   title: string
@@ -18,7 +19,8 @@ type Etat = {
   weather: Weather | null
 }
 
-const THEMES: Array<ThemeName> = ['geek', 'eighties', 'gym', 'modern']
+/* La liste du composant : un thème ajouté y est d'office. */
+const THEMES: Array<ThemeName> = THEMES_COMPOSANT
 
 function App() {
   const [etat, setEtat] = useState<Etat | null>(null)

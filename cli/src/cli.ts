@@ -46,7 +46,7 @@ Options:
   -p, --port <n>        Port to listen on, on 127.0.0.1 (default 4747)
   -m, --match <text>    Only show jobs whose name contains this text (repeatable)
   -x, --exclude <text>  Hide jobs whose name contains this text (repeatable)
-  -t, --theme <name>    geek, eighties, gym or modern (default geek)
+  -t, --theme <name>    geek, eighties, gym, modern, kitchen or neon (default geek)
   -l, --lang <en|fr>    Language of the room (default: from your system)
       --title <text>    The name on the wall
   -w, --weather <place> Real weather behind the lead's window: a city or "lat,lon" (Open-Meteo)

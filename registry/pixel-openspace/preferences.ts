@@ -20,7 +20,7 @@ export type Preferences = {
   timeline?: boolean
 }
 
-export const THEMES: Array<ThemeName> = ['geek', 'eighties', 'gym', 'modern', 'kitchen']
+export const THEMES: Array<ThemeName> = ['geek', 'eighties', 'gym', 'modern', 'kitchen', 'neon']
 export const LANGUES: Array<Language> = ['en', 'fr']
 export const COLONNES: Array<Columns> = [4, 5, 6]
 export const LONGUEUR_ENSEIGNE = 24

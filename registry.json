@@ -145,6 +145,11 @@
           "path": "registry/pixel-openspace/themes/kitchen.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/themes/kitchen.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/themes/neon.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/themes/neon.tsx"
         }
       ],
       "dependencies": [

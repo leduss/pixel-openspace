@@ -181,7 +181,7 @@ export async function GET() {
 | `celebrate` | `boolean` | Confetti over the whole room |
 | `timeline` | `boolean` | The day timeline under the room, one dot per run, when agents have `runs` (default `true`) |
 | `language` | `'en' \| 'fr'` | Everything written and said in the room |
-| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern' \| 'kitchen'` | The look of the room (default `'geek'`, see below) |
+| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern' \| 'kitchen' \| 'neon'` | The look of the room (default `'geek'`, see below) |
 | `columns` | `4 \| 5 \| 6` | How many desks per row (default `5`). Also in the settings |
 | `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
 | `nightHours` | `[number, number]` | When everybody stays at their desk (default `[22, 6]`) |
@@ -213,7 +213,7 @@ The server listens on `127.0.0.1:4747` only and opens your browser. The useful o
 | --- | --- |
 | `-m, --match <text>` | Only show jobs whose name contains this text (repeatable). Also brings in services that have no schedule |
 | `-x, --exclude <text>` | Hide jobs whose name contains this text (repeatable) |
-| `-t, --theme <name>` | `geek`, `eighties`, `gym`, `modern` or `kitchen`; `?theme=gym` in the address works too |
+| `-t, --theme <name>` | `geek`, `eighties`, `gym`, `modern`, `kitchen` or `neon`; `?theme=gym` in the address works too |
 | `-l, --lang <en\|fr>` | Language of the room (default: your system’s) |
 | `-w, --weather <place>` | Real weather behind the lead’s window, from [Open-Meteo](https://open-meteo.com): a city or `latitude,longitude` |
 | `--allow-run` | Let the “Run now” button start a job (`launchctl kickstart`, `systemctl start`); off by default |
@@ -237,7 +237,7 @@ Every option can also live in a `pixel-openspace.json` file, in the current fold
 
 ## What else is in the room
 
-- Five themes: a geek open space with RGB towers (`geek`), a 1986 corporate office with wood panelling and green-phosphor CRTs (`eighties`), a gym where every job rides an exercise bike (`gym`), and a bright modern office in light oak with laptops, standing desks and a ping-pong table (`modern`), and a restaurant kitchen where every job cooks at its range and a failed one burns its pan (`kitchen`).
+- Six themes: a geek open space with RGB towers (`geek`), a 1986 corporate office with wood panelling and green-phosphor CRTs (`eighties`), a gym where every job rides an exercise bike (`gym`), a bright modern office in light oak with laptops, standing desks and a ping-pong table (`modern`), and a restaurant kitchen where every job cooks at its range and a failed one burns its pan (`kitchen`), and a neon city at night, with a ramen stand, holographic screens that glitch when a job fails and katakana signs (`neon`).
 - Two playable arcade cabinets, **Component Snake** and **Chip Breaker**, with their high scores on the wall.
 - A whiteboard with the next five runs, a real-time clock, the office cat napping on empty desks.
 - The seasons: Halloween all October, Christmas all December, and Easter for the two weeks before Easter Monday, with hidden eggs and a bunny.

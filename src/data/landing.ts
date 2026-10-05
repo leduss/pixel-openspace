@@ -107,8 +107,8 @@ export const TEXTES = {
     aussiTexte: 'None of this is needed to watch your jobs. It is there because an office you look at every day should be a nice place.',
     details: [
       [
-        'Five themes',
-        'A geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, a gym where every job rides an exercise bike, a bright modern office in light oak with standing desks and a ping-pong table, or a restaurant kitchen where a failed job burns its pan.',
+        'Six themes',
+        'A geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, a gym where every job rides an exercise bike, a bright modern office in light oak with standing desks and a ping-pong table, a restaurant kitchen where a failed job burns its pan, or a neon city at night where holographic screens glitch when a job breaks.',
       ],
       ['Two arcade cabinets', 'Component Snake and Chip Breaker, both playable. High scores hang on the wall.'],
       ['A wall screen', 'Up to four numbers of your own: jobs today, errors, queue size, budget.'],
@@ -184,8 +184,8 @@ export const TEXTES = {
       'Rien de tout ça n’est nécessaire pour surveiller tes tâches. C’est là parce qu’un bureau qu’on regarde tous les jours doit être un endroit agréable.',
     details: [
       [
-        'Cinq thèmes',
-        'Un open space geek aux tours RGB, un bureau d’entreprise de 1986 aux écrans cathodiques vert phosphore, une salle de sport où chaque tâche pédale sur son vélo, un bureau moderne et lumineux, chêne clair, bureaux assis-debout et table de ping-pong, ou une cuisine de restaurant où la tâche qui plante fait brûler sa poêle.',
+        'Six thèmes',
+        'Un open space geek aux tours RGB, un bureau d’entreprise de 1986 aux écrans cathodiques vert phosphore, une salle de sport où chaque tâche pédale sur son vélo, un bureau moderne et lumineux, chêne clair, bureaux assis-debout et table de ping-pong, une cuisine de restaurant où la tâche qui plante fait brûler sa poêle, ou une ville néon la nuit, où l’écran holographique d’une tâche en panne crache des glitchs.',
       ],
       ['Deux bornes d’arcade', 'Snake des composants et Casse-puces, jouables toutes les deux. Les records sont affichés au mur.'],
       ['Un écran mural', 'Jusqu’à quatre chiffres à toi : tâches du jour, erreurs, file d’attente, budget.'],

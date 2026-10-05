@@ -14,6 +14,16 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.4.0 · 2026-10-05
+
+### Ajouté
+
+- Un sixième thème, `neon` : une ville néon la nuit. Murs de béton sombre et tubes roses et cyan, un stand de ramen sous ses rideaux rouges, un panneau holographique où tombent des katakana, un distributeur de canettes qui clignote. Les écrans des postes sont holographiques : le code y défile en vert, une tâche en panne y crache des glitchs. Le chef est un fixer, derrière sa baie de serveurs.
+
+### Corrigé
+
+- Le serveur local (`npx pixel-openspace`) acceptait `?theme=` sans le thème cuisine : il suit désormais la liste des thèmes du composant. Son aide cite tous les thèmes.
+
 ## 0.3.0 · 2026-10-05
 
 ### Ajouté

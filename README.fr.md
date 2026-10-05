@@ -181,7 +181,7 @@ export async function GET() {
 | `celebrate` | `boolean` | Des confettis sur toute la salle |
 | `timeline` | `boolean` | La frise de la journée sous la salle, un point par passage, quand les agents ont des `runs` (`true` par défaut) |
 | `language` | `'en' \| 'fr'` | Tout ce qui s'écrit et se dit dans la salle |
-| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern' \| 'kitchen'` | L'allure de la salle (`'geek'` par défaut, voir plus bas) |
+| `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern' \| 'kitchen' \| 'neon'` | L'allure de la salle (`'geek'` par défaut, voir plus bas) |
 | `columns` | `4 \| 5 \| 6` | Le nombre de bureaux par rangée (`5` par défaut). Aussi dans les réglages |
 | `seasonal` | `boolean` | Halloween tout octobre, Noël tout décembre, Pâques les deux semaines avant le lundi de Pâques (`true` par défaut) |
 | `nightHours` | `[number, number]` | Les heures où chacun reste à son bureau (`[22, 6]` par défaut) |
@@ -213,7 +213,7 @@ Le serveur n'écoute que sur `127.0.0.1:4747` et ouvre ton navigateur. Les optio
 | --- | --- |
 | `-m, --match <texte>` | Ne montre que les tâches dont le nom contient ce texte (répétable). Fait aussi entrer les services sans horaire |
 | `-x, --exclude <texte>` | Cache les tâches dont le nom contient ce texte (répétable) |
-| `-t, --theme <nom>` | `geek`, `eighties`, `gym`, `modern` ou `kitchen` ; `?theme=gym` dans l'adresse marche aussi |
+| `-t, --theme <nom>` | `geek`, `eighties`, `gym`, `modern`, `kitchen` ou `neon` ; `?theme=gym` dans l'adresse marche aussi |
 | `-l, --lang <en\|fr>` | La langue de la salle (par défaut, celle du système) |
 | `-w, --weather <lieu>` | La vraie météo derrière la fenêtre du chef, par [Open-Meteo](https://open-meteo.com) : une ville ou `latitude,longitude` |
 | `--allow-run` | Laisse le bouton « Lancer » démarrer une tâche (`launchctl kickstart`, `systemctl start`) ; désactivé par défaut |
@@ -237,7 +237,7 @@ Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, d
 
 ## Ce qu'il y a d'autre dans la salle
 
-- Cinq thèmes : un open space geek aux tours RGB (`geek`), un bureau d'entreprise de 1986, lambris et écrans cathodiques vert phosphore (`eighties`), une salle de sport où chaque tâche pédale sur son vélo (`gym`), et un bureau moderne et lumineux, chêne clair, portables, bureaux assis-debout et table de ping-pong (`modern`), et une cuisine de restaurant où chaque tâche cuisine à son piano et où celle qui plante fait brûler sa poêle (`kitchen`).
+- Six thèmes : un open space geek aux tours RGB (`geek`), un bureau d'entreprise de 1986, lambris et écrans cathodiques vert phosphore (`eighties`), une salle de sport où chaque tâche pédale sur son vélo (`gym`), un bureau moderne et lumineux, chêne clair, portables, bureaux assis-debout et table de ping-pong (`modern`), et une cuisine de restaurant où chaque tâche cuisine à son piano et où celle qui plante fait brûler sa poêle (`kitchen`), et une ville néon la nuit, avec son stand de ramen, ses écrans holographiques qui crachent des glitchs quand une tâche plante et ses enseignes en katakana (`neon`).
 - Deux bornes d'arcade jouables, **Snake des composants** et **Casse-puces**, avec leurs records au mur.
 - Un tableau blanc avec les cinq prochains passages, une horloge à l'heure, le chat de l'atelier qui dort sur les bureaux vides.
 - Les saisons : Halloween tout octobre, Noël tout décembre, et Pâques les deux semaines avant le lundi de Pâques, avec ses œufs cachés et son lapin.
