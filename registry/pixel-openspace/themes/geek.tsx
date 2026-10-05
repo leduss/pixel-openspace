@@ -485,7 +485,10 @@ export function Ecran({ cx, dy, statut, bientot }: { cx: number; dy: number; sta
       <rect x={cx - 4} y={dy + 10} width="8" height="7" fill="#111827" />
       <rect x={cx - 12} y={dy + 16} width="24" height="3" fill="#111827" />
       <rect x={g - 3} y={dy - 15} width={l + 6} height="27" fill="#0b0d10" />
-      {statut === 'absent' ? (
+      {statut === 'endormi' ? (
+        // En veille : l'écran noir, sans le post-it de l'absent.
+        <rect x={g} y={dy - 12} width={l} height="21" fill="#020617" />
+      ) : statut === 'absent' ? (
         <>
           <rect x={g} y={dy - 12} width={l} height="21" fill="#020617" />
           {/* Le post-it laissé en partant. */}

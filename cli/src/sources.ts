@@ -88,27 +88,83 @@ export function derniereLigne(chemin: string): string | null {
   }
 }
 
+/** Une période où la machine dormait, en millisecondes depuis l'époque. */
+export type Veille = { debut: number; fin: number }
+
+/**
+ * Les périodes de veille du Mac, lues dans `pmset -g log` : d'un « Sleep » au
+ * « Wake » qui suit. Un « DarkWake » ne les interrompt pas : c'est un réveil
+ * technique, écran éteint, pendant lequel l'agenda de launchd ne passe pas. Une
+ * veille sans réveil derrière court jusqu'à `maintenant`.
+ */
+export function lireVeilles(journal: string, maintenant: Date): Array<Veille> {
+  const veilles: Array<Veille> = []
+  let debut: number | null = null
+  for (const ligne of journal.split('\n')) {
+    const m = ligne.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) ([+-]\d{2})(\d{2}) (Sleep|Wake)\s*\t/)
+    if (!m) continue
+    const instant = Date.parse(`${m[1]}T${m[2]}${m[3]}:${m[4]}`)
+    if (Number.isNaN(instant)) continue
+    if (m[5] === 'Sleep') debut ??= instant
+    else if (debut !== null) {
+      veilles.push({ debut, fin: instant })
+      debut = null
+    }
+  }
+  if (debut !== null) veilles.push({ debut, fin: maintenant.getTime() })
+  return veilles
+}
+
+/* Le journal de veille pèse plusieurs mégaoctets : relu au plus toutes les cinq minutes. */
+let veillesEnCache: { lu: number; veilles: Array<Veille> } | null = null
+
+/** Les veilles du Mac, ou aucune ailleurs et si `pmset` ne répond pas. */
+export function veillesDuMac(maintenant: Date): Array<Veille> {
+  if (process.platform !== 'darwin') return []
+  if (veillesEnCache && maintenant.getTime() - veillesEnCache.lu < 5 * 60_000) return veillesEnCache.veilles
+  let veilles: Array<Veille> = []
+  try {
+    const journal = execFileSync('pmset', ['-g', 'log'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+      timeout: 15_000,
+      maxBuffer: 256 * 1024 * 1024,
+    })
+    veilles = lireVeilles(journal, maintenant)
+  } catch {
+    /* Sans journal, aucune tâche ne passe pour endormie : elle reste en retard, comme avant. */
+  }
+  veillesEnCache = { lu: maintenant.getTime(), veilles }
+  return veilles
+}
+
 /**
  * L'état d'une tâche qui ne tourne pas : en échec, jamais lancée, en retard
- * (son dernier passage prévu n'a pas eu lieu), ou à jour.
+ * (son dernier passage prévu n'a pas eu lieu), endormie (il devait avoir lieu
+ * pendant que la machine dormait : rien n'est cassé), ou à jour.
  */
 export function etatAuRepos({
   horaire,
   dernier,
   echec,
   maintenant,
+  veilles = [],
 }: {
   horaire: Horaire
   dernier: Date | null
   echec: boolean
   maintenant: Date
+  veilles?: Array<Veille>
 }): AgentStatus {
   if (echec) return 'failed'
   if (horaire.type === 'aucun') return 'on-demand'
   if (!dernier) return 'never'
   const prevu = passagePrecedent(horaire, maintenant)
   // Un quart d'heure de grâce : la machine sortait peut-être de veille.
-  if (prevu && dernier.getTime() < prevu.getTime() - 60_000 && maintenant.getTime() - prevu.getTime() > 15 * 60_000) return 'late'
+  if (prevu && dernier.getTime() < prevu.getTime() - 60_000 && maintenant.getTime() - prevu.getTime() > 15 * 60_000) {
+    const t = prevu.getTime()
+    return veilles.some((v) => t >= v.debut && t < v.fin) ? 'asleep' : 'late'
+  }
   return 'ok'
 }
 
@@ -141,6 +197,7 @@ export function lireLaunchd(filtre: Filtre, langue: Language, maintenant: Date):
   const dossier = join(homedir(), 'Library', 'LaunchAgents')
   if (process.platform !== 'darwin' || !existsSync(dossier)) return []
   const charges = chargesLaunchd()
+  const veilles = veillesDuMac(maintenant)
   const taches: Array<Tache> = []
   for (const fichier of readdirSync(dossier).filter((f) => f.endsWith('.plist'))) {
     let plist: Plist
@@ -160,7 +217,7 @@ export function lireLaunchd(filtre: Filtre, langue: Language, maintenant: Date):
     const dernier = recent ? statSync(recent).mtime : null
     const charge = charges.get(label)
     const status: AgentStatus =
-      !charge || plist.Disabled ? 'off' : charge.pid ? 'working' : etatAuRepos({ horaire, dernier, echec: charge.sortie !== 0, maintenant })
+      !charge || plist.Disabled ? 'off' : charge.pid ? 'working' : etatAuRepos({ horaire, dernier, echec: charge.sortie !== 0, maintenant, veilles })
 
     taches.push({
       id: label,

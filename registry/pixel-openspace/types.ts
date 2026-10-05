@@ -8,6 +8,12 @@ export type AgentStatus =
   | 'ok'
   /** Missed its last run: it dozes at its desk. */
   | 'late'
+  /**
+   * Missed its last run while the machine was asleep (a laptop with its lid
+   * closed): it sleeps at its desk, and the lead leaves it alone. Nothing is
+   * broken, unlike `late`.
+   */
+  | 'asleep'
   /** Its last run failed: its PC smokes and the lead comes to see it. */
   | 'failed'
   /** Not loaded at all: empty chair, a post-it on a dark screen. */

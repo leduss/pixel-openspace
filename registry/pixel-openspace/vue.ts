@@ -21,6 +21,7 @@ export const STATUT: Record<AgentStatus, Statut> = {
   working: 'au-travail',
   ok: 'a-jour',
   late: 'en-retard',
+  asleep: 'endormi',
   failed: 'en-echec',
   off: 'absent',
   never: 'jamais',

@@ -394,7 +394,9 @@ function Console({ cx, dy, statut, bientot }: { cx: number; dy: number; statut: 
     <g>
       <rect x={cx - 2} y={dy + 4} width="4" height="16" fill="#9ca3af" />
       <rect x={g - 3} y={dy - 18} width="50" height="24" fill="#111827" />
-      {statut === 'absent' ? (
+      {statut === 'endormi' ? (
+        <rect x={g} y={dy - 15} width="44" height="18" fill="#020617" />
+      ) : statut === 'absent' ? (
         <>
           <rect x={g} y={dy - 15} width="44" height="18" fill="#020617" />
           <g transform={`rotate(-6 ${cx} ${dy - 6})`}>

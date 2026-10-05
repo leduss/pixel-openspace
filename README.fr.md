@@ -13,7 +13,7 @@
 
 **Un open space en pixel art où tes tâches planifiées et tes agents IA viennent travailler.**
 
-Chaque agent a son bureau. Celui qui tourne s'assoit et tape, l'écran allumé. Les désœuvrés vont au café, aux bornes d'arcade ou chez un collègue. Le PC d'une tâche en échec se met à fumer, et le chef vient s'asseoir à côté jusqu'à ce qu'elle reparte. Les retardataires somnolent ; les oubliés voient leur plante faner et la poussière couvrir leur écran.
+Chaque agent a son bureau. Celui qui tourne s'assoit et tape, l'écran allumé. Les désœuvrés vont au café, aux bornes d'arcade ou chez un collègue. Le PC d'une tâche en échec se met à fumer, et le chef vient s'asseoir à côté jusqu'à ce qu'elle reparte. Les retardataires somnolent, ceux qui ont manqué leur passage pendant que le portable dormait dorment tout court ; les oubliés voient leur plante faner et la poussière couvrir leur écran.
 
 **[Essayer la démo en ligne](https://pixel-openspace.vercel.app/fr)** · [🇬🇧 Read in English](./README.md)
 
@@ -160,6 +160,7 @@ export async function GET() {
 | `working` | À son bureau, il tape, le code défile sur son écran |
 | `ok` | À jour : il va au café, aux bornes d'arcade, sur le canapé… |
 | `late` | Il somnole à son bureau |
+| `asleep` | A manqué son passage pendant que la machine dormait : il dort à son bureau, écran éteint, et le chef le laisse tranquille |
 | `failed` | Écran rouge, PC qui fume ; le chef vient rester à côté de lui |
 | `off` | Chaise vide, un post-it sur l'écran éteint |
 | `never` | Jamais lancé |
@@ -196,7 +197,7 @@ Chaque `Agent` a un `id`, un `name`, un `status`, et au choix un `emoji`, un `ro
 
 Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées sur ta machine et les montre dans l'open space :
 
-- **launchd** (macOS) : tes agents de `~/Library/LaunchAgents` qui tournent selon un horaire. En cours ou non, dernier code de sortie, dernière ligne de leur journal.
+- **launchd** (macOS) : tes agents de `~/Library/LaunchAgents` qui tournent selon un horaire. En cours ou non, dernier code de sortie, dernière ligne de leur journal. Un passage manqué pendant que le Mac dormait (lu dans `pmset -g log`) s'affiche `asleep`, pas `late`.
 - **cron** : ta crontab. cron ne garde pas d'historique : chaque passage est supposé avoir eu lieu à l'heure.
 - **systemd** (Linux) : tes timers utilisateur, avec le résultat de leur dernier passage et la dernière ligne de leur journal.
 

@@ -390,7 +390,9 @@ function Portable({ cx, dy, statut, bientot }: { cx: number; dy: number; statut:
       ))}
       <rect x={cx - 7} y={dy + 17} width="14" height="2" fill="#c4c0bc" />
       <rect x={g - 2} y={dy - 16} width={l + 4} height="26" fill="#d6d3d1" />
-      {statut === 'absent' ? (
+      {statut === 'endormi' ? (
+        <rect x={g} y={dy - 14} width={l} height="20" fill={ENCRE} />
+      ) : statut === 'absent' ? (
         <>
           <rect x={g} y={dy - 14} width={l} height="20" fill={ENCRE} />
           <g transform={`rotate(-6 ${cx} ${dy - 4})`}>

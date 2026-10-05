@@ -22,6 +22,7 @@ export const LAMPE_PLAN: Record<Statut, string> = {
   'au-travail': ACCENT,
   'a-jour': '#4ade80',
   'en-retard': '#fb923c',
+  endormi: '#818cf8',
   'en-echec': '#ef4444',
   absent: '#52525b',
   jamais: '#a1a1aa',

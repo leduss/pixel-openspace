@@ -13,7 +13,7 @@
 
 **A pixel-art open space where your scheduled jobs and AI agents come to work.**
 
-Every agent gets a desk. Whoever is running sits down and types, screen lit up. Idle ones wander off to the coffee machine, the arcade cabinets or a colleague’s desk. A failed job’s PC starts smoking and the lead walks over and stays until it recovers. Late ones doze, forgotten ones see their plant wilt and dust settle on their screen.
+Every agent gets a desk. Whoever is running sits down and types, screen lit up. Idle ones wander off to the coffee machine, the arcade cabinets or a colleague’s desk. A failed job’s PC starts smoking and the lead walks over and stays until it recovers. Late ones doze, the ones that missed a run while the laptop slept just sleep it off, forgotten ones see their plant wilt and dust settle on their screen.
 
 **[Try the live demo](https://pixel-openspace.vercel.app)** · [🇫🇷 Lire en français](./README.fr.md)
 
@@ -160,6 +160,7 @@ export async function GET() {
 | `working` | At its desk, typing, code scrolling on its screen |
 | `ok` | Up to date: wanders to the coffee machine, the arcade, the sofa… |
 | `late` | Dozes at its desk |
+| `asleep` | Missed its run while the machine was asleep: sleeps at its desk, screen off, and the lead leaves it alone |
 | `failed` | Red screen, smoking PC; the lead comes and stays by its side |
 | `off` | Empty chair, a post-it on a dark screen |
 | `never` | Never ran yet |
@@ -196,7 +197,7 @@ Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `ro
 
 The `cli/` folder holds a small server that finds the jobs scheduled on your machine and shows them in the open space:
 
-- **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log.
+- **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log. A run missed while the Mac was asleep (read from `pmset -g log`) shows as `asleep`, not `late`.
 - **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
 - **systemd** (Linux): your user timers, with the result of their last run and their last journal line.
 

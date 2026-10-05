@@ -12,7 +12,7 @@ import type { Columns } from './types'
 import { TEXTS, type Phrases } from './i18n'
 
 /** An agent's state, as the engine reads it. */
-export type Statut = 'au-travail' | 'a-jour' | 'en-retard' | 'en-echec' | 'absent' | 'jamais' | 'a-la-demande'
+export type Statut = 'au-travail' | 'a-jour' | 'en-retard' | 'endormi' | 'en-echec' | 'absent' | 'jamais' | 'a-la-demande'
 
 export type Point = { x: number; y: number }
 
@@ -277,7 +277,8 @@ export function invite(p: Plan, genre: Invite, numero: number): Marcheur {
 }
 
 /** Ceux que leur état cloue au bureau : le travail, ou le souci qui les y retient. */
-export const auBureau = (s: Statut | undefined) => s === 'au-travail' || s === 'en-echec' || s === 'en-retard'
+export const auBureau = (s: Statut | undefined) =>
+  s === 'au-travail' || s === 'en-echec' || s === 'en-retard' || s === 'endormi'
 
 function partir(m: Marcheur, etape: Etape, couloirs: Array<number>) {
   m.chemin = trajet(m.lieu, etape.lieu, couloirs)

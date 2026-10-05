@@ -455,7 +455,7 @@ function Feu({ cx, dy, statut }: { cx: number; dy: number; statut: Statut }) {
             </rect>
           ))
         : null}
-      {statut === 'absent' ? (
+      {statut === 'absent' || statut === 'endormi' ? (
         // Feux éteints, le couvercle posé sur la marmite.
         <>
           <rect x={cx - 12} y={dy + 2} width="24" height="12" fill={INOX.ombre} />
@@ -488,7 +488,7 @@ function Feu({ cx, dy, statut }: { cx: number; dy: number; statut: Statut }) {
         </>
       )}
       {/* La vapeur de ce qui cuit, ou la fumée noire de ce qui brûle. */}
-      {statut === 'absent'
+      {statut === 'absent' || statut === 'endormi'
         ? null
         : [0, 0.6, 1.2].map((debut, i) => (
             <rect

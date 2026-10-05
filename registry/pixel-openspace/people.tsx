@@ -293,6 +293,23 @@ export function Annonce({ vue, pose, parole }: { vue: Vue; pose: Pose; parole: s
     )
   }
 
+  /* Endormi : la machine dormait, rien n'est cassé. Pas de pancarte d'alerte,
+     des « z » qui montent doucement, dans un indigo de nuit. */
+  if (pose.assise === 'bureau' && statut === 'endormi') {
+    return (
+      <g pointerEvents="none" fill="#a5b4fc" stroke="#1e1b4b" strokeWidth={2} paintOrder="stroke" fontWeight={700}>
+        {[0, 1, 2].map((i) => (
+          /* Visibles d'emblée : la boucle de la salle se fige au calme, et un « z »
+             parti de zéro y resterait. L'animation ne fait que les faire respirer. */
+          <text key={i} x={x + 12 + i * 6} y={haut + 14 - i * 8} fontSize={9 + i * 3} opacity={1 - i * 0.2}>
+            z
+            <Anim attributeName="opacity" values="1;0.35;1" dur="3s" begin={`${i}s`} repeatCount="indefinite" />
+          </text>
+        ))}
+      </g>
+    )
+  }
+
   if (statut !== 'au-travail') return null
   const libelle = t.statuses[statut]
   const largeur = Math.round(Math.max(fiche.nom.length * 5.4, libelle.length * 4.6 + 12) + 12)

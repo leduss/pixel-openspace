@@ -170,7 +170,8 @@ export function equipe(langue: Language): Array<Agent> {
       name: 'Audit',
       emoji: '🛡️',
       role: fr ? 'Cherche les paquets vulnérables' : 'Looks for vulnerable packages',
-      status: 'ok',
+      // Son passage tombait pendant que le portable dormait : rien n'est cassé.
+      status: 'asleep',
       schedule: fr ? 'chaque semaine' : 'weekly',
       lastRun: ilYa(60 * 24 * 5),
       nextRun: dans(60 * 24 * 2),

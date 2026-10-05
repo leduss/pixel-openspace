@@ -429,8 +429,8 @@ function Cathodique({ cx, dy, statut, bientot }: { cx: number; dy: number; statu
       {/* L'écran, bombé dans son boîtier beige. */}
       <rect x={g - 4} y={dy - 22} width="52" height="30" fill="#d8cfb8" />
       <rect x={g - 4} y={dy - 22} width="52" height="2" fill="#e8e0cc" />
-      <rect x={g} y={dy - 19} width="44" height="23" fill={statut === 'absent' ? '#0a0a0a' : '#052e16'} />
-      {statut === 'absent' ? (
+      <rect x={g} y={dy - 19} width="44" height="23" fill={statut === 'absent' || statut === 'endormi' ? '#0a0a0a' : '#052e16'} />
+      {statut === 'endormi' ? null : statut === 'absent' ? (
         <g transform={`rotate(-6 ${cx} ${dy - 8})`}>
           <rect x={cx - 15} y={dy - 16} width="30" height="15" fill="#fde68a" />
           <rect x={cx - 15} y={dy - 16} width="30" height="3" fill="#fcd34d" />

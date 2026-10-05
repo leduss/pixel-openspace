@@ -3,7 +3,7 @@ import type { Language, ThemeName } from './types'
 /** Every word the open space writes or says, in English and in French. */
 export type Texts = {
   locale: string
-  statuses: Record<'au-travail' | 'a-jour' | 'en-retard' | 'en-echec' | 'absent' | 'jamais' | 'a-la-demande', string>
+  statuses: Record<'au-travail' | 'a-jour' | 'en-retard' | 'endormi' | 'en-echec' | 'absent' | 'jamais' | 'a-la-demande', string>
   leadName: string
   leadRole: string
   leadOffice: string
@@ -106,6 +106,7 @@ const EN: Texts = {
     'au-travail': 'working',
     'a-jour': 'up to date',
     'en-retard': 'late',
+    endormi: 'asleep',
     'en-echec': 'failed',
     absent: 'off',
     jamais: 'never ran',
@@ -215,6 +216,7 @@ const FR: Texts = {
     'au-travail': 'au travail',
     'a-jour': 'à jour',
     'en-retard': 'en retard',
+    endormi: 'endormi',
     'en-echec': 'en échec',
     absent: 'absent',
     jamais: 'jamais passé',

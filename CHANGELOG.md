@@ -14,6 +14,13 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.3.0 · 2026-10-05
+
+### Added
+
+- A new status, `asleep`: the job missed its run while the machine was asleep. The worker sleeps at its desk, screen off, z's above its head, and the lead leaves it alone. After opening the lid, genuinely broken jobs stay `late` and no longer get lost in a room full of dozing desks.
+- The local server (`npx pixel-openspace`) reads the Mac's sleep history (`pmset -g log`): a launchd run missed during sleep shows as `asleep`, not `late`.
+
 ## 0.2.0 · 2026-10-04
 
 ### Added
