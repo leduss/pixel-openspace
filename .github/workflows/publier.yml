@@ -1,0 +1,74 @@
+# À chaque release GitHub : le CLI publié sur npm, puis sur GitHub Packages.
+#
+# npm, par la publication de confiance (trusted publishing) : npmjs.com accepte
+# ce workflow-ci sans jeton ni connexion qui expire. Le réglage se fait une fois
+# sur la page du paquet (Settings → Trusted Publisher → GitHub Actions :
+# leduss / pixel-openspace / publier.yml).
+#
+# GitHub Packages, pour la colonne « Packages » du dépôt. Il n'accepte qu'un nom
+# au compte du dépôt, d'où @leduss/pixel-openspace, renommé au moment de publier.
+#
+# Une version déjà publiée est sautée : relancer le workflow ne casse rien.
+name: Publier
+
+on:
+  release:
+    types: [published]
+  # À la main, pour publier la version en cours sans attendre la prochaine release.
+  workflow_dispatch:
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      # La publication de confiance demande npm 11.5.1 ou plus récent.
+      - run: npm install -g npm@latest
+      - run: bun install --frozen-lockfile
+      - run: bun run cli:build
+      - name: Publier pixel-openspace sur npm
+        working-directory: cli
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "pixel-openspace@$VERSION" version >/dev/null 2>&1; then
+            echo "pixel-openspace@$VERSION est déjà sur npm, rien à faire."
+          else
+            npm publish
+          fi
+
+  github-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: '@leduss'
+      - run: bun install --frozen-lockfile
+      - run: bun run cli:build
+      - name: Publier @leduss/pixel-openspace
+        working-directory: cli
+        run: |
+          npm pkg set name=@leduss/pixel-openspace
+          npm pkg set publishConfig.registry=https://npm.pkg.github.com
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "@leduss/pixel-openspace@$VERSION" version >/dev/null 2>&1; then
+            echo "@leduss/pixel-openspace@$VERSION est déjà sur GitHub Packages, rien à faire."
+          else
+            npm publish
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
