@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   cronsDuWorkflow,
+  depotDuRemote,
+  githubSansValeur,
   etatDuWorkflow,
   horaireDuWorkflow,
   lireDepot,
@@ -117,5 +119,25 @@ describe('runsQuiComptent', () => {
     const pr = { ...run('2026-10-17T10:00:00Z', 'completed', 'failure'), head_branch: 'feature/x', event: 'pull_request' }
     expect(runsQuiComptent([pr, principal], 'main')).toEqual([principal])
     expect(runsQuiComptent([pr], 'main')).toEqual([pr])
+  })
+})
+
+describe('le dépôt d’ici', () => {
+  it('lit les remotes GitHub en SSH, en HTTPS et en ssh://', () => {
+    expect(depotDuRemote('git@github.com:acme/ops.git\n')).toEqual(depot)
+    expect(depotDuRemote('https://github.com/acme/ops')).toEqual(depot)
+    expect(depotDuRemote('https://x-access-token@github.com/acme/ops.git')).toEqual(depot)
+    expect(depotDuRemote('ssh://git@github.com/acme/ops.git')).toEqual(depot)
+    expect(depotDuRemote('git@gitlab.com:acme/ops.git')).toBeNull()
+  })
+
+  it('fait d’un --github nu le dépôt courant, sans toucher à celui qui a une valeur', () => {
+    expect(githubSansValeur(['--github'])).toEqual(['--github=.'])
+    expect(githubSansValeur(['-g', '--theme', 'farm'])).toEqual(['--github=.', '--theme', 'farm'])
+    expect(githubSansValeur(['--github', 'acme/ops', '-g'])).toEqual(['--github', 'acme/ops', '--github=.'])
+  })
+
+  it('trouve le dépôt de ce dossier', () => {
+    expect(lireDepot('.')).toEqual({ proprietaire: 'leduss', nom: 'pixel-openspace' })
   })
 })

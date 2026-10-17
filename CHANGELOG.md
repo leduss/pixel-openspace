@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.8.0 · 2026-10-17
+
+### Added
+
+- `--github` without a repository shows the one of the current folder, read from its `origin` remote: from a project's folder, `npx pixel-openspace --github` is all it takes. `"github": ["."]` does the same in the settings file.
+
 ## 0.7.0 · 2026-10-17
 
 ### Added

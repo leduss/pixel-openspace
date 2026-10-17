@@ -32,15 +32,49 @@ export type Run = {
   run_started_at?: string | null
 }
 
-/** `owner/repo`, ou une adresse github.com. */
-export function lireDepot(texte: string): Depot {
+/** `owner/repo`, une adresse github.com, ou `.` pour le dépôt du dossier courant. */
+export function lireDepot(texte: string, dossier = process.cwd()): Depot {
+  if (texte.trim() === '.') return depotCourant(dossier)
+  const depot = depotDuRemote(texte) ?? depotNu(texte)
+  if (!depot) throw new Error(`not a GitHub repository: "${texte}", expected owner/repo`)
+  return depot
+}
+
+function depotNu(texte: string): Depot | null {
   const m = texte
     .trim()
-    .replace(/^https?:\/\/github\.com\//, '')
     .replace(/\.git$|\/$/g, '')
     .match(/^([\w.-]+)\/([\w.-]+)$/)
-  if (!m) throw new Error(`not a GitHub repository: "${texte}", expected owner/repo`)
-  return { proprietaire: m[1], nom: m[2] }
+  return m ? { proprietaire: m[1], nom: m[2] } : null
+}
+
+/** Le dépôt d'une adresse de remote GitHub : `git@github.com:o/r.git`, `https://github.com/o/r`, `ssh://git@github.com/o/r.git`. */
+export function depotDuRemote(url: string): Depot | null {
+  const m = url.trim().match(/^(?:https?:\/\/(?:[^@/]+@)?|ssh:\/\/git@|git@)github\.com[:/]([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/)
+  return m ? { proprietaire: m[1], nom: m[2] } : null
+}
+
+/** Le dépôt GitHub du dossier courant, lu dans son remote `origin`. */
+export function depotCourant(dossier: string): Depot {
+  let url: string
+  try {
+    url = execFileSync('git', ['remote', 'get-url', 'origin'], {
+      cwd: dossier,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+      timeout: 5000,
+    })
+  } catch {
+    throw new Error('--github without a repository needs a git repository with an "origin" remote here; or pass owner/repo')
+  }
+  const depot = depotDuRemote(url)
+  if (!depot) throw new Error(`the "origin" remote is not on GitHub (${url.trim()}); pass owner/repo`)
+  return depot
+}
+
+/** Un `--github` (ou `-g`) sans dépôt derrière lui veut dire « le dépôt d'ici » : `parseArgs` le lit alors `--github=.`. */
+export function githubSansValeur(args: Array<string>): Array<string> {
+  return args.map((a, i) => ((a === '--github' || a === '-g') && (i === args.length - 1 || args[i + 1].startsWith('-')) ? '--github=.' : a))
 }
 
 /** Les expressions `cron:` du `schedule:` d'un workflow, sans lire tout le YAML. */

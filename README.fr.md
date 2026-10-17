@@ -218,7 +218,7 @@ Le serveur n'écoute que sur `127.0.0.1:4747` et ouvre ton navigateur. Les optio
 | `-l, --lang <en\|fr>` | La langue de la salle (par défaut, celle du système) |
 | `-w, --weather <lieu>` | La vraie météo derrière la fenêtre du chef, par [Open-Meteo](https://open-meteo.com) : une ville ou `latitude,longitude` |
 | `--allow-run` | Laisse le bouton « Lancer » démarrer une tâche (`launchctl kickstart`, `systemctl start`) ; désactivé par défaut |
-| `-g, --github <owner/repo>` | Montre les workflows d'un dépôt GitHub (répétable). Seul, il ne montre que GitHub ; ajoute `--local` pour les tâches de la machine aussi |
+| `-g, --github [owner/repo]` | Montre les workflows d'un dépôt GitHub (répétable). Sans dépôt, celui du dossier courant (son remote `origin`). Seul, il ne montre que GitHub ; ajoute `--local` pour les tâches de la machine aussi |
 | `--json` | Affiche les tâches trouvées et s'arrête |
 
 Pour GitHub, un jeton est facultatif pour un dépôt public. Sans jeton, GitHub accorde 60 requêtes par heure : la salle se rafraîchit toutes les 5 minutes. Avec `GITHUB_TOKEN`, `GH_TOKEN` ou un `gh` connecté, elle se rafraîchit chaque minute et lit les dépôts privés. Les réponses inchangées sont gardées en cache et ne coûtent rien.
@@ -227,7 +227,9 @@ Pour GitHub, un jeton est facultatif pour un dépôt public. Sans jeton, GitHub 
 npx pixel-openspace --github vercel/next.js --github mon-org/mon-app
 ```
 
-Dans le fichier de réglages ci-dessous, c'est `"github": ["owner/repo"]` ; ajoute `"sources": ["launchd", "cron", "systemd"]` pour garder les tâches de la machine dans la salle.
+Depuis le dossier de ton projet, `npx pixel-openspace --github` suffit : il trouve le dépôt dans le remote `origin`.
+
+Dans le fichier de réglages ci-dessous, c'est `"github": ["owner/repo"]` (ou `"."` pour le dépôt du dossier) ; ajoute `"sources": ["launchd", "cron", "systemd"]` pour garder les tâches de la machine dans la salle.
 
 Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, dans le dossier courant ou dans `~/.config/pixel-openspace/config.json`, avec pour chaque tâche un nom, un emoji ou une description plus parlants :
 

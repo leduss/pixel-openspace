@@ -1,6 +1,6 @@
 {
   "name": "pixel-openspace",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Your scheduled jobs (launchd, cron, systemd timers) and GitHub Actions workflows as pixel-art workers in an open space, in your browser.",
   "type": "module",
   "bin": {

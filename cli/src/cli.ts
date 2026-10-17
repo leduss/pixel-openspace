@@ -15,7 +15,7 @@ import { parseArgs } from 'node:util'
 import type { Agent, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
 import { LANGUES, THEMES } from '../../registry/pixel-openspace/preferences'
 import paquet from '../package.json'
-import { lireDepot, suivreGithub, type Depot } from './github'
+import { githubSansValeur, lireDepot, suivreGithub, type Depot } from './github'
 import { suivreMeteo } from './meteo'
 import { lireCron, lireLaunchd, lireSystemd, relancer, type Filtre, type Source, type Tache } from './sources'
 
@@ -50,8 +50,9 @@ Options:
   -p, --port <n>        Port to listen on, on 127.0.0.1 (default 4747)
   -m, --match <text>    Only show jobs whose name contains this text (repeatable)
   -x, --exclude <text>  Hide jobs whose name contains this text (repeatable)
-  -g, --github <owner/repo>
+  -g, --github [owner/repo]
                         Show the GitHub Actions workflows of a repository (repeatable).
+                        Alone, the repository of the current folder (its "origin" remote).
                         Uses GITHUB_TOKEN, GH_TOKEN or \`gh auth token\` when available
       --local           With --github, show this machine's jobs too
   -t, --theme <name>    geek, eighties, gym, modern, kitchen, neon or farm (default geek)
@@ -142,6 +143,7 @@ function ouvrir(url: string) {
 
 async function principal() {
   const { values: o } = parseArgs({
+    args: githubSansValeur(process.argv.slice(2)),
     options: {
       port: { type: 'string', short: 'p' },
       match: { type: 'string', short: 'm', multiple: true },
@@ -191,7 +193,7 @@ async function principal() {
 
   let depots: Array<Depot> = []
   try {
-    depots = github.map(lireDepot)
+    depots = github.map((d) => lireDepot(d))
   } catch (erreur) {
     console.error(`pixel-openspace: ${(erreur as Error).message}`)
     process.exit(1)

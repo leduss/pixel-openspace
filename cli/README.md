@@ -14,6 +14,8 @@ Or the GitHub Actions workflows of any repository, no code needed:
 npx pixel-openspace --github owner/repo
 ```
 
+From a project's folder, `npx pixel-openspace --github` finds the repository on its own.
+
 Run `npx pixel-openspace --help` for the options, and see the [main README](https://github.com/leduss/pixel-openspace#without-writing-code) for the settings file.
 
 Live demo: https://pixel-openspace.vercel.app · MIT

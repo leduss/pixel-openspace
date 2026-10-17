@@ -218,7 +218,7 @@ The server listens on `127.0.0.1:4747` only and opens your browser. The useful o
 | `-l, --lang <en\|fr>` | Language of the room (default: your system’s) |
 | `-w, --weather <place>` | Real weather behind the lead’s window, from [Open-Meteo](https://open-meteo.com): a city or `latitude,longitude` |
 | `--allow-run` | Let the “Run now” button start a job (`launchctl kickstart`, `systemctl start`); off by default |
-| `-g, --github <owner/repo>` | Show the workflows of a GitHub repository (repeatable). Alone, it shows only GitHub; add `--local` for this machine's jobs too |
+| `-g, --github [owner/repo]` | Show the workflows of a GitHub repository (repeatable). Without a repository, the one of the current folder (its `origin` remote). Alone, it shows only GitHub; add `--local` for this machine's jobs too |
 | `--json` | Print the jobs it found and exit |
 
 For GitHub, a token is optional for public repositories. Without one, GitHub allows 60 requests an hour, so the room refreshes every 5 minutes; with `GITHUB_TOKEN`, `GH_TOKEN` or a logged-in `gh` CLI, it refreshes every minute and can read private repositories. Unchanged answers are cached and cost nothing.
@@ -227,7 +227,9 @@ For GitHub, a token is optional for public repositories. Without one, GitHub all
 npx pixel-openspace --github vercel/next.js --github my-org/my-app
 ```
 
-In the settings file below, that is `"github": ["owner/repo"]`; add `"sources": ["launchd", "cron", "systemd"]` to keep this machine's jobs in the room.
+From your project's folder, `npx pixel-openspace --github` is enough: it finds the repository in the `origin` remote.
+
+In the settings file below, that is `"github": ["owner/repo"]` (or `"."` for the folder's own repository); add `"sources": ["launchd", "cron", "systemd"]` to keep this machine's jobs in the room.
 
 Every option can also live in a `pixel-openspace.json` file, in the current folder or in `~/.config/pixel-openspace/config.json`, along with a nicer name, emoji or description per job:
 
