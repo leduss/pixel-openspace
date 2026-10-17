@@ -49,6 +49,16 @@ export function Landing({ langue }: { langue: Language }) {
         <div className="flex flex-col gap-6">
           <h1 className="max-w-3xl font-heading text-5xl leading-[0.95] tracking-tight text-balance sm:text-7xl">{t.titre}</h1>
           <p className="max-w-[60ch] text-lg leading-relaxed text-muted-foreground">{t.intro}</p>
+          {/* Ce qu'elle surveille, lisible avant même de défiler. */}
+          <ul className="flex flex-wrap gap-2" aria-label={t.sourcesTitre}>
+            {t.surveille.map((s) => (
+              <li key={s}>
+                <Badge variant="secondary" className="font-mono">
+                  {s}
+                </Badge>
+              </li>
+            ))}
+          </ul>
           <div className="flex flex-col gap-3">
             <CopyCommand command={INSTALL} copy={t.copier} copied={t.copie} />
             <div className="flex flex-wrap items-center gap-3">
@@ -62,6 +72,35 @@ export function Landing({ langue }: { langue: Language }) {
           </div>
         </div>
         <Demo langue={langue} />
+      </section>
+
+      <Separator />
+
+      {/* Ce que la salle surveille : une carte par source, et comment la brancher. */}
+      <section id="sources" className="flex scroll-mt-6 flex-col gap-10 py-20">
+        <div className="flex max-w-[60ch] flex-col gap-4">
+          <h2 className="font-heading text-3xl sm:text-4xl">{t.sourcesTitre}</h2>
+          <p className="leading-relaxed text-muted-foreground">{t.sourcesTexte}</p>
+        </div>
+        <ul className="grid gap-4 sm:grid-cols-2">
+          {t.sources.map((s) => (
+            <li key={s.titre}>
+              <Card className="h-full gap-4 px-6">
+                <div className="flex items-center gap-3">
+                  <span aria-hidden className="text-2xl">
+                    {s.emoji}
+                  </span>
+                  <h3 className="text-lg font-bold">{s.titre}</h3>
+                </div>
+                <p className="flex-1 text-sm leading-relaxed text-muted-foreground">{s.texte}</p>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-muted-foreground">{s.comment}</span>
+                  <code className="rounded-md bg-muted px-2 py-1 font-mono text-foreground">{s.code}</code>
+                </div>
+              </Card>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <Separator />

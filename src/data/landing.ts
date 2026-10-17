@@ -68,6 +68,44 @@ export const TEXTES = {
     intro:
       'pixel-openspace shows your scheduled jobs, CI pipelines and AI agents as a pixel-art office. Running jobs sit down and type, idle ones go get coffee, and when one fails its PC starts to smoke and the lead walks over.',
     etoile: 'Star it on GitHub',
+    surveille: ['cron', 'launchd', 'systemd timers', 'GitHub Actions', 'AI agents', 'queues', 'deploys'],
+    sourcesTitre: 'What it watches',
+    sourcesTexte:
+      'Anything that runs on a schedule or on demand, and can succeed or fail. Some of it comes in without a line of code; the rest takes one API route.',
+    sources: [
+      {
+        emoji: '⏰',
+        titre: 'Cron jobs and system timers',
+        texte:
+          'Your crontab, launchd agents on macOS, systemd timers on Linux: running or not, last exit code, last log line. A run missed while the laptop slept shows as asleep, not late.',
+        comment: 'No code',
+        code: 'npx pixel-openspace',
+      },
+      {
+        emoji: '🧪',
+        titre: 'GitHub Actions',
+        texte:
+          'Every workflow of your repository: it types while a run is in progress, smokes when the build breaks, and, with the local server, dozes when a scheduled run is missing. A broken pull request does not count.',
+        comment: 'In your app, or no code',
+        code: 'githubAgents()',
+      },
+      {
+        emoji: '🤖',
+        titre: 'AI agents',
+        texte:
+          'An LLM triaging the inbox, a scraper, a nightly digest: it sits down while it works and says its last log line in a speech bubble when it is done.',
+        comment: 'Your API route',
+        code: "{ status: 'working' }",
+      },
+      {
+        emoji: '📬',
+        titre: 'Queues, workers and deploys',
+        texte:
+          'A BullMQ worker, a Postgres job table, a deploy, a backup: if it runs and can fail, it gets a desk. The wall screen shows your own numbers, like the queue size.',
+        comment: 'Your API route',
+        code: "{ status: 'failed' }",
+      },
+    ],
     cafe: 'Buy me a coffee',
     licence: 'A shadcn/ui component for Next.js and React. Free and open source under the MIT license.',
     lireTitre: 'Read the room',
@@ -146,6 +184,44 @@ export const TEXTES = {
     intro:
       'pixel-openspace montre tes tâches planifiées, ta CI et tes agents IA comme un bureau en pixel art. Ceux qui tournent s’assoient et tapent, les désœuvrés vont au café, et quand l’un plante, son PC se met à fumer et le chef vient le voir.',
     etoile: 'Une étoile sur GitHub',
+    surveille: ['cron', 'launchd', 'timers systemd', 'GitHub Actions', 'agents IA', 'files d’attente', 'déploiements'],
+    sourcesTitre: 'Ce que la salle surveille',
+    sourcesTexte:
+      'Tout ce qui tourne selon un horaire ou à la demande, et peut réussir ou échouer. Une partie entre sans une ligne de code ; le reste demande une route d’API.',
+    sources: [
+      {
+        emoji: '⏰',
+        titre: 'Les tâches cron et les timers système',
+        texte:
+          'Ta crontab, tes agents launchd sur macOS, tes timers systemd sur Linux : en cours ou non, dernier code de sortie, dernière ligne de journal. Un passage manqué pendant que le portable dormait s’affiche endormi, pas en retard.',
+        comment: 'Sans code',
+        code: 'npx pixel-openspace',
+      },
+      {
+        emoji: '🧪',
+        titre: 'GitHub Actions',
+        texte:
+          'Chaque workflow de ton dépôt : il tape pendant un run, fume quand le build casse, et, avec le serveur local, somnole quand un passage planifié manque. Une pull request cassée ne compte pas.',
+        comment: 'Dans ton appli, ou sans code',
+        code: 'githubAgents()',
+      },
+      {
+        emoji: '🤖',
+        titre: 'Les agents IA',
+        texte:
+          'Un LLM qui trie la boîte de support, un scraper, un résumé de la nuit : il s’assoit pendant qu’il travaille et dit sa dernière ligne de journal dans une bulle quand il a fini.',
+        comment: 'Ta route d’API',
+        code: "{ status: 'working' }",
+      },
+      {
+        emoji: '📬',
+        titre: 'Les files d’attente, les workers et les déploiements',
+        texte:
+          'Un worker BullMQ, une table de tâches Postgres, un déploiement, une sauvegarde : si ça tourne et que ça peut échouer, ça a son bureau. L’écran mural affiche tes propres chiffres, comme la taille de la file.',
+        comment: 'Ta route d’API',
+        code: "{ status: 'failed' }",
+      },
+    ],
     cafe: 'M’offrir un café',
     licence: 'Un composant shadcn/ui pour Next.js et React. Gratuit et open source, sous licence MIT.',
     lireTitre: 'Lire la salle',
