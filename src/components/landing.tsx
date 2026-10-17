@@ -1,13 +1,16 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ButtonGroup } from '@/components/ui/button-group'
 import { Card } from '@/components/ui/card'
 import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from '@/components/ui/item'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
-import { CAFE, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { journal } from '@/data/changelog'
+import { BoutonCafe, Cadre } from '@/components/cadre'
+import { Nouveautes } from '@/components/journal'
+import { chemin } from '@/data/site'
 import type { Language } from '@/registry/pixel-openspace/types'
 
 /** Les deux exemples de code, en onglets : la route d'API, puis la page. */
@@ -34,67 +37,13 @@ function Exemples({ onglets }: { onglets: Array<{ titre: string; code: string }>
   )
 }
 
-/** Le choix de la langue : deux liens, la page anglaise et la page française. */
-function ChoixLangue({ langue, libelle }: { langue: Language; libelle: string }) {
-  const liens: Array<{ code: Language; href: string; texte: string }> = [
-    { code: 'en', href: '/', texte: 'EN' },
-    { code: 'fr', href: '/fr', texte: 'FR' },
-  ]
-  return (
-    <ButtonGroup aria-label={libelle}>
-      {liens.map((l) => (
-        <Button
-          key={l.code}
-          size="sm"
-          variant={l.code === langue ? 'default' : 'outline'}
-          nativeButton={false}
-          render={<a href={l.href} hrefLang={l.code} lang={l.code} aria-current={l.code === langue ? 'page' : undefined} />}
-        >
-          {l.texte}
-        </Button>
-      ))}
-    </ButtonGroup>
-  )
-}
-
-/** Le bouton jaune de Buy Me a Coffee, avec ses couleurs et sa police Cookie, sans le compteur de soutiens de leur image. */
-function BoutonCafe({ texte }: { texte: string }) {
-  return (
-    <a
-      href={CAFE}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex h-10 w-fit items-center gap-2 rounded-lg border border-black bg-[#ffdd00] px-4 font-[family-name:var(--font-cookie)] text-2xl leading-none text-black transition-colors hover:bg-[#ffe633] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-    >
-      <span aria-hidden="true" className="font-sans text-lg">
-        ☕
-      </span>
-      {texte}
-    </a>
-  )
-}
-
 /** La landing, dans la langue de sa page. */
 export function Landing({ langue }: { langue: Language }) {
   const t = TEXTES[langue]
   const codeEnLigne = 'font-mono text-sm text-foreground'
+  const derniere = journal(langue).slice(0, 1)
   return (
-    <main lang={langue} className="mx-auto flex w-full max-w-6xl flex-col px-4 sm:px-6">
-      <header className="flex items-center justify-between gap-4 py-6">
-        {/* Le logo officiel, en version sombre : la landing ne connaît que le thème sombre. */}
-        {/* eslint-disable-next-line @next/next/no-img-element -- un SVG statique, rien à optimiser */}
-        <img src="/docs/logo-sombre.svg" alt="pixel-openspace" width={204} height={48} className="h-12 w-auto" />
-        <nav className="flex items-center gap-1 text-sm">
-          <Button variant="ghost" size="sm" className="hidden sm:inline-flex" nativeButton={false} render={<a href="#setup" />}>
-            {t.installer}
-          </Button>
-          <Button variant="ghost" size="sm" nativeButton={false} render={<a href={DEPOT} />}>
-            GitHub
-          </Button>
-          <ChoixLangue langue={langue} libelle={t.langue} />
-        </nav>
-      </header>
-
+    <Cadre langue={langue} page="accueil">
       {/* Le haut de page : le titre, la commande, puis la salle elle-même. */}
       <section className="flex flex-col gap-8 pt-10 pb-20 sm:pt-16">
         <div className="flex flex-col gap-6">
@@ -209,22 +158,17 @@ export function Landing({ langue }: { langue: Language }) {
 
       <Separator />
 
-      <footer className="flex flex-col gap-2 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>
-          {t.faitA}
-          <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href="https://montematour.fr" />}>
-            Monte Ma Tour
+      {/* La dernière version, et le journal complet sur sa page. */}
+      <section id="nouveautes" className="grid scroll-mt-6 gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
+        <div className="flex max-w-[45ch] flex-col gap-4">
+          <h2 className="font-heading text-3xl sm:text-4xl">{t.nouveautesTitre}</h2>
+          <p className="leading-relaxed text-muted-foreground">{t.nouveautesTexte}</p>
+          <Button variant="outline" className="w-fit" nativeButton={false} render={<a href={chemin(langue, 'changelog')} />}>
+            {t.journalComplet}
           </Button>
-          {t.atelier}
-        </p>
-        <p>
-          {t.mit}
-          <Button variant="link" className="h-auto p-0" nativeButton={false} render={<a href={DEPOT} />}>
-            {t.source}
-          </Button>
-        </p>
-        <BoutonCafe texte={t.cafe} />
-      </footer>
-    </main>
+        </div>
+        <Nouveautes versions={derniere} />
+      </section>
+    </Cadre>
   )
 }

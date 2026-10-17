@@ -62,7 +62,6 @@ export default function Office() {
 /* Tous les mots de la page, en anglais et en français. */
 export const TEXTES = {
   en: {
-    installer: 'Set it up',
     copier: 'Copy',
     copie: 'Copied',
     titre: 'Your cron jobs, at their desks.',
@@ -78,7 +77,8 @@ export const TEXTES = {
       working: 'Sits at its desk and types. Code scrolls on its screen, its keyboard and fans light up.',
       ok: 'Up to date. Gets up now and then for a coffee, a round of arcade or a chat with a colleague.',
       late: 'Missed its run. Dozes at its desk until it catches up.',
-      asleep: 'Missed its run while the laptop was asleep. Sleeps at its desk, screen off, and the lead leaves it alone: nothing is broken.',
+      asleep:
+        'Missed its run while the laptop was asleep. Sleeps at its desk, screen off, and the lead leaves it alone: nothing is broken.',
       failed: 'Red screen, smoking PC. The lead walks over and stays until it recovers.',
       off: 'Not loaded. An empty chair and a post-it on a dark screen.',
       never: 'Hired, but has not run yet.',
@@ -124,21 +124,22 @@ export const TEXTES = {
         'CI pipelines too',
         'A GitHub Actions workflow, a GitLab pipeline, a deploy: it types while it runs, and a broken build smokes like any failed job.',
       ],
-      ['The day timeline', 'Under the room, one dot per run since midnight, red when it failed. Pass each job its runs.'],
+      [
+        'The day timeline',
+        'Under the room, one dot per run since midnight, red when it failed. Click a job’s name for its runs of the day, and since when it has been failing.',
+      ],
       [
         'A settings gear',
         'Whoever watches the room renames the sign, picks the weather city, the theme and the language, and turns things on or off. Saved in their browser.',
       ],
       ['Alerts and sound', 'Browser notifications when a job fails, 8-bit beeps for starts and failures. Both off until you turn them on.'],
     ],
-    faitA: 'Made at ',
-    atelier: ', a custom PC workshop on the Bassin d’Arcachon.',
-    mit: 'MIT license. ',
-    source: 'Source on GitHub',
-    langue: 'Language',
+    nouveautesTitre: 'What’s new',
+    nouveautesTexte:
+      'The latest versions, straight from the changelog. Each one is also a GitHub release: watch the repository to hear about the next ones.',
+    journalComplet: 'Full changelog',
   },
   fr: {
-    installer: 'Installer',
     copier: 'Copier',
     copie: 'Copié',
     titre: 'Tes tâches cron, à leur bureau.',
@@ -154,7 +155,8 @@ export const TEXTES = {
       working: 'Assis à son bureau, il tape. Du code défile sur son écran, son clavier et ses ventilateurs s’allument.',
       ok: 'À jour. Se lève de temps en temps pour un café, une partie d’arcade ou un mot à un collègue.',
       late: 'A manqué son passage. Somnole à son bureau en attendant de rattraper.',
-      asleep: 'A manqué son passage pendant que le portable dormait. Dort à son bureau, écran éteint, et le chef le laisse tranquille : rien n’est cassé.',
+      asleep:
+        'A manqué son passage pendant que le portable dormait. Dort à son bureau, écran éteint, et le chef le laisse tranquille : rien n’est cassé.',
       failed: 'Écran rouge, PC qui fume. Le chef vient le voir et reste à côté jusqu’à ce qu’il reparte.',
       off: 'Pas chargé. Une chaise vide et un post-it sur un écran noir.',
       never: 'Embauché, mais pas encore passé.',
@@ -200,7 +202,7 @@ export const TEXTES = {
       ],
       [
         'La frise de la journée',
-        'Sous la salle, un point par passage depuis minuit, rouge s’il a raté. Passe à chaque tâche ses passages.',
+        'Sous la salle, un point par passage depuis minuit, rouge s’il a raté. Un clic sur le nom d’une tâche liste ses passages du jour, et depuis quand elle échoue.',
       ],
       [
         'Une roue dentée de réglages',
@@ -211,10 +213,9 @@ export const TEXTES = {
         'Une notification du navigateur quand une tâche plante, des bips 8 bits aux départs et aux échecs. Les deux coupés tant que tu ne les allumes pas.',
       ],
     ],
-    faitA: 'Fait à l’atelier ',
-    atelier: ', montage de PC sur mesure sur le Bassin d’Arcachon.',
-    mit: 'Licence MIT. ',
-    source: 'Le code sur GitHub',
-    langue: 'Langue',
+    nouveautesTitre: 'Quoi de neuf',
+    nouveautesTexte:
+      'Les dernières versions, tirées du journal. Chacune est aussi une release GitHub : suis le dépôt pour être prévenu des suivantes.',
+    journalComplet: 'Tout le journal',
   },
 } satisfies Record<Language, unknown>
