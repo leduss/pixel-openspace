@@ -221,6 +221,7 @@ Le serveur n'écoute que sur `127.0.0.1:4747` et ouvre ton navigateur. Les optio
 | `--allow-run` | Laisse le bouton « Lancer » démarrer une tâche (`launchctl kickstart`, `systemctl start`) ; désactivé par défaut |
 | `-g, --github [owner/repo]` | Montre les workflows d'un dépôt GitHub (répétable). Sans dépôt, celui du dossier courant (son remote `origin`). Seul, il ne montre que GitHub ; ajoute `--local` pour les tâches de la machine aussi |
 | `--json` | Affiche les tâches trouvées et s'arrête |
+| `--card <fichier>` | Dessine la salle en SVG animé dans ce fichier et s'arrête (voir plus bas) ; `--cols 4\|5\|6` règle les bureaux par rangée |
 
 Pour GitHub, un jeton est facultatif pour un dépôt public. Sans jeton, GitHub accorde 60 requêtes par heure : la salle se rafraîchit toutes les 5 minutes. Avec `GITHUB_TOKEN`, `GH_TOKEN` ou un `gh` connecté, elle se rafraîchit chaque minute et lit les dépôts privés. Les réponses inchangées sont gardées en cache et ne coûtent rien.
 
@@ -261,6 +262,55 @@ C'est un SVG animé : net à toutes les tailles, léger, et il bouge sans JavaSc
 Voici la salle de ce dépôt-ci :
 
 ![La salle du dépôt pixel-openspace](https://pixel-openspace.vercel.app/api/card?repo=leduss/pixel-openspace&theme=farm&lang=fr)
+
+### Un dépôt privé
+
+Le CLI dessine la même image dans un fichier, avec ton jeton : `npx pixel-openspace --github --card office.svg`. Il prend les mêmes options que le serveur (`--theme`, `--lang`, `--title`, `--cols`). Laisse un workflow la redessiner et la commiter sur une branche à elle, pour garder ton historique propre. Crée la branche une fois :
+
+```bash
+git switch --orphan office && git commit --allow-empty -m office && git push -u origin office && git switch -
+```
+
+Puis ajoute ce workflow (remplace `CI` par le nom du tien) :
+
+```yaml
+# .github/workflows/office.yml
+name: Office
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [requested, completed]
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+concurrency: office
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: office
+      - run: npx -y pixel-openspace --github ${{ github.repository }} --card office.svg -x Office
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git add office.svg
+          git commit -m "office" && git push || true
+```
+
+Et dans ton README :
+
+```md
+![office](../office/office.svg)
+```
+
+Un commit poussé avec le jeton du workflow ne lance aucun autre workflow : pas de boucle, et `-x Office` garde le workflow qui dessine hors de sa propre salle. L'image suit ta CI quand elle démarre et quand elle finit, et le passage de chaque heure tient sa frise à jour.
 
 ## Ce qu'il y a d'autre dans la salle
 

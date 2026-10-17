@@ -6,13 +6,13 @@
  */
 
 import { spawn } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { homedir } from 'node:os'
 import { dirname, extname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
-import type { Agent, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
+import type { Agent, Columns, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
 import { LANGUES, THEMES } from '../../registry/pixel-openspace/preferences'
 import paquet from '../package.json'
 import { githubSansValeur, lireDepot, suivreGithub, type Depot } from './github'
@@ -62,6 +62,9 @@ Options:
       --config <file>   Settings file (default ./pixel-openspace.json, then ~/.config/pixel-openspace/config.json)
       --allow-run       Let the Run button start a job (launchctl kickstart / systemctl start)
       --json            Print the jobs as JSON and exit
+      --card <file>     Draw the room as an animated SVG into this file and exit,
+                        for a README (works on private repositories with a token)
+      --cols <4|5|6>    With --card, desks per row (default 5)
       --no-open         Do not open the browser
   -h, --help            Show this help
   -v, --version         Show the version
@@ -156,6 +159,8 @@ async function principal() {
       config: { type: 'string' },
       'allow-run': { type: 'boolean' },
       json: { type: 'boolean' },
+      card: { type: 'string' },
+      cols: { type: 'string' },
       weather: { type: 'string', short: 'w' },
       'no-open': { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
@@ -206,12 +211,43 @@ async function principal() {
 
   if (o.json) return console.log(JSON.stringify(collecter(reglages, langue, new Date(), externes()), null, 2))
 
-  const meteo = reglages.weather ? suivreMeteo(reglages.weather, langue) : null
-  const page = join(dirname(fileURLToPath(import.meta.url)), 'app')
-  const port = Number(o.port ?? reglages.port ?? 4747)
   // Un seul dépôt et rien d'autre : son nom sur le mur.
   const titreParDefaut = () =>
     depots.length === 1 && !reglages.sources?.length ? depots[0].nom.toUpperCase() : langue === 'fr' ? 'MES TÂCHES' : 'MY JOBS'
+
+  /*
+   * La carte des README, écrite dans un fichier : la même que
+   * pixel-openspace.vercel.app/api/card, mais lue avec le jeton de la machine
+   * ou du workflow, donc aussi pour un dépôt privé. Une CI la régénère et la
+   * commite ; le README l'affiche par son chemin.
+   */
+  if (o.card) {
+    const colonnes = o.cols ? Number(o.cols) : 5
+    if (![4, 5, 6].includes(colonnes)) {
+      console.error('pixel-openspace: --cols must be 4, 5 or 6')
+      process.exit(1)
+    }
+    const liste = collecter(reglages, langue, new Date(), externes())
+    // Chargé à la demande : react-dom/server ne pèse que sur ceux qui dessinent une carte.
+    const { rendreCarte } = await import('../../src/carte/rendu')
+    writeFileSync(
+      o.card,
+      rendreCarte({
+        agents: liste.map(versAgent),
+        titre: (reglages.title ?? titreParDefaut()).slice(0, 24),
+        theme: reglages.theme ?? 'geek',
+        langue,
+        colonnes: colonnes as Columns,
+      }),
+    )
+    console.log(`pixel-openspace ${paquet.version}: ${liste.length} job${liste.length === 1 ? '' : 's'} drawn into ${o.card}`)
+    if (!liste.length) process.exitCode = 1
+    return
+  }
+
+  const meteo = reglages.weather ? suivreMeteo(reglages.weather, langue) : null
+  const page = join(dirname(fileURLToPath(import.meta.url)), 'app')
+  const port = Number(o.port ?? reglages.port ?? 4747)
   // Lire launchd prend un instant par tâche : l'état est gardé deux secondes.
   let cache: { quand: number; taches: Array<Tache> } | null = null
   const taches = () => {

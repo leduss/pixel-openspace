@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.12.0 · 2026-10-17
+
+### Ajouté
+
+- `--card <fichier>` dessine la salle en SVG animé dans un fichier et s'arrête : la carte des README, lue avec ton jeton, donc aussi pour un dépôt privé. Un workflow peut la redessiner et la commiter sur une branche à elle ; le README explique comment. `--cols` règle les bureaux par rangée. Le code du dessin est un morceau à part du paquet, chargé seulement par `--card`.
+
 ## 0.11.0 · 2026-10-17
 
 ### Ajouté

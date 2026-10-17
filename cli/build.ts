@@ -25,8 +25,11 @@ await cp(`${ici}/app/index.html`, `${ici}/dist/app/index.html`)
 const serveur = await Bun.build({
   entrypoints: [`${ici}/src/cli.ts`],
   outdir: `${ici}/dist`,
-  naming: 'cli.js',
+  // La carte (react-dom/server) part dans un morceau à part, chargé seulement par --card.
+  splitting: true,
+  naming: { entry: 'cli.js', chunk: '[name]-[hash].js' },
   target: 'node',
+  define: { 'process.env.NODE_ENV': '"production"' },
   banner: '#!/usr/bin/env node',
 })
 if (!serveur.success) throw new AggregateError(serveur.logs, 'server build failed')

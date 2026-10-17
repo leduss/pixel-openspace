@@ -221,6 +221,7 @@ The server listens on `127.0.0.1:4747` only and opens your browser. The useful o
 | `--allow-run` | Let the “Run now” button start a job (`launchctl kickstart`, `systemctl start`); off by default |
 | `-g, --github [owner/repo]` | Show the workflows of a GitHub repository (repeatable). Without a repository, the one of the current folder (its `origin` remote). Alone, it shows only GitHub; add `--local` for this machine's jobs too |
 | `--json` | Print the jobs it found and exit |
+| `--card <file>` | Draw the room as an animated SVG into this file and exit (see below); `--cols 4\|5\|6` sets the desks per row |
 
 For GitHub, a token is optional for public repositories. Without one, GitHub allows 60 requests an hour, so the room refreshes every 5 minutes; with `GITHUB_TOKEN`, `GH_TOKEN` or a logged-in `gh` CLI, it refreshes every minute and can read private repositories. Unchanged answers are cached and cost nothing.
 
@@ -261,6 +262,55 @@ It is an animated SVG: sharp at any size, light, and it moves without JavaScript
 Here is this repository's own room:
 
 ![The pixel-openspace repository's own room](https://pixel-openspace.vercel.app/api/card?repo=leduss/pixel-openspace&theme=farm)
+
+### A private repository
+
+The CLI draws the same image into a file, with your token: `npx pixel-openspace --github --card office.svg`. It takes the same options as the server (`--theme`, `--lang`, `--title`, `--cols`). Let a workflow redraw it and commit it to a branch of its own, so your history stays clean. Create the branch once:
+
+```bash
+git switch --orphan office && git commit --allow-empty -m office && git push -u origin office && git switch -
+```
+
+Then add this workflow (rename `CI` to your workflow's name):
+
+```yaml
+# .github/workflows/office.yml
+name: Office
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [requested, completed]
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+concurrency: office
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: office
+      - run: npx -y pixel-openspace --github ${{ github.repository }} --card office.svg -x Office
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git add office.svg
+          git commit -m "office" && git push || true
+```
+
+And in your README:
+
+```md
+![office](../office/office.svg)
+```
+
+A commit pushed with the workflow's token starts no other workflow, so there is no loop, and `-x Office` keeps the drawing workflow out of its own room. The image follows your CI as it starts and ends, and the hourly run keeps its timeline up to date.
 
 ## What else is in the room
 

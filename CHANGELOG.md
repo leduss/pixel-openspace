@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.12.0 · 2026-10-17
+
+### Added
+
+- `--card <file>` draws the room as an animated SVG into a file and exits: the README card, read with your token, so it works for private repositories too. A workflow can redraw it and commit it to a branch of its own; the README explains how. `--cols` sets the desks per row. The drawing code is a separate chunk of the package, loaded only by `--card`.
+
 ## 0.11.0 · 2026-10-17
 
 ### Added
