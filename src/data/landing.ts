@@ -122,7 +122,7 @@ export const TEXTES = {
       ['The office cat', 'Naps on whichever desk was left empty.'],
       [
         'CI pipelines too',
-        'A GitHub Actions workflow, a GitLab pipeline, a deploy: it types while it runs, and a broken build smokes like any failed job. For GitHub, no code at all: npx pixel-openspace --github owner/repo.',
+        'A GitHub Actions workflow, a GitLab pipeline, a deploy: it types while it runs, and a broken build smokes like any failed job. For GitHub, githubAgents() finds your project’s workflows on its own, or run npx pixel-openspace --github without any code.',
       ],
       [
         'The day timeline',
@@ -198,7 +198,7 @@ export const TEXTES = {
       ['Le chat de l’atelier', 'Fait la sieste sur le bureau resté vide.'],
       [
         'La CI aussi',
-        'Un workflow GitHub Actions, un pipeline GitLab, un déploiement : il tape pendant qu’il tourne, et un build cassé fume comme n’importe quelle tâche en échec. Pour GitHub, sans une ligne de code : npx pixel-openspace --github owner/repo.',
+        'Un workflow GitHub Actions, un pipeline GitLab, un déploiement : il tape pendant qu’il tourne, et un build cassé fume comme n’importe quelle tâche en échec. Pour GitHub, githubAgents() trouve seule les workflows de ton projet, ou lance npx pixel-openspace --github sans une ligne de code.',
       ],
       [
         'La frise de la journée',

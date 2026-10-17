@@ -11,47 +11,30 @@
  */
 
 import { execFileSync } from 'node:child_process'
+import {
+  EN_COURS,
+  LimiteAtteinte,
+  RATES,
+  clientGithub,
+  debutDuRun,
+  depotDuRemote,
+  lireWorkflows,
+  type Depot,
+  type Run,
+  type Workflow,
+} from '../../registry/pixel-openspace/github'
 import type { AgentRun, AgentStatus, Language } from '../../registry/pixel-openspace/types'
 import { decrire, horaireCron, prochainPassage, type Calendrier, type Horaire } from './horaire'
 import { emojiPour, etatAuRepos, retenue, type Filtre, type Tache } from './sources'
 
-export type Depot = { proprietaire: string; nom: string }
-
-/** Un workflow, tel que l'API le liste. */
-export type Workflow = { id: number; name: string; path: string; state: string; updated_at: string }
-
-/** Un run, réduit à ce que la salle en montre. */
-export type Run = {
-  workflow_id: number
-  status: string
-  conclusion: string | null
-  display_title: string
-  event: string
-  head_branch: string | null
-  created_at: string
-  run_started_at?: string | null
-}
+export { depotDuRemote, runsQuiComptent, type Depot, type Run, type Workflow } from '../../registry/pixel-openspace/github'
 
 /** `owner/repo`, une adresse github.com, ou `.` pour le dépôt du dossier courant. */
 export function lireDepot(texte: string, dossier = process.cwd()): Depot {
   if (texte.trim() === '.') return depotCourant(dossier)
-  const depot = depotDuRemote(texte) ?? depotNu(texte)
+  const depot = depotDuRemote(texte)
   if (!depot) throw new Error(`not a GitHub repository: "${texte}", expected owner/repo`)
   return depot
-}
-
-function depotNu(texte: string): Depot | null {
-  const m = texte
-    .trim()
-    .replace(/\.git$|\/$/g, '')
-    .match(/^([\w.-]+)\/([\w.-]+)$/)
-  return m ? { proprietaire: m[1], nom: m[2] } : null
-}
-
-/** Le dépôt d'une adresse de remote GitHub : `git@github.com:o/r.git`, `https://github.com/o/r`, `ssh://git@github.com/o/r.git`. */
-export function depotDuRemote(url: string): Depot | null {
-  const m = url.trim().match(/^(?:https?:\/\/(?:[^@/]+@)?|ssh:\/\/git@|git@)github\.com[:/]([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/)
-  return m ? { proprietaire: m[1], nom: m[2] } : null
 }
 
 /** Le dépôt GitHub du dossier courant, lu dans son remote `origin`. */
@@ -82,16 +65,6 @@ export function cronsDuWorkflow(yaml: string): Array<string> {
   return [...yaml.matchAll(/^\s*-?\s*cron:\s*(['"]?)([^'"#\n]+?)\1\s*(?:#.*)?$/gm)].map((m) => m[2].trim())
 }
 
-/**
- * Les runs d'un workflow qui disent son état : ceux de la branche par défaut,
- * pour qu'une pull request cassée ne mette pas son bureau en échec ; tous, s'il
- * n'y a jamais tourné (un workflow de pull requests).
- */
-export function runsQuiComptent(runs: Array<Run>, brancheParDefaut: string): Array<Run> {
-  const principaux = runs.filter((r) => r.head_branch === brancheParDefaut)
-  return principaux.length ? principaux : runs
-}
-
 /** Toutes les expressions d'un workflow en un seul horaire, en temps universel. */
 export function horaireDuWorkflow(crons: Array<string>): Horaire {
   const calendriers: Array<Calendrier> = []
@@ -106,12 +79,8 @@ export function horaireDuWorkflow(crons: Array<string>): Horaire {
   return calendriers.length ? { type: 'calendrier', calendriers, utc: true } : { type: 'aucun' }
 }
 
-const EN_COURS = new Set(['queued', 'in_progress', 'waiting', 'requested', 'pending'])
-const RATES = new Set(['failure', 'timed_out', 'startup_failure'])
 /* GitHub retarde souvent ses crons de plusieurs minutes aux heures chargées : trois quarts d'heure avant de dire « en retard ». */
 const GRACE_GITHUB = 45 * 60_000
-
-const debutDuRun = (r: Run) => r.run_started_at ?? r.created_at
 
 /** L'état d'un workflow d'après ses runs, le plus récent en premier. */
 export function etatDuWorkflow(workflow: Workflow, runs: Array<Run>, horaire: Horaire, maintenant: Date): AgentStatus {
@@ -178,44 +147,13 @@ export function jetonGithub(): string | null {
   }
 }
 
-class LimiteAtteinte extends Error {}
-
-/** Un client de l'API qui garde l'ETag et le corps de chaque réponse. */
-function client(jeton: string | null) {
-  const caches = new Map<string, { etag: string; corps: unknown }>()
-  return async function lire<T>(chemin: string, brut = false): Promise<T> {
-    const enCache = caches.get(chemin)
-    const reponse = await fetch(`https://api.github.com${chemin}`, {
-      headers: {
-        accept: brut ? 'application/vnd.github.raw+json' : 'application/vnd.github+json',
-        'x-github-api-version': '2022-11-28',
-        'user-agent': 'pixel-openspace',
-        ...(jeton ? { authorization: `Bearer ${jeton}` } : {}),
-        ...(enCache ? { 'if-none-match': enCache.etag } : {}),
-      },
-      signal: AbortSignal.timeout(15_000),
-    })
-    if (reponse.status === 304 && enCache) return enCache.corps as T
-    if ((reponse.status === 403 || reponse.status === 429) && reponse.headers.get('x-ratelimit-remaining') === '0') {
-      const reprise = new Date(Number(reponse.headers.get('x-ratelimit-reset')) * 1000)
-      throw new LimiteAtteinte(`GitHub rate limit reached until ${reprise.toLocaleTimeString()}`)
-    }
-    if (reponse.status === 404) throw new Error(`${chemin.split('/').slice(2, 4).join('/')} not found (or private: set GITHUB_TOKEN)`)
-    if (!reponse.ok) throw new Error(`GitHub answered ${reponse.status} for ${chemin}`)
-    const corps = brut ? await reponse.text() : await reponse.json()
-    const etag = reponse.headers.get('etag')
-    if (etag) caches.set(chemin, { etag, corps })
-    return corps as T
-  }
-}
-
 /**
  * Suit les workflows de quelques dépôts en arrière-plan. `lire()` rend les
  * dernières tâches connues ; `pret` se résout après la première lecture,
  * réussie ou non.
  */
 export function suivreGithub(depots: Array<Depot>, filtre: Filtre, langue: Language, jeton = jetonGithub()) {
-  const lire = client(jeton)
+  const lire = clientGithub(jeton)
   const intervalle = jeton ? 60_000 : 5 * 60_000
   let taches: Array<Tache> = []
   // Le schedule de chaque workflow, relu quand le workflow change.
@@ -226,17 +164,11 @@ export function suivreGithub(depots: Array<Depot>, filtre: Filtre, langue: Langu
 
   const lireDepot = async (d: Depot, maintenant: Date): Promise<Array<Tache>> => {
     const base = `/repos/${d.proprietaire}/${d.nom}/actions`
-    const { default_branch } = await lire<{ default_branch: string }>(`/repos/${d.proprietaire}/${d.nom}`)
-    const { workflows } = await lire<{ workflows: Array<Workflow> }>(`${base}/workflows?per_page=100`)
-    const { workflow_runs } = await lire<{ workflow_runs: Array<Run> }>(`${base}/runs?per_page=100`)
     const resultat: Array<Tache> = []
-    for (const w of workflows) {
+    for (const { workflow: w, runs: recents } of await lireWorkflows(lire, d)) {
       if (!retenue(`${w.name} ${w.path}`, filtre)) continue
       const cle = `${d.proprietaire}/${d.nom}/${w.path}`
-      let runs = runsQuiComptent(
-        workflow_runs.filter((r) => r.workflow_id === w.id),
-        default_branch,
-      )
+      let runs = recents
       if (!runs.length && w.state === 'active') {
         const ancien = anciens.get(cle)
         if (!ancien || maintenant.getTime() - ancien.lu > 30 * 60_000) {

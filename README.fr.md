@@ -128,30 +128,31 @@ export default function Office() {
 
 ### La CI aussi
 
-Tout ce qui tourne, réussit ou échoue peut avoir son bureau : un workflow GitHub Actions, un pipeline GitLab, un déploiement. Pendant qu'il tourne, son agent tape ; quand le build casse, son PC fume et le chef vient le voir ; chaque exécution du jour fait un point sur la frise. Ici, les dernières exécutions d'un workflow GitHub deviennent un agent de plus à ajouter aux autres. GitHub accepte 60 appels par heure sans jeton : garde la réponse une minute ou deux avant de redemander.
+Tout ce qui tourne, réussit ou échoue peut avoir son bureau : un workflow GitHub Actions, un pipeline GitLab, un déploiement. Pendant qu'il tourne, son agent tape ; quand le build casse, son PC fume et le chef vient le voir ; chaque exécution du jour fait un point sur la frise.
+
+Pour GitHub Actions, `githubAgents()` fait tout. Elle trouve seule le dépôt de ton projet (sur Vercel, dans GitHub Actions, ou par le remote `origin` en développement) et fait de chacun de ses workflows un agent : au travail pendant un run, en échec après un échec, éteint s'il est désactivé. Les pull requests et les pushes sur d'autres branches ne comptent pas : un travail en cours cassé ne met pas un bureau en rouge.
 
 ```ts
 // app/api/ci/route.ts
+import { githubAgents } from '@/components/pixel-openspace/github'
+
 export async function GET() {
-  const res = await fetch('https://api.github.com/repos/OWNER/REPO/actions/workflows/ci.yml/runs?per_page=30', {
-    headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` },
-  })
-  const { workflow_runs: runs } = await res.json()
-  const running = runs.find((run) => run.status !== 'completed')
-  const done = runs.filter((run) => run.status === 'completed' && run.conclusion !== 'cancelled')
-  const last = done[0]
-  return Response.json({
-    id: 'ci',
-    name: 'CI',
-    emoji: '🧪',
-    schedule: 'à chaque push',
-    status: running ? 'working' : !last ? 'never' : last.conclusion === 'success' ? 'ok' : 'failed',
-    lastMessage: (running ?? last)?.display_title,
-    lastRun: last?.updated_at,
-    runs: done.reverse().map((run) => ({ at: run.run_started_at, ok: run.conclusion === 'success', message: run.display_title })),
-  })
+  return Response.json(await githubAgents())
 }
 ```
+
+Ensuite, ta page interroge `/api/ci` comme `/api/jobs` plus haut, et mélange ses agents aux tiens si tu en as.
+
+Elle ne tourne que côté serveur. Mets `GITHUB_TOKEN` dans tes variables d'environnement (un jeton à portée fine, en lecture sur Actions, suffit) : il est facultatif pour un dépôt public, mais GitHub n'accorde alors que 60 requêtes par heure, et la réponse est gardée 5 minutes au lieu d'une. Sur Vercel, le dépôt vient de ses variables d'environnement système, exposées par défaut. Les options :
+
+| Option | |
+| --- | --- |
+| `repo` | `'owner/repo'`, ou plusieurs ; par défaut celui du projet |
+| `token` | Par défaut `GITHUB_TOKEN`, puis `GH_TOKEN` |
+| `language` | `'en'` ou `'fr'`, pour le déclencheur affiché sur chaque fiche (« sur push ») |
+| `cacheSeconds` | Combien de temps garder la réponse : 60 avec un jeton, 300 sans |
+
+Le serveur local fait la même chose sans une ligne de code, et sait en plus quand un passage du `schedule:` est en retard : `npx pixel-openspace --github` (voir plus bas).
 
 ### Les états d'un agent
 
@@ -200,7 +201,7 @@ Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées s
 - **launchd** (macOS) : tes agents de `~/Library/LaunchAgents` qui tournent selon un horaire. En cours ou non, dernier code de sortie, dernière ligne de leur journal. Un passage manqué pendant que le Mac dormait (lu dans `pmset -g log`) s'affiche `asleep`, pas `late`.
 - **cron** : ta crontab. cron ne garde pas d'historique : chaque passage est supposé avoir eu lieu à l'heure.
 - **systemd** (Linux) : tes timers utilisateur, avec le résultat de leur dernier passage et la dernière ligne de leur journal.
-- **GitHub Actions** : les workflows de n'importe quel dépôt, avec `--github owner/repo`. Chaque workflow a son bureau : au travail pendant un run, en échec après un échec, en retard quand un passage du `schedule:` manque (les crons de GitHub sont lus en UTC). Ses passages du jour remplissent la frise. Une pull request cassée ne met pas un bureau en rouge : les runs de la branche par défaut comptent d'abord.
+- **GitHub Actions** : les workflows de n'importe quel dépôt, avec `--github owner/repo`. Chaque workflow a son bureau : au travail pendant un run, en échec après un échec, en retard quand un passage du `schedule:` manque (les crons de GitHub sont lus en UTC). Ses passages du jour remplissent la frise. Les pull requests et les pushes sur d'autres branches ne comptent pas : un travail en cours cassé ne met pas un bureau en rouge.
 
 Une seule commande, avec Node.js 18.3 ou plus récent :
 

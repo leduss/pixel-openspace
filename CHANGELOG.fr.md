@@ -14,6 +14,16 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.9.0 · 2026-10-17
+
+### Ajouté
+
+- `githubAgents()`, dans `components/pixel-openspace/github.ts` : la CI de ton projet dans la salle avec deux lignes dans une route d'API. Elle trouve seule le dépôt GitHub (sur Vercel, dans GitHub Actions, ou par le remote `origin` en développement) et fait de chaque workflow un agent, avec ses passages du jour sur la frise. `GITHUB_TOKEN` est facultatif pour un dépôt public ; la réponse est gardée une minute avec, cinq sans.
+
+### Corrigé
+
+- Avec `--github`, les runs lancés par une release, un cron ou à la main ne comptaient que si leur branche était celle par défaut, et une release porte le nom de son tag : un workflow de release affichait un vieux lancement manuel et aucun passage du jour. Seuls les pull requests et les pushes sur d'autres branches sont désormais écartés.
+
 ## 0.8.0 · 2026-10-17
 
 ### Ajouté

@@ -128,30 +128,31 @@ export default function Office() {
 
 ### CI pipelines too
 
-Anything that runs, passes or fails can have a desk: a GitHub Actions workflow, a GitLab pipeline, a deploy. While it runs, its agent types; when the build breaks, its PC smokes and the lead walks over; every run of the day is a dot on the timeline. Here, the last runs of a GitHub workflow become one more agent to add to the others. GitHub allows 60 calls an hour without a token: keep the answer a minute or two before asking again.
+Anything that runs, passes or fails can have a desk: a GitHub Actions workflow, a GitLab pipeline, a deploy. While it runs, its agent types; when the build breaks, its PC smokes and the lead walks over; every run of the day is a dot on the timeline.
+
+For GitHub Actions, `githubAgents()` does it all. It finds your project's repository on its own (on Vercel, in GitHub Actions, or from the `origin` remote in development) and turns each of its workflows into an agent: working while a run is in progress, failed after a failure, off when disabled. Pull requests and pushes to other branches don't count, so a broken work in progress does not turn a desk red.
 
 ```ts
 // app/api/ci/route.ts
+import { githubAgents } from '@/components/pixel-openspace/github'
+
 export async function GET() {
-  const res = await fetch('https://api.github.com/repos/OWNER/REPO/actions/workflows/ci.yml/runs?per_page=30', {
-    headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` },
-  })
-  const { workflow_runs: runs } = await res.json()
-  const running = runs.find((run) => run.status !== 'completed')
-  const done = runs.filter((run) => run.status === 'completed' && run.conclusion !== 'cancelled')
-  const last = done[0]
-  return Response.json({
-    id: 'ci',
-    name: 'CI',
-    emoji: '🧪',
-    schedule: 'on every push',
-    status: running ? 'working' : !last ? 'never' : last.conclusion === 'success' ? 'ok' : 'failed',
-    lastMessage: (running ?? last)?.display_title,
-    lastRun: last?.updated_at,
-    runs: done.reverse().map((run) => ({ at: run.run_started_at, ok: run.conclusion === 'success', message: run.display_title })),
-  })
+  return Response.json(await githubAgents())
 }
 ```
+
+Then poll `/api/ci` from your page, like `/api/jobs` above, and mix its agents with yours if you have some.
+
+It runs on the server only. Set `GITHUB_TOKEN` in your environment variables (a fine-grained token with read access to Actions is enough): it is optional for a public repository, but GitHub then allows 60 requests an hour, so the answer is kept 5 minutes instead of 1. On Vercel, the repository comes from its system environment variables, exposed by default. The options:
+
+| Option | |
+| --- | --- |
+| `repo` | `'owner/repo'`, or several; by default the project's own |
+| `token` | By default `GITHUB_TOKEN`, then `GH_TOKEN` |
+| `language` | `'en'` or `'fr'`, for the trigger shown on each card (“on push”) |
+| `cacheSeconds` | How long to keep the answer: 60 with a token, 300 without |
+
+The local server does the same without any code, and also knows when a `schedule:` run is late: `npx pixel-openspace --github` (see below).
 
 ### Agent statuses
 
@@ -200,7 +201,7 @@ The `cli/` folder holds a small server that finds the jobs scheduled on your mac
 - **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log. A run missed while the Mac was asleep (read from `pmset -g log`) shows as `asleep`, not `late`.
 - **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
 - **systemd** (Linux): your user timers, with the result of their last run and their last journal line.
-- **GitHub Actions**: the workflows of any repository, with `--github owner/repo`. Each workflow gets a desk: working while a run is in progress, failed after a failure, late when a `schedule:` run is missing (GitHub's crons are read in UTC). Its runs of the day fill the timeline. A failed pull request does not turn a desk red: the default branch's runs count first.
+- **GitHub Actions**: the workflows of any repository, with `--github owner/repo`. Each workflow gets a desk: working while a run is in progress, failed after a failure, late when a `schedule:` run is missing (GitHub's crons are read in UTC). Its runs of the day fill the timeline. Pull requests and pushes to other branches don't count, so a broken work in progress does not turn a desk red.
 
 One command, with Node.js 18.3 or later:
 

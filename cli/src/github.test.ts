@@ -119,6 +119,9 @@ describe('runsQuiComptent', () => {
     const pr = { ...run('2026-10-17T10:00:00Z', 'completed', 'failure'), head_branch: 'feature/x', event: 'pull_request' }
     expect(runsQuiComptent([pr, principal], 'main')).toEqual([principal])
     expect(runsQuiComptent([pr], 'main')).toEqual([pr])
+    // Une release porte le nom de son tag : elle compte quand même.
+    const release = { ...run('2026-10-17T11:00:00Z'), head_branch: 'v1.2.0', event: 'release' }
+    expect(runsQuiComptent([release, pr, principal], 'main')).toEqual([release, principal])
   })
 })
 
