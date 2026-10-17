@@ -262,6 +262,8 @@ bun run cli:build        # builds the local server into cli/dist
 
 The component lives in `registry/pixel-openspace/`, the local server in `cli/`, the landing page in `src/`.
 
+To draw a new theme, follow the guide: [Create a theme](./THEMES.md).
+
 ## Credits
 
 Born in the workshop of [Monte Ma Tour](https://montematour.fr), a custom PC builder on the Bassin d’Arcachon, to keep an eye on the jobs running the business. The code speaks French inside: that is where it grew up.

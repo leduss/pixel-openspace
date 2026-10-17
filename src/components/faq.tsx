@@ -9,7 +9,7 @@ export function PageFaq({ langue }: { langue: Language }) {
     <Cadre langue={langue} page="faq">
       <TitrePage titre={t.titre} intro={t.intro} />
       <div className="flex max-w-3xl flex-col gap-3 pb-20">
-        {t.questions.map(({ q, r }) => (
+        {t.questions.map(({ q, r, lien }) => (
           <details key={q} className="group rounded-xl border bg-card px-5 py-4 open:pb-5">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold [&::-webkit-details-marker]:hidden">
               {q}
@@ -18,6 +18,11 @@ export function PageFaq({ langue }: { langue: Language }) {
               </span>
             </summary>
             <p className="mt-3 max-w-[65ch] leading-relaxed text-muted-foreground">{r}</p>
+            {lien ? (
+              <a href={lien.href} className="mt-3 inline-block text-primary underline-offset-2 hover:underline">
+                {lien.texte} →
+              </a>
+            ) : null}
           </details>
         ))}
       </div>

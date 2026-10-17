@@ -262,6 +262,8 @@ bun run cli:build        # construit le serveur local dans cli/dist
 
 Le composant vit dans `registry/pixel-openspace/`, le serveur local dans `cli/`, la landing dans `src/`.
 
+Pour dessiner un nouveau thème, suis le guide : [Créer un thème](./THEMES.fr.md).
+
 ## D'où ça vient
 
 Né dans l'atelier de [Monte Ma Tour](https://montematour.fr), montage de PC sur mesure sur le Bassin d'Arcachon, pour garder un œil sur les tâches qui font tourner l'activité. Le code parle français à l'intérieur : c'est là qu'il a grandi.

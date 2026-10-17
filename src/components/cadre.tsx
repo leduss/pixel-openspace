@@ -2,7 +2,22 @@ import type { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Separator } from '@/components/ui/separator'
-import { ANNUAIRE, ATELIER, BUG, CAFE, DEPOT, DISCUSSIONS, IDEE, NPM, RELEASES, SITE, chemin, type Page } from '@/data/site'
+import {
+  ANNUAIRE,
+  ATELIER,
+  BUG,
+  CAFE,
+  DEPOT,
+  DISCUSSIONS,
+  GUIDE_THEME,
+  GUIDE_THEME_FR,
+  IDEE,
+  NPM,
+  RELEASES,
+  SITE,
+  chemin,
+  type Page,
+} from '@/data/site'
 import type { Language } from '@/registry/pixel-openspace/types'
 
 /*
@@ -111,6 +126,7 @@ function PiedDePage({ langue, page }: { langue: Language; page: Page }) {
         { texte: t.npm, href: NPM },
         { texte: t.releases, href: RELEASES },
         { texte: t.annuaire, href: ANNUAIRE },
+        { texte: t.guide, href: langue === 'fr' ? GUIDE_THEME_FR : GUIDE_THEME },
       ],
     },
     {

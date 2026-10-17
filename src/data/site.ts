@@ -22,10 +22,12 @@ export const DISCUSSIONS = `${DEPOT}/discussions`
 export const BUG = `${DEPOT}/issues/new?labels=bug`
 export const IDEE = `${DEPOT}/issues/new?labels=idea`
 export const EMAIL = 'julien.dussart59@gmail.com'
+export const GUIDE_THEME = `${DEPOT}/blob/main/THEMES.md`
+export const GUIDE_THEME_FR = `${DEPOT}/blob/main/THEMES.fr.md`
 export const ATELIER = 'https://montematour.fr'
 export { CAFE, DEPOT }
 
-type Question = { q: string; r: string }
+type Question = { q: string; r: string; lien?: { texte: string; href: string } }
 
 export const SITE = {
   en: {
@@ -42,6 +44,7 @@ export const SITE = {
       npm: 'Local server on npm',
       releases: 'Releases',
       annuaire: 'shadcn/ui directory',
+      guide: 'Create a theme',
       aide: 'Help',
       contact: 'Contact',
       discussions: 'Ask a question',
@@ -96,6 +99,7 @@ export const SITE = {
         {
           q: 'Can I make my own theme?',
           r: 'Yes. A theme is one file in components/pixel-openspace/themes/: the decor, the desks, the outfits, the break corners and the night lights. Start from an existing one; theme ideas are welcome as GitHub issues.',
+          lien: { texte: 'Read the guide: Create a theme', href: GUIDE_THEME },
         },
         {
           q: 'Which languages are there?',
@@ -159,6 +163,7 @@ export const SITE = {
       npm: 'Le serveur local sur npm',
       releases: 'Les releases',
       annuaire: 'L’annuaire shadcn/ui',
+      guide: 'Créer un thème',
       aide: 'Aide',
       contact: 'Contact',
       discussions: 'Poser une question',
@@ -213,6 +218,7 @@ export const SITE = {
         {
           q: 'Puis-je créer mon propre thème ?',
           r: 'Oui. Un thème tient dans un fichier de components/pixel-openspace/themes/ : le décor, les bureaux, les tenues, les coins de pause et les lumières de nuit. Pars d’un thème existant ; les idées de thème sont les bienvenues en issue GitHub.',
+          lien: { texte: 'Lire le guide : Créer un thème', href: GUIDE_THEME_FR },
         },
         {
           q: 'Quelles langues ?',
