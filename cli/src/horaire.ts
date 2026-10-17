@@ -15,7 +15,9 @@ export type Calendrier = {
   semaine: Array<number> | null
 }
 
-export type Horaire = { type: 'calendrier'; calendriers: Array<Calendrier> } | { type: 'intervalle'; secondes: number } | { type: 'aucun' }
+/** `utc` : un calendrier lu en temps universel, comme les `schedule:` de GitHub Actions ; à l'heure de la machine sinon. */
+export type Horaire =
+  { type: 'calendrier'; calendriers: Array<Calendrier>; utc?: boolean } | { type: 'intervalle'; secondes: number } | { type: 'aucun' }
 
 const TOUTES = { minute: [0, 59], heure: [0, 23], jour: [1, 31], mois: [1, 12], semaine: [0, 7] } as const
 const MOIS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
@@ -57,13 +59,14 @@ function champ(texte: string, nom: keyof typeof TOUTES, noms?: Array<string>): A
 }
 
 /** Les cinq champs d'une ligne de crontab, ou un de ses raccourcis. `@reboot` n'a pas d'horaire. */
-export function horaireCron(expression: string): Horaire {
+export function horaireCron(expression: string, utc = false): Horaire {
   if (expression === '@reboot') return { type: 'aucun' }
   const champs = (RACCOURCIS[expression] ?? expression).trim().split(/\s+/)
   if (champs.length !== 5) throw new Error(`invalid cron expression: ${expression}`)
   const [minute, heure, jour, mois, semaine] = champs
   return {
     type: 'calendrier',
+    ...(utc ? { utc } : {}),
     calendriers: [
       {
         minute: champ(minute, 'minute'),
@@ -100,26 +103,32 @@ export function horaireLaunchd(plist: {
 }
 
 /** Le jour convient-il ? Comme cron : si le jour du mois et celui de la semaine sont tous deux fixés, l'un ou l'autre suffit. */
-function jourConvient(c: Calendrier, d: Date) {
-  if (c.mois && !c.mois.includes(d.getMonth() + 1)) return false
-  const jour = !c.jour || c.jour.includes(d.getDate())
-  const semaine = !c.semaine || c.semaine.includes(d.getDay())
-  return c.jour && c.semaine ? c.jour.includes(d.getDate()) || c.semaine.includes(d.getDay()) : jour && semaine
+function jourConvient(c: Calendrier, d: Date, utc: boolean) {
+  const [mois, date, jourSemaine] = utc ? [d.getUTCMonth(), d.getUTCDate(), d.getUTCDay()] : [d.getMonth(), d.getDate(), d.getDay()]
+  if (c.mois && !c.mois.includes(mois + 1)) return false
+  const jour = !c.jour || c.jour.includes(date)
+  const semaine = !c.semaine || c.semaine.includes(jourSemaine)
+  return c.jour && c.semaine ? c.jour.includes(date) || c.semaine.includes(jourSemaine) : jour && semaine
 }
 
 const tout = (n: number) => Array.from({ length: n }, (_, i) => i)
 
 /** Le premier passage après `depuis` (sens 1) ou le dernier avant (sens -1), sur un an au plus. */
-function chercher(c: Calendrier, depuis: Date, sens: 1 | -1): Date | null {
+function chercher(c: Calendrier, depuis: Date, sens: 1 | -1, utc: boolean): Date | null {
   const heures = c.heure ?? tout(24)
   const minutes = c.minute ?? tout(60)
   const ordre = <T>(l: Array<T>) => (sens === 1 ? l : [...l].reverse())
+  // Les dates se construisent à l'heure de la machine, ou en temps universel.
+  const date = (a: number, mo: number, j: number, h = 0, mi = 0) => (utc ? new Date(Date.UTC(a, mo, j, h, mi)) : new Date(a, mo, j, h, mi))
+  const [annee, mois, quantieme] = utc
+    ? [depuis.getUTCFullYear(), depuis.getUTCMonth(), depuis.getUTCDate()]
+    : [depuis.getFullYear(), depuis.getMonth(), depuis.getDate()]
   for (let i = 0; i <= 366; i++) {
-    const jour = new Date(depuis.getFullYear(), depuis.getMonth(), depuis.getDate() + i * sens)
-    if (!jourConvient(c, jour)) continue
+    const jour = date(annee, mois, quantieme + i * sens)
+    if (!jourConvient(c, jour, utc)) continue
     for (const h of ordre(heures)) {
       for (const m of ordre(minutes)) {
-        const t = new Date(jour.getFullYear(), jour.getMonth(), jour.getDate(), h, m)
+        const t = date(annee, mois, quantieme + i * sens, h, m)
         if (sens === 1 ? t > depuis : t <= depuis) return t
       }
     }
@@ -129,7 +138,7 @@ function chercher(c: Calendrier, depuis: Date, sens: 1 | -1): Date | null {
 
 function extreme(horaire: Horaire, depuis: Date, sens: 1 | -1): Date | null {
   if (horaire.type !== 'calendrier') return null
-  const dates = horaire.calendriers.map((c) => chercher(c, depuis, sens)).filter((d): d is Date => d !== null)
+  const dates = horaire.calendriers.map((c) => chercher(c, depuis, sens, Boolean(horaire.utc))).filter((d): d is Date => d !== null)
   if (!dates.length) return null
   return new Date((sens === 1 ? Math.min : Math.max)(...dates.map((d) => d.getTime())))
 }
@@ -195,9 +204,11 @@ export function decrire(horaire: Horaire, langue: Language): string | null {
   }
   const phrases = horaire.calendriers.map((c) => phrase(c, langue))
   if (phrases.some((p) => p === null)) return null
+  // En temps universel, l'heure le dit.
+  const fuseau = horaire.utc ? ' UTC' : ''
   // Plusieurs heures dans la journée : « chaque jour à 7 h 30, 12 h 30 ».
   const prefixe = fr ? 'chaque jour à ' : 'daily at '
   if (phrases.length > 1 && phrases.every((p) => p!.startsWith(prefixe)))
-    return prefixe + phrases.map((p) => p!.slice(prefixe.length)).join(', ')
-  return phrases.join(', ')
+    return prefixe + phrases.map((p) => p!.slice(prefixe.length)).join(', ') + fuseau
+  return phrases.join(', ') + fuseau
 }

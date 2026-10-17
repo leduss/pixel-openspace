@@ -15,6 +15,7 @@ import { parseArgs } from 'node:util'
 import type { Agent, Language, ThemeName, WallTile } from '../../registry/pixel-openspace/types'
 import { LANGUES, THEMES } from '../../registry/pixel-openspace/preferences'
 import paquet from '../package.json'
+import { lireDepot, suivreGithub, type Depot } from './github'
 import { suivreMeteo } from './meteo'
 import { lireCron, lireLaunchd, lireSystemd, relancer, type Filtre, type Source, type Tache } from './sources'
 
@@ -26,6 +27,8 @@ export type Reglages = {
   language?: Language
   theme?: ThemeName
   sources?: Array<Source>
+  /** Des dépôts GitHub, `owner/repo` : chaque workflow devient une tâche. */
+  github?: Array<string>
   match?: Array<string>
   exclude?: Array<string>
   allowRun?: boolean
@@ -40,12 +43,17 @@ Your scheduled jobs as pixel-art workers in an open space.
 Usage: npx pixel-openspace [options]
 
 Reads launchd agents (macOS), your crontab, and systemd user timers (Linux),
-then opens the open space in your browser.
+or the GitHub Actions workflows of a repository, then opens the open space
+in your browser.
 
 Options:
   -p, --port <n>        Port to listen on, on 127.0.0.1 (default 4747)
   -m, --match <text>    Only show jobs whose name contains this text (repeatable)
   -x, --exclude <text>  Hide jobs whose name contains this text (repeatable)
+  -g, --github <owner/repo>
+                        Show the GitHub Actions workflows of a repository (repeatable).
+                        Uses GITHUB_TOKEN, GH_TOKEN or \`gh auth token\` when available
+      --local           With --github, show this machine's jobs too
   -t, --theme <name>    geek, eighties, gym, modern, kitchen, neon or farm (default geek)
   -l, --lang <en|fr>    Language of the room (default: from your system)
       --title <text>    The name on the wall
@@ -75,8 +83,8 @@ function langueSysteme(): Language {
   return locale.toLowerCase().startsWith('fr') ? 'fr' : 'en'
 }
 
-/** Toutes les tâches, réglages appliqués. */
-export function collecter(reglages: Reglages, langue: Language, maintenant = new Date()): Array<Tache> {
+/** Toutes les tâches, réglages appliqués. `externes` : celles déjà lues ailleurs (GitHub). */
+export function collecter(reglages: Reglages, langue: Language, maintenant = new Date(), externes: Array<Tache> = []): Array<Tache> {
   const filtre: Filtre = { match: reglages.match ?? [], exclude: reglages.exclude ?? [] }
   const sources = reglages.sources ?? ['launchd', 'cron', 'systemd']
   const lecteurs = { launchd: lireLaunchd, cron: lireCron, systemd: lireSystemd }
@@ -88,7 +96,7 @@ export function collecter(reglages: Reglages, langue: Language, maintenant = new
       return []
     }
   })
-  return taches
+  return [...taches, ...externes]
     .filter((t) => !reglages.agents?.[t.id]?.hidden)
     .map((t) => {
       const surcharge = { ...reglages.agents?.[t.id] }
@@ -132,12 +140,14 @@ function ouvrir(url: string) {
     .unref()
 }
 
-function principal() {
+async function principal() {
   const { values: o } = parseArgs({
     options: {
       port: { type: 'string', short: 'p' },
       match: { type: 'string', short: 'm', multiple: true },
       exclude: { type: 'string', short: 'x', multiple: true },
+      github: { type: 'string', short: 'g', multiple: true },
+      local: { type: 'boolean' },
       theme: { type: 'string', short: 't' },
       lang: { type: 'string', short: 'l' },
       title: { type: 'string' },
@@ -154,8 +164,12 @@ function principal() {
   if (o.version) return console.log(paquet.version)
 
   const fichier = lireReglages(o.config)
+  const github = o.github ?? fichier.github ?? []
   const reglages: Reglages = {
     ...fichier,
+    github,
+    // Avec GitHub seul, la salle ne montre que ses workflows, sauf --local ou des sources choisies.
+    sources: fichier.sources ?? (github.length && !o.local ? [] : undefined),
     match: o.match ?? fichier.match,
     exclude: o.exclude ?? fichier.exclude,
     theme: (o.theme as ThemeName | undefined) ?? fichier.theme,
@@ -175,15 +189,32 @@ function principal() {
   }
   const langue = reglages.language ?? langueSysteme()
 
-  if (o.json) return console.log(JSON.stringify(collecter(reglages, langue), null, 2))
+  let depots: Array<Depot> = []
+  try {
+    depots = github.map(lireDepot)
+  } catch (erreur) {
+    console.error(`pixel-openspace: ${(erreur as Error).message}`)
+    process.exit(1)
+  }
+  const suivi = depots.length ? suivreGithub(depots, { match: reglages.match ?? [], exclude: reglages.exclude ?? [] }, langue) : null
+  if (suivi && !suivi.jeton)
+    console.error('pixel-openspace: no GitHub token found, refreshing every 5 minutes (set GITHUB_TOKEN to refresh every minute)')
+  await suivi?.pret
+  const externes = () => suivi?.lire() ?? []
+
+  if (o.json) return console.log(JSON.stringify(collecter(reglages, langue, new Date(), externes()), null, 2))
 
   const meteo = reglages.weather ? suivreMeteo(reglages.weather, langue) : null
   const page = join(dirname(fileURLToPath(import.meta.url)), 'app')
   const port = Number(o.port ?? reglages.port ?? 4747)
+  // Un seul dépôt et rien d'autre : son nom sur le mur.
+  const titreParDefaut = () =>
+    depots.length === 1 && !reglages.sources?.length ? depots[0].nom.toUpperCase() : langue === 'fr' ? 'MES TÂCHES' : 'MY JOBS'
   // Lire launchd prend un instant par tâche : l'état est gardé deux secondes.
   let cache: { quand: number; taches: Array<Tache> } | null = null
   const taches = () => {
-    if (!cache || Date.now() - cache.quand > 2000) cache = { quand: Date.now(), taches: collecter(reglages, langue) }
+    if (!cache || Date.now() - cache.quand > 2000)
+      cache = { quand: Date.now(), taches: collecter(reglages, langue, new Date(), externes()) }
     return cache.taches
   }
 
@@ -205,7 +236,7 @@ function principal() {
       res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' })
       return res.end(
         JSON.stringify({
-          title: reglages.title ?? (langue === 'fr' ? 'MES TÂCHES' : 'MY JOBS'),
+          title: reglages.title ?? titreParDefaut(),
           language: langue,
           theme: reglages.theme ?? 'geek',
           allowRun: reglages.allowRun,
@@ -251,9 +282,10 @@ function principal() {
     const adresse = `http://127.0.0.1:${port}`
     const n = taches().length
     console.log(`pixel-openspace ${paquet.version}: ${n} job${n === 1 ? '' : 's'} at ${adresse}`)
-    if (!n) console.log('No scheduled job found. Try --match <text> to include services, or check your crontab.')
+    if (!n && !depots.length) console.log('No scheduled job found. Try --match <text> to include services, or check your crontab.')
+    if (!n && depots.length) console.log('No GitHub workflow found yet. Check the repository name, or set GITHUB_TOKEN for a private one.')
     if (!o['no-open']) ouvrir(adresse)
   })
 }
 
-principal()
+void principal()

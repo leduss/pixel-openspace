@@ -15,7 +15,7 @@ import { decrire, horaireCron, horaireLaunchd, passagePrecedent, prochainPassage
 export type Source = 'launchd' | 'cron' | 'systemd'
 
 /** Un agent, et de quoi le relancer à la main. */
-export type Tache = Agent & { source: Source; cible: string }
+export type Tache = Agent & { source: Source | 'github'; cible: string }
 
 export type Filtre = { match: Array<string>; exclude: Array<string> }
 
@@ -149,19 +149,22 @@ export function etatAuRepos({
   echec,
   maintenant,
   veilles = [],
+  grace = 15 * 60_000,
 }: {
   horaire: Horaire
   dernier: Date | null
   echec: boolean
   maintenant: Date
   veilles?: Array<Veille>
+  /** Le temps laissé à un passage avant de le dire en retard. */
+  grace?: number
 }): AgentStatus {
   if (echec) return 'failed'
   if (horaire.type === 'aucun') return 'on-demand'
   if (!dernier) return 'never'
   const prevu = passagePrecedent(horaire, maintenant)
-  // Un quart d'heure de grâce : la machine sortait peut-être de veille.
-  if (prevu && dernier.getTime() < prevu.getTime() - 60_000 && maintenant.getTime() - prevu.getTime() > 15 * 60_000) {
+  // Un quart d'heure de grâce par défaut : la machine sortait peut-être de veille.
+  if (prevu && dernier.getTime() < prevu.getTime() - 60_000 && maintenant.getTime() - prevu.getTime() > grace) {
     const t = prevu.getTime()
     return veilles.some((v) => t >= v.debut && t < v.fin) ? 'asleep' : 'late'
   }
@@ -392,5 +395,6 @@ export function lireSystemd(filtre: Filtre, langue: Language): Array<Tache> {
 export function relancer(tache: Tache) {
   if (tache.source === 'launchd') lancer('launchctl', ['kickstart', `gui/${process.getuid?.() ?? 501}/${tache.cible}`])
   else if (tache.source === 'systemd') lancer('systemctl', ['--user', 'start', '--no-block', tache.cible])
+  else if (tache.source === 'github') throw new Error('GitHub workflows cannot be started from here')
   else throw new Error('cron jobs cannot be started from here')
 }

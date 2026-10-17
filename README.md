@@ -200,6 +200,7 @@ The `cli/` folder holds a small server that finds the jobs scheduled on your mac
 - **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log. A run missed while the Mac was asleep (read from `pmset -g log`) shows as `asleep`, not `late`.
 - **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
 - **systemd** (Linux): your user timers, with the result of their last run and their last journal line.
+- **GitHub Actions**: the workflows of any repository, with `--github owner/repo`. Each workflow gets a desk: working while a run is in progress, failed after a failure, late when a `schedule:` run is missing (GitHub's crons are read in UTC). Its runs of the day fill the timeline. A failed pull request does not turn a desk red: the default branch's runs count first.
 
 One command, with Node.js 18.3 or later:
 
@@ -217,7 +218,16 @@ The server listens on `127.0.0.1:4747` only and opens your browser. The useful o
 | `-l, --lang <en\|fr>` | Language of the room (default: your system’s) |
 | `-w, --weather <place>` | Real weather behind the lead’s window, from [Open-Meteo](https://open-meteo.com): a city or `latitude,longitude` |
 | `--allow-run` | Let the “Run now” button start a job (`launchctl kickstart`, `systemctl start`); off by default |
+| `-g, --github <owner/repo>` | Show the workflows of a GitHub repository (repeatable). Alone, it shows only GitHub; add `--local` for this machine's jobs too |
 | `--json` | Print the jobs it found and exit |
+
+For GitHub, a token is optional for public repositories. Without one, GitHub allows 60 requests an hour, so the room refreshes every 5 minutes; with `GITHUB_TOKEN`, `GH_TOKEN` or a logged-in `gh` CLI, it refreshes every minute and can read private repositories. Unchanged answers are cached and cost nothing.
+
+```bash
+npx pixel-openspace --github vercel/next.js --github my-org/my-app
+```
+
+In the settings file below, that is `"github": ["owner/repo"]`; add `"sources": ["launchd", "cron", "systemd"]` to keep this machine's jobs in the room.
 
 Every option can also live in a `pixel-openspace.json` file, in the current folder or in `~/.config/pixel-openspace/config.json`, along with a nicer name, emoji or description per job:
 

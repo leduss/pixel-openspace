@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.7.0 · 2026-10-17
+
+### Ajouté
+
+- Le serveur local lit GitHub Actions : `npx pixel-openspace --github owner/repo`, répétable. Chaque workflow a son bureau : au travail pendant un run, en échec après un échec, éteint s'il est désactivé, en retard quand un passage du `schedule:` manque (les crons de GitHub sont lus en UTC, avec trois quarts d'heure de grâce pour ses retards). Ses passages du jour remplissent la frise. Les runs de la branche par défaut comptent d'abord : une pull request cassée ne met pas un bureau en rouge. Un jeton est facultatif pour un dépôt public : `GITHUB_TOKEN`, `GH_TOKEN` ou `gh auth token` fait passer le rafraîchissement de 5 minutes à une minute et ouvre les dépôts privés. `--local` montre aussi les tâches de la machine. (#1)
+
 ## 0.6.0 · 2026-10-17
 
 ### Ajouté
