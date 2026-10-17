@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Le paquet npm construit.
     "cli/dist/**",
+    // Le rendu construit de la carte de README.
+    "src/carte/dist/**",
   ]),
 ]);
 

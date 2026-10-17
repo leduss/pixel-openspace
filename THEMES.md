@@ -69,7 +69,7 @@ Two more things belong on the desk: `bientot` (minutes before the next run, show
 
 ## Animation
 
-Don't use `<animate>`: Chrome recomputes every SVG animation on every frame, even when nothing changes. Use `<Anim>` from `primitives.tsx` instead, with the same `attributeName`, `values`, `dur` and `begin`. The room moves it in steps, like an old game, and freezes it when all is quiet. `etapes(from, to, n)` builds the steps of a movement.
+Don't use `<animate>`: Chrome recomputes every SVG animation on every frame, even when nothing changes. Use `<Anim>` from `primitives.tsx` instead, with the same `attributeName`, `values`, `dur` and `begin`. The room moves it in steps, like an old game, and freezes it when all is quiet. `etapes(from, to, n)` builds the steps of a movement. In the README card, the same `<Anim>` becomes a native SVG `<animate>`, so your theme moves there too, without JavaScript.
 
 Other helpers in `primitives.tsx`: `Pixels` draws a grid of characters, one per pixel; `Cliquable` makes an object clickable; `Neon` draws a glowing sign; `Plante` a potted plant; `MUR_SALLE` lists the spans of the main room's wall. `Arcade`, `BorneCasseBriques` and `Porte` can be borrowed from `themes/geek.tsx`.
 

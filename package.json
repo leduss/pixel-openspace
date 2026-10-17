@@ -1,6 +1,6 @@
 {
   "name": "pixel-openspace",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write registry src",
     "registry:build": "shadcn build",
+    "carte:build": "bun build src/carte/rendu.tsx --target=node --format=esm --production --outfile=src/carte/dist/rendu.mjs",
     "cli:build": "bun cli/build.ts",
     "cli": "bun cli/build.ts && node cli/dist/cli.js"
   },

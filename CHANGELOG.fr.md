@@ -14,6 +14,13 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.11.0 · 2026-10-17
+
+### Ajouté
+
+- La salle dans n'importe quel README : `![office](https://pixel-openspace.vercel.app/api/card?repo=owner/repo)` montre les workflows GitHub Actions d'un dépôt public à leur bureau, en SVG animé qui bouge sans JavaScript. `&theme=`, `&lang=`, `&cols=` et `&title=` la changent ; elle est gardée cinq minutes. (#2)
+- `<Anim>` se joue en `<animate>` SVG natif quand la scène est exportée, ce dont la carte a besoin. Rien ne change dans le composant.
+
 ## 0.10.0 · 2026-10-17
 
 ### Ajouté

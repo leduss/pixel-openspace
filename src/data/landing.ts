@@ -5,6 +5,7 @@ import type { Language } from '@/registry/pixel-openspace/types'
 export const DEPOT = 'https://github.com/leduss/pixel-openspace'
 export const CAFE = 'https://buymeacoffee.com/leduss'
 export const INSTALL = 'npx shadcn@latest add @pixel-openspace/pixel-openspace'
+export const CARTE_README = '![office](https://pixel-openspace.vercel.app/api/card?repo=owner/repo)'
 
 /* La couleur de la lampe de chaque état, la même que dans la salle. */
 export const LAMPES: Record<string, string> = {
@@ -69,6 +70,11 @@ export const TEXTES = {
       'pixel-openspace shows your scheduled jobs, CI pipelines and AI agents as a pixel-art office. Running jobs sit down and type, idle ones go get coffee, and when one fails its PC starts to smoke and the lead walks over.',
     etoile: 'Star it on GitHub',
     surveille: ['cron', 'launchd', 'systemd timers', 'GitHub Actions', 'AI agents', 'queues', 'deploys'],
+    readmeTitre: 'In your README too',
+    readmeTexte:
+      'Paste one line into any repository’s README: its GitHub Actions workflows at their desks, up to date, animated. The image refreshes every five minutes.',
+    readmeOptions: 'Add &theme=farm, &lang=fr, &cols=6 or &title=ACME to the address.',
+    readmeLegende: 'This repository’s own room, live.',
     sourcesTitre: 'What it watches',
     sourcesTexte:
       'Anything that runs on a schedule or on demand, and can succeed or fail. Some of it comes in without a line of code; the rest takes one API route.',
@@ -146,7 +152,7 @@ export const TEXTES = {
     details: [
       [
         'Seven themes',
-        'A geek open space with RGB towers, a 1986 corporate office with green-phosphor CRTs, a gym where every job rides an exercise bike, a bright modern office in light oak with standing desks and a ping-pong table, a restaurant kitchen where a failed job burns its pan, a neon city at night where holographic screens glitch when a job breaks, or a cozy farm where a failed job’s crops wither under a crow.',
+        'Geek, 1980s office, gym, modern office, restaurant kitchen, neon city, cozy farm: each tells the statuses its own way.',
       ],
       ['Two arcade cabinets', 'Component Snake and Chip Breaker, both playable. High scores hang on the wall.'],
       ['A wall screen', 'Up to four numbers of your own: jobs today, errors, queue size, budget.'],
@@ -158,10 +164,7 @@ export const TEXTES = {
         'Pumpkins and a ghost all October, a Christmas tree and garlands all December, hidden eggs and a hopping bunny at Easter.',
       ],
       ['The office cat', 'Naps on whichever desk was left empty.'],
-      [
-        'CI pipelines too',
-        'A GitHub Actions workflow, a GitLab pipeline, a deploy: it types while it runs, and a broken build smokes like any failed job. For GitHub, githubAgents() finds your project’s workflows on its own, or run npx pixel-openspace --github without any code.',
-      ],
+      ['Reduced motion', 'If your system asks for less motion, everybody stays at their desk.'],
       [
         'The day timeline',
         'Under the room, one dot per run since midnight, red when it failed. Click a job’s name for its runs of the day, and since when it has been failing.',
@@ -185,6 +188,11 @@ export const TEXTES = {
       'pixel-openspace montre tes tâches planifiées, ta CI et tes agents IA comme un bureau en pixel art. Ceux qui tournent s’assoient et tapent, les désœuvrés vont au café, et quand l’un plante, son PC se met à fumer et le chef vient le voir.',
     etoile: 'Une étoile sur GitHub',
     surveille: ['cron', 'launchd', 'timers systemd', 'GitHub Actions', 'agents IA', 'files d’attente', 'déploiements'],
+    readmeTitre: 'Dans ton README aussi',
+    readmeTexte:
+      'Colle une ligne dans le README de n’importe quel dépôt : ses workflows GitHub Actions à leur bureau, à jour, animés. L’image se rafraîchit toutes les cinq minutes.',
+    readmeOptions: 'Ajoute &theme=farm, &lang=fr, &cols=6 ou &title=ACME à l’adresse.',
+    readmeLegende: 'La salle de ce dépôt-ci, en direct.',
     sourcesTitre: 'Ce que la salle surveille',
     sourcesTexte:
       'Tout ce qui tourne selon un horaire ou à la demande, et peut réussir ou échouer. Une partie entre sans une ligne de code ; le reste demande une route d’API.',
@@ -263,7 +271,7 @@ export const TEXTES = {
     details: [
       [
         'Sept thèmes',
-        'Un open space geek aux tours RGB, un bureau d’entreprise de 1986 aux écrans cathodiques vert phosphore, une salle de sport où chaque tâche pédale sur son vélo, un bureau moderne et lumineux, chêne clair, bureaux assis-debout et table de ping-pong, une cuisine de restaurant où la tâche qui plante fait brûler sa poêle, ou une ville néon la nuit, où l’écran holographique d’une tâche en panne crache des glitchs, ou une ferme douillette où les cultures d’une tâche en panne fanent sous l’œil d’un corbeau.',
+        'Geek, bureau des années 80, salle de sport, bureau moderne, cuisine de restaurant, ville néon, ferme douillette : chacun raconte les états à sa façon.',
       ],
       ['Deux bornes d’arcade', 'Snake des composants et Casse-puces, jouables toutes les deux. Les records sont affichés au mur.'],
       ['Un écran mural', 'Jusqu’à quatre chiffres à toi : tâches du jour, erreurs, file d’attente, budget.'],
@@ -272,10 +280,7 @@ export const TEXTES = {
       ['Visiteurs et livreurs', 'Augmente un compteur et quelqu’un entre : un visiteur salue le chef, un livreur dépose un colis.'],
       ['Les saisons', 'Citrouilles et fantôme tout octobre, sapin et guirlandes tout décembre, œufs cachés et lapin qui bondit à Pâques.'],
       ['Le chat de l’atelier', 'Fait la sieste sur le bureau resté vide.'],
-      [
-        'La CI aussi',
-        'Un workflow GitHub Actions, un pipeline GitLab, un déploiement : il tape pendant qu’il tourne, et un build cassé fume comme n’importe quelle tâche en échec. Pour GitHub, githubAgents() trouve seule les workflows de ton projet, ou lance npx pixel-openspace --github sans une ligne de code.',
-      ],
+      ['Moins d’animations', 'Si ton système demande moins de mouvement, chacun reste à son bureau.'],
       [
         'La frise de la journée',
         'Sous la salle, un point par passage depuis minuit, rouge s’il a raté. Un clic sur le nom d’une tâche liste ses passages du jour, et depuis quand elle échoue.',

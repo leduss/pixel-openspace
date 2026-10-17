@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { JeuArcade, lireRecord, type Jeu } from './arcade'
 import { BUREAU, CHAT_ID, CHEF_ID, LARGEUR, avancer, chat, estInvite, invite, marcheur, plan, type Invite, type Statut } from './engine'
-import { TEXTS, type Texts } from './i18n'
+import { TEXTS } from './i18n'
 import { ACCENT, DefsCommunes, TextesContexte, animerLeDecor, type Lumiere } from './primitives'
 import { THEME_GEEK } from './themes/geek'
 import { Frise } from './timeline'
@@ -13,8 +13,21 @@ import { changerPreferences } from './preferences'
 import { useDansLeNavigateur, usePreferences } from './navigateur'
 import { Reglages, useMeteoDuLieu } from './settings'
 import { fete } from './seasons'
-import type { Agent, OpenSpaceProps, SceneObject, WallTile } from './types'
-import { type Equipe, type Pose, type Vue, bientot, heureCourte, obscurite, oublie, poses, posesAuBureau, versVue } from './vue'
+import type { OpenSpaceProps, SceneObject } from './types'
+import {
+  type Equipe,
+  type Pose,
+  type Vue,
+  bientot,
+  chefDecor,
+  ecranParDefaut,
+  obscurite,
+  oublie,
+  poses,
+  posesAuBureau,
+  prochainsPassages,
+  versVue,
+} from './vue'
 import { THEMES, ThemeContexte } from './contexte'
 import { Carte } from './card'
 import { Chat, ColisDeposes, Confettis, EcranMural, Fenetre, Horloge, Nuit, Records, TableauBlanc } from './decor'
@@ -59,21 +72,6 @@ function ecrire(cle: string, valeur: string) {
   } catch {
     /* Navigation privée ou stockage bloqué : on s'en passe. */
   }
-}
-
-const CHEF_DECOR = (t: Texts): Agent => ({ id: CHEF_ID, name: t.leadName, emoji: '🧑‍💼', role: t.leadRole, status: 'ok' })
-
-/** L'écran mural quand on ne lui donne rien : combien de tâches, combien au travail, en échec, en retard. */
-function ecranParDefaut(agents: Array<Agent>, t: Texts): Array<WallTile> {
-  const compte = (statut: Agent['status']) => agents.filter((a) => a.status === statut).length
-  const echecs = compte('failed')
-  const retards = compte('late')
-  return [
-    { label: t.wall.jobs, value: agents.length, tone: 'info' },
-    { label: t.wall.running, value: compte('working'), tone: 'ok' },
-    { label: t.wall.failed, value: echecs, tone: echecs ? 'alert' : 'neutral' },
-    { label: t.wall.late, value: retards, tone: retards ? 'warn' : 'neutral' },
-  ]
 }
 
 /**
@@ -126,7 +124,7 @@ export function PixelOpenspace({
   const t = TEXTS[language] ?? TEXTS.en
   const theme = THEMES[nomTheme] ?? THEME_GEEK
   const equipe: Equipe = {
-    chef: versVue(lead ?? CHEF_DECOR(t), CHEF_ID),
+    chef: versVue(lead ?? chefDecor(t), CHEF_ID),
     agents: agents.map((a) => versVue(a)),
   }
 
@@ -440,12 +438,7 @@ export function PixelOpenspace({
   const cafe = Boolean(theme.coinCafe) && presents.some(({ pose }) => pose.lieu === theme.coinCafe && !pose.marche)
   const invites = Object.entries(scene).filter(([id]) => estInvite(id))
   const poseChat = scene[CHAT_ID]
-  // Les cinq prochains passages, pour le tableau blanc du chef.
-  const prochains = equipe.agents
-    .filter((a) => a.prochain && a.statut !== 'absent')
-    .sort((a, b) => a.prochain!.localeCompare(b.prochain!))
-    .slice(0, 5)
-    .map((a) => ({ heure: heureCourte(a.prochain!, maintenant, t.locale), nom: a.fiche.nom }))
+  const prochains = prochainsPassages(equipe.agents, maintenant, t.locale)
   const nuit = assombrir ? obscurite(maintenant) : 0
   const aller = (objet: SceneObject) => {
     const href = objectLinks[objet]

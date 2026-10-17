@@ -4,7 +4,7 @@
 
 import { CHEF_ID, marcheur, type Marcheur, type Plan, type Statut } from './engine'
 import { type Texts } from './i18n'
-import type { Agent, AgentStatus } from './types'
+import type { Agent, AgentStatus, WallTile } from './types'
 
 /* ——— Ce que la scène sait d'un agent ——— */
 
@@ -157,4 +157,29 @@ export function oublie(vue: Vue, maintenant: number): boolean {
   if (!vue.brut.dernierPassage) return vue.statut !== 'jamais' && vue.statut !== 'a-la-demande'
   const heures = (maintenant - Date.parse(vue.brut.dernierPassage)) / 3_600_000
   return heures > vue.fiche.vieillitApresH
+}
+
+/** Le chef quand on n'en donne pas : le décor de la salle, toujours à jour. */
+export const chefDecor = (t: Texts): Agent => ({ id: CHEF_ID, name: t.leadName, emoji: '🧑‍💼', role: t.leadRole, status: 'ok' })
+
+/** L'écran mural quand on ne lui donne rien : combien de tâches, combien au travail, en échec, en retard. */
+export function ecranParDefaut(agents: Array<Agent>, t: Texts): Array<WallTile> {
+  const compte = (statut: Agent['status']) => agents.filter((a) => a.status === statut).length
+  const echecs = compte('failed')
+  const retards = compte('late')
+  return [
+    { label: t.wall.jobs, value: agents.length, tone: 'info' },
+    { label: t.wall.running, value: compte('working'), tone: 'ok' },
+    { label: t.wall.failed, value: echecs, tone: echecs ? 'alert' : 'neutral' },
+    { label: t.wall.late, value: retards, tone: retards ? 'warn' : 'neutral' },
+  ]
+}
+
+/** Les cinq prochains passages, pour le tableau blanc du chef. */
+export function prochainsPassages(agents: Array<Vue>, maintenant: number, locale: string): Array<{ heure: string; nom: string }> {
+  return agents
+    .filter((a) => a.prochain && a.statut !== 'absent')
+    .sort((a, b) => a.prochain!.localeCompare(b.prochain!))
+    .slice(0, 5)
+    .map((a) => ({ heure: heureCourte(a.prochain!, maintenant, locale), nom: a.fiche.nom }))
 }

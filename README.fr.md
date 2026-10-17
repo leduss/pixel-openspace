@@ -248,6 +248,20 @@ Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, d
 }
 ```
 
+## Dans ton README
+
+Une ligne dans le README de n'importe quel dépôt, et ses workflows GitHub Actions y sont à leur bureau, à jour et animés :
+
+```md
+![office](https://pixel-openspace.vercel.app/api/card?repo=owner/repo)
+```
+
+C'est un SVG animé : net à toutes les tailles, léger, et il bouge sans JavaScript, donc GitHub l'affiche tel quel. L'image est gardée cinq minutes. Ajoute `&theme=farm`, `&lang=fr`, `&cols=6` ou `&title=ACME` à l'adresse. Dépôts publics seulement.
+
+Voici la salle de ce dépôt-ci :
+
+![La salle du dépôt pixel-openspace](https://pixel-openspace.vercel.app/api/card?repo=leduss/pixel-openspace&theme=farm&lang=fr)
+
 ## Ce qu'il y a d'autre dans la salle
 
 - Sept thèmes : un open space geek aux tours RGB (`geek`), un bureau d'entreprise de 1986, lambris et écrans cathodiques vert phosphore (`eighties`), une salle de sport où chaque tâche pédale sur son vélo (`gym`), un bureau moderne et lumineux, chêne clair, portables, bureaux assis-debout et table de ping-pong (`modern`), et une cuisine de restaurant où chaque tâche cuisine à son piano et où celle qui plante fait brûler sa poêle (`kitchen`), une ville néon la nuit, avec son stand de ramen, ses écrans holographiques qui crachent des glitchs quand une tâche plante et ses enseignes en katakana (`neon`), et une ferme douillette où chaque tâche arrose sa parcelle, où celle qui plante voit ses cultures faner sous l'œil d'un corbeau, et où le fermier se balance sur sa véranda (`farm`).
@@ -271,6 +285,7 @@ bun install
 bun dev                  # la démo, sur http://localhost:3000
 bun run test             # le moteur des déplacements, les saisons, les horaires
 bun run registry:build   # reconstruit public/r/pixel-openspace.json
+bun run carte:build      # reconstruit le rendu de la carte de README, src/carte/dist
 bun run cli:build        # construit le serveur local dans cli/dist
 ```
 

@@ -24,3 +24,8 @@ jobs:
         run: |
           bunx shadcn build
           git diff --exit-code public/r || (echo "::error::public/r est périmé : lance bun run registry:build et commite le résultat" && exit 1)
+      # Le rendu de la carte de README est construit à part de Next.js, et servi tel quel : il doit sortir tel quel des sources.
+      - name: La carte est à jour
+        run: |
+          bun run carte:build
+          git diff --exit-code src/carte/dist || (echo "::error::src/carte/dist est périmé : lance bun run carte:build et commite le résultat" && exit 1)

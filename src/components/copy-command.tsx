@@ -3,12 +3,22 @@
 import { useState } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 
-/** A shell command in a read-only field, with a button that copies it and says so. */
-export function CopyCommand({ command, copy = 'Copy', copied = 'Copied' }: { command: string; copy?: string; copied?: string }) {
+/** A shell command in a read-only field, with a button that copies it and says so. Without `prompt`, no `$`: a line of Markdown, say. */
+export function CopyCommand({
+  command,
+  copy = 'Copy',
+  copied = 'Copied',
+  prompt = '$',
+}: {
+  command: string
+  copy?: string
+  copied?: string
+  prompt?: string | null
+}) {
   const [fait, setFait] = useState(false)
   return (
     <InputGroup className="h-11 bg-card">
-      <InputGroupAddon className="font-mono">$</InputGroupAddon>
+      {prompt ? <InputGroupAddon className="font-mono">{prompt}</InputGroupAddon> : null}
       <InputGroupInput
         readOnly
         value={command}

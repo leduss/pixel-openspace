@@ -1,12 +1,11 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemTitle } from '@/components/ui/item'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
 import { Demo } from '@/components/demo'
-import { DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { CARTE_README, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import { journal } from '@/data/changelog'
 import { BoutonCafe, Cadre } from '@/components/cadre'
 import { Nouveautes } from '@/components/journal'
@@ -105,6 +104,30 @@ export function Landing({ langue }: { langue: Language }) {
 
       <Separator />
 
+      {/* La carte de README : la ligne à coller, et celle de ce dépôt, en direct. */}
+      <section id="readme" className="grid scroll-mt-6 gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
+        <div className="flex min-w-0 max-w-[45ch] flex-col gap-4">
+          <h2 className="font-heading text-3xl sm:text-4xl">{t.readmeTitre}</h2>
+          <p className="leading-relaxed text-muted-foreground">{t.readmeTexte}</p>
+          <CopyCommand command={CARTE_README} copy={t.copier} copied={t.copie} prompt={null} />
+          <p className="text-sm text-muted-foreground">{t.readmeOptions}</p>
+        </div>
+        <figure className="flex min-w-0 flex-col gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- une image SVG animée servie par la route de la carte : next/image la figerait */}
+          <img
+            src={`/api/card?repo=leduss/pixel-openspace&theme=farm${langue === 'fr' ? '&lang=fr' : ''}`}
+            alt={t.readmeLegende}
+            width={1000}
+            height={480}
+            loading="lazy"
+            className="h-auto w-full rounded-xl border"
+          />
+          <figcaption className="text-sm text-muted-foreground">{t.readmeLegende}</figcaption>
+        </figure>
+      </section>
+
+      <Separator />
+
       {/* Le tableau d'affichage du hall. */}
       <section className="grid gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
         <div className="flex max-w-[45ch] flex-col gap-4">
@@ -177,22 +200,20 @@ export function Landing({ langue }: { langue: Language }) {
 
       <Separator />
 
-      {/* Les petites choses de la salle. */}
-      <section className="grid gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
-        <div className="flex max-w-[45ch] flex-col gap-4">
+      {/* Les petites choses de la salle : une liste sur toute la largeur, sans boîtes. */}
+      <section className="flex flex-col gap-10 py-20">
+        <div className="flex max-w-[60ch] flex-col gap-4">
           <h2 className="font-heading text-3xl sm:text-4xl">{t.aussiTitre}</h2>
           <p className="leading-relaxed text-muted-foreground">{t.aussiTexte}</p>
         </div>
-        <ItemGroup className="grid gap-3 sm:grid-cols-2">
+        <dl className="grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3">
           {t.details.map(([quoi, detail]) => (
-            <Item key={quoi} variant="outline">
-              <ItemContent>
-                <ItemTitle>{quoi}</ItemTitle>
-                <ItemDescription className="line-clamp-none">{detail}</ItemDescription>
-              </ItemContent>
-            </Item>
+            <div key={quoi} className="flex flex-col gap-1.5 border-t py-5">
+              <dt className="font-bold">{quoi}</dt>
+              <dd className="text-sm leading-relaxed text-muted-foreground">{detail}</dd>
+            </div>
           ))}
-        </ItemGroup>
+        </dl>
       </section>
 
       <Separator />

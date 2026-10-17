@@ -54,6 +54,13 @@ export type Piste = {
 
 export const pistes = new Set<Piste>()
 
+/**
+ * La scène exportée en image (une carte de README) n'a pas de JavaScript :
+ * `<Anim>` y devient une animation SVG native, `<animate>`, que les images
+ * jouent seules.
+ */
+export const ExportSvgContexte = createContext(false)
+
 export const enMs = (duree: string | undefined) => (duree ? Number.parseFloat(duree) * (duree.endsWith('ms') ? 1 : 1000) : 0)
 
 export function Anim({
@@ -72,6 +79,7 @@ export function Anim({
   keyTimes?: string
   repeatCount?: string
 }) {
+  const exporter = useContext(ExportSvgContexte)
   const repere = useRef<SVGDescElement>(null)
   useEffect(() => {
     const cible = repere.current?.parentElement
@@ -90,6 +98,12 @@ export function Anim({
       pistes.delete(piste)
     }
   }, [attributeName, type, values, dur, begin, keyTimes])
+  if (exporter) {
+    // Par sauts, comme la boucle de la scène ; un départ décalé tourne déjà, comme elle : il commence dans le passé.
+    const depart = `${(enMs(begin) - enMs(dur)) / 1000}s`
+    const commun = { values, dur, begin: begin ? depart : undefined, keyTimes, calcMode: 'discrete', repeatCount: 'indefinite' }
+    return type ? <animateTransform attributeName={attributeName} type={type} {...commun} /> : <animate attributeName={attributeName} {...commun} />
+  }
   return <desc ref={repere} />
 }
 

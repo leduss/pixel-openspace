@@ -69,7 +69,7 @@ Deux choses de plus ont leur place sur le bureau : `bientot` (les minutes avant 
 
 ## L'animation
 
-N'utilise pas `<animate>` : Chrome recalcule toutes les animations SVG à chaque image, même quand rien ne change. Prends `<Anim>` de `primitives.tsx`, avec les mêmes `attributeName`, `values`, `dur` et `begin`. La salle le fait avancer par sauts, comme dans un vieux jeu, et le fige au calme. `etapes(de, a, n)` découpe un mouvement en étapes.
+N'utilise pas `<animate>` : Chrome recalcule toutes les animations SVG à chaque image, même quand rien ne change. Prends `<Anim>` de `primitives.tsx`, avec les mêmes `attributeName`, `values`, `dur` et `begin`. La salle le fait avancer par sauts, comme dans un vieux jeu, et le fige au calme. `etapes(de, a, n)` découpe un mouvement en étapes. Dans la carte de README, le même `<Anim>` devient un `<animate>` SVG natif : ton thème y bouge aussi, sans JavaScript.
 
 Les autres aides de `primitives.tsx` : `Pixels` dessine une grille de caractères, un par pixel ; `Cliquable` rend un objet cliquable ; `Neon` dessine une enseigne lumineuse ; `Plante` une plante en pot ; `MUR_SALLE` liste les pans du mur de la grande salle. `Arcade`, `BorneCasseBriques` et `Porte` s'empruntent à `themes/geek.tsx`.
 

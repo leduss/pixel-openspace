@@ -248,6 +248,20 @@ Every option can also live in a `pixel-openspace.json` file, in the current fold
 }
 ```
 
+## In your README
+
+One line in any repository's README, and its GitHub Actions workflows sit at their desks there, up to date and animated:
+
+```md
+![office](https://pixel-openspace.vercel.app/api/card?repo=owner/repo)
+```
+
+It is an animated SVG: sharp at any size, light, and it moves without JavaScript, so GitHub shows it as is. The image is cached five minutes. Add `&theme=farm`, `&lang=fr`, `&cols=6` or `&title=ACME` to the address. Public repositories only.
+
+Here is this repository's own room:
+
+![The pixel-openspace repository's own room](https://pixel-openspace.vercel.app/api/card?repo=leduss/pixel-openspace&theme=farm)
+
 ## What else is in the room
 
 - Seven themes: a geek open space with RGB towers (`geek`), a 1986 corporate office with wood panelling and green-phosphor CRTs (`eighties`), a gym where every job rides an exercise bike (`gym`), a bright modern office in light oak with laptops, standing desks and a ping-pong table (`modern`), and a restaurant kitchen where every job cooks at its range and a failed one burns its pan (`kitchen`), a neon city at night, with a ramen stand, holographic screens that glitch when a job fails and katakana signs (`neon`), and a cozy farm where every job waters its plot, a failed one's crops wither under a crow, and the farmer rocks on the porch (`farm`).
@@ -271,6 +285,7 @@ bun install
 bun dev                  # the demo, on http://localhost:3000
 bun run test             # the movement engine, the seasons, the schedules
 bun run registry:build   # rebuilds public/r/pixel-openspace.json
+bun run carte:build      # rebuilds the README card renderer, src/carte/dist
 bun run cli:build        # builds the local server into cli/dist
 ```
 
