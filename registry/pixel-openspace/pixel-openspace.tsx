@@ -543,7 +543,14 @@ export function PixelOpenspace({
                   aria-label={t.sceneLabel}
                 >
                   <DefsCommunes />
-                  <theme.Decor hauteur={lePlan.hauteur} titre={enseigne} liens={objectLinks} aller={aller} jouer={setJeu} />
+                  <theme.Decor
+                    hauteur={lePlan.hauteur}
+                    titre={enseigne}
+                    liens={objectLinks}
+                    aller={aller}
+                    jouer={setJeu}
+                    fete={seasonal ? fete(maintenant) : null}
+                  />
                   <EcranMural tuiles={wall ?? ecranParDefaut(agents, t)} />
                   <TableauBlanc prochains={prochains} />
                   <Records snake={records.snake} casse={records.casse} />
@@ -573,6 +580,7 @@ export function PixelOpenspace({
                       id={vue.fiche.id}
                       pose={pose}
                       etire={Boolean(etires[vue.fiche.id])}
+                      sieste={Boolean(theme.sieste) && vue.statut === 'endormi' && pose.assise === 'bureau'}
                       choisir={cliquerAgent}
                     />
                   ))}

@@ -155,6 +155,8 @@ export const TETE_CASQUE: Record<'haut' | 'bas' | 'droite', Array<string>> = {
   haut: ['..kkkk..', '.khhhhk.', 'khhhhhhk', 'khhhhhhk', '.cchhcc.'],
   droite: ['..kkkk..', '.hhhkhh.', '.hhkkss.', '.hhkses.', '.ccsss..'],
 }
+/* Retourné, adossé, le chapeau (`k`) rabattu sur les yeux : la sieste. */
+export const TETE_SIESTE = ['..kkkk..', '.kkkkkk.', 'kkkkkkkk', '.ssssss.', '.cssssc.']
 /* Le sweat : la poche ventrale et les cordons de capuche (`t`). */
 export const BUSTE: Record<'haut' | 'bas' | 'droite', Array<string>> = {
   bas: ['.ctcctc.', 'cctcctcc', 'sccccccs', '.cCCCCc.'],
@@ -178,7 +180,15 @@ export const JAMBES: Record<'face' | 'cote', Array<Array<string>>> = {
 /* Les bras levés de l'agent qui s'étire, vu de dos. */
 export const ETIREMENT = ['s.hhhh.s', 'chhhhhhc', 'chhhhhhc', 'chhhhhhc', 'c.hhhh.c', '.cccccc.', 'cccccccc', 'cccccccc']
 
-export function grilleSprite(sens: Direction, temps: number, assise: Assise, etire: boolean, casque: boolean): Array<string> {
+export function grilleSprite(
+  sens: Direction,
+  temps: number,
+  assise: Assise,
+  etire: boolean,
+  casque: boolean,
+  sieste = false,
+): Array<string> {
+  if (sieste && assise === 'bureau') return [...TETE_SIESTE, ...BUSTE.bas.slice(0, 3)]
   if (etire && assise === 'bureau' && sens === 'haut') return ETIREMENT
   const tete = casque ? TETE_CASQUE : TETE
   // Au bureau ou sur un pouf, de dos devant l'écran ; le chef, lui, trône face à la pièce.
@@ -198,15 +208,17 @@ export const Sprite = memo(function Sprite({
   temps,
   assise,
   etire,
+  sieste,
 }: {
   id: string
   sens: Direction
   temps: number
   assise: Assise
   etire: boolean
+  sieste: boolean
 }) {
   const theme = useTheme()
-  const grille = grilleSprite(sens, temps, assise, etire, theme.casque(id))
+  const grille = grilleSprite(sens, temps, assise, etire, theme.casque(id), sieste)
   return (
     <>
       {[
@@ -232,7 +244,20 @@ export function cadrage(pose: Pose) {
   return { haut: bas - rangs * 3, bas }
 }
 
-export function Personnage({ id, pose, etire, choisir }: { id: string; pose: Pose; etire: boolean; choisir?: (id: string) => void }) {
+export function Personnage({
+  id,
+  pose,
+  etire,
+  sieste = false,
+  choisir,
+}: {
+  id: string
+  pose: Pose
+  etire: boolean
+  /** Endormi à son poste, dans un thème qui fait la sieste : retourné, le chapeau sur les yeux. */
+  sieste?: boolean
+  choisir?: (id: string) => void
+}) {
   const theme = useTheme()
   const temps = pose.marche ? 1 + (Math.floor(pose.pas / 170) % 2) : 0
   const { haut, bas } = cadrage(pose)
@@ -240,7 +265,7 @@ export function Personnage({ id, pose, etire, choisir }: { id: string; pose: Pos
     <g className={choisir ? 'cursor-pointer' : undefined} onClick={choisir ? () => choisir(id) : undefined}>
       {pose.assise ? null : <ellipse cx={pose.x} cy={bas} rx="10" ry="3" fill="black" opacity="0.3" shapeRendering="auto" />}
       <g transform={`translate(${Math.round(pose.x) - 12} ${Math.round(haut)})`}>
-        <Sprite id={id} sens={direction(pose.angle)} temps={temps} assise={pose.assise} etire={etire} />
+        <Sprite id={id} sens={direction(pose.angle)} temps={temps} assise={pose.assise} etire={etire} sieste={sieste} />
         {/* Le colis du livreur, porté à bout de bras. */}
         {pose.porte ? (
           <g>

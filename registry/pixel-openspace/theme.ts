@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import type { CoinDePause, Statut } from './engine'
 import type { Lumiere } from './primitives'
+import type { Fete } from './seasons'
 import type { SceneObject } from './types'
 
 /** Ce que le décor reçoit pour se dessiner et se rendre cliquable. */
@@ -11,6 +12,8 @@ export type PropsDecor = {
   liens: Partial<Record<SceneObject, string>>
   aller: (objet: SceneObject) => void
   jouer: (jeu: 'snake' | 'casse-briques') => void
+  /** La fête du moment, quand les saisons sont allumées : un thème peut s'en habiller (la neige, les citrouilles). */
+  fete?: Fete
 }
 
 /** Ce qu'un bureau reçoit : sa place sur le plan, l'état de son agent, ce qui s'affiche sur son poste. */
@@ -67,6 +70,8 @@ export type Theme = {
   nuit?: { couleur: string; opacite: number }
   /** Se promène-t-il une tasse à la main ? */
   tasse?: (id: string) => boolean
+  /** L'agent endormi à son poste se retourne, adossé, la couleur de son casque (`k`) rabattue sur les yeux en chapeau. */
+  sieste?: boolean
   /** Une lumière de plus par poste occupé (une tour RGB…). */
   lumierePoste?: (cx: number, dy: number, accent: string) => Array<Lumiere>
 }

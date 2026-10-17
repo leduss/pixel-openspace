@@ -14,6 +14,16 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.5.0 · 2026-10-17
+
+### Added
+
+- A seventh theme, `farm`: a cozy farm. Every desk is a plot: a working job waters it and its sprouts grow, a failed one's crops wither and a crow lands on its sign, an asleep one turns around and dozes against its fence, straw hat over the eyes. The farmer rocks on the log-cabin porch; breaks happen at the well, under the apple tree, by the henhouse or on the hay bales facing the red barn. The seasons count twice: snow on the roofs and fields in December, pumpkin patches and a pumpkin-headed scarecrow in October.
+
+### Fixed
+
+- In the settings, the theme buttons no longer leave one orphan on its own line: past four choices, they line up in a grid.
+
 ## 0.4.0 · 2026-10-05
 
 ### Added

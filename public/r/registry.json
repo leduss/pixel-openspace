@@ -150,6 +150,11 @@
           "path": "registry/pixel-openspace/themes/neon.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/themes/neon.tsx"
+        },
+        {
+          "path": "registry/pixel-openspace/themes/farm.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/themes/farm.tsx"
         }
       ],
       "dependencies": [

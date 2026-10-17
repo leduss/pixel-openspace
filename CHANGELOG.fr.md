@@ -14,6 +14,16 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.5.0 · 2026-10-17
+
+### Ajouté
+
+- Un septième thème, `farm` : une ferme douillette. Chaque bureau est une parcelle : la tâche au travail l'arrose et ses pousses montent, celle qui plante voit ses cultures faner et un corbeau se poser sur son écriteau, celle qui dort se retourne et somnole adossée à sa clôture, le chapeau de paille sur les yeux. Le fermier se balance dans son rocking-chair sur la véranda en rondins ; on fait la pause au puits, sous le pommier, près du poulailler ou sur les bottes de foin face à la grange rouge. Les saisons comptent double : la neige sur les toits et les champs en décembre, les champs de citrouilles et l'épouvantail à tête de citrouille en octobre.
+
+### Corrigé
+
+- Dans les réglages, les boutons de thème ne laissent plus un orphelin seul sur sa ligne : au-delà de quatre choix, ils se rangent en grille.
+
 ## 0.4.0 · 2026-10-05
 
 ### Ajouté

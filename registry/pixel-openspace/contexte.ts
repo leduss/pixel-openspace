@@ -5,6 +5,7 @@
 import { createContext, useContext } from 'react'
 import type { Theme } from './theme'
 import { THEME_80 } from './themes/eighties'
+import { THEME_FERME } from './themes/farm'
 import { THEME_GEEK } from './themes/geek'
 import { THEME_GYM } from './themes/gym'
 import { THEME_CUISINE } from './themes/kitchen'
@@ -20,6 +21,7 @@ export const THEMES: Record<ThemeName, Theme> = {
   modern: THEME_MODERNE,
   kitchen: THEME_CUISINE,
   neon: THEME_NEON,
+  farm: THEME_FERME,
 }
 
 /* Le thème de la scène, à portée des postes et des bonshommes. */

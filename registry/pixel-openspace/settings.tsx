@@ -100,16 +100,22 @@ function Choix<T extends string>({
   valeur: T
   changer: (v: T) => void
 }) {
+  const boutons = options.map(([v, libelle]) => (
+    <Button key={v} size="sm" variant={valeur === v ? 'default' : 'outline'} aria-pressed={valeur === v} onClick={() => changer(v)}>
+      {libelle}
+    </Button>
+  ))
   return (
     <div className="flex flex-col gap-2">
       <Label>{nom}</Label>
-      <ButtonGroup aria-label={nom} className="flex-wrap">
-        {options.map(([v, libelle]) => (
-          <Button key={v} size="sm" variant={valeur === v ? 'default' : 'outline'} aria-pressed={valeur === v} onClick={() => changer(v)}>
-            {libelle}
-          </Button>
-        ))}
-      </ButtonGroup>
+      {/* Au-delà de quatre, un groupe soudé déborde et laisse un bouton seul à la ligne : une grille de boutons détachés. */}
+      {options.length > 4 ? (
+        <div role="group" aria-label={nom} className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          {boutons}
+        </div>
+      ) : (
+        <ButtonGroup aria-label={nom}>{boutons}</ButtonGroup>
+      )}
     </div>
   )
 }
