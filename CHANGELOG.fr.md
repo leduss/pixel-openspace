@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.6.0 · 2026-10-17
+
+### Ajouté
+
+- Un clic sur le nom d'une tâche dans la frise de la journée déplie ses passages du jour sous sa ligne, le plus récent en haut : l'heure, réussi ou raté, et le message. Quand ses derniers passages ont raté, une ligne en rouge dit depuis quand elle échoue. Un second clic la referme.
+
 ## 0.5.0 · 2026-10-17
 
 ### Ajouté

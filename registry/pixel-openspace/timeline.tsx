@@ -4,18 +4,28 @@
  * La journée en frise, sous la salle : une ligne par agent, de minuit à
  * minuit, un point par passage (vert s'il s'est bien passé, rouge sinon), et
  * le trait de l'heure qu'il est. De quoi voir d'un coup d'œil qui a sauté un
- * passage cette nuit.
+ * passage cette nuit. Un clic sur un nom déplie ses passages du jour, du plus
+ * récent au plus ancien, et depuis quand il échoue.
  */
 
+import { Fragment, useState } from 'react'
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useTextes } from './primitives'
-import type { Agent } from './types'
+import type { Agent, AgentRun } from './types'
 
 const JOUR_MS = 86_400_000
 const HEURES = [0, 3, 6, 9, 12, 15, 18, 21, 24]
 
+/** Le premier raté de la série en cours, quand le dernier passage a raté : depuis quand ça ne marche plus. */
+export function enEchecDepuis(passages: Array<AgentRun>): string | null {
+  let depuis: string | null = null
+  for (let i = passages.length - 1; i >= 0 && passages[i].ok === false; i--) depuis = passages[i].at
+  return depuis
+}
+
 export function Frise({ agents, maintenant, choisir }: { agents: Array<Agent>; maintenant: number; choisir: (id: string) => void }) {
   const t = useTextes()
+  const [deplie, setDeplie] = useState<string | null>(null)
   const minuit = new Date(maintenant)
   minuit.setHours(0, 0, 0, 0)
   const debut = minuit.getTime()
@@ -52,8 +62,17 @@ export function Frise({ agents, maintenant, choisir }: { agents: Array<Agent>; m
           </div>
 
           {lignes.map(({ agent, passages }) => (
-            <div key={agent.id} className="contents">
-              <button type="button" onClick={() => choisir(agent.id)} className="truncate text-left hover:text-primary">
+            <Fragment key={agent.id}>
+              <button
+                type="button"
+                aria-expanded={deplie === agent.id}
+                aria-controls={`passages-${agent.id}`}
+                onClick={() => {
+                  setDeplie((d) => (d === agent.id ? null : agent.id))
+                  choisir(agent.id)
+                }}
+                className={`truncate text-left hover:text-primary ${deplie === agent.id ? 'text-primary' : ''}`}
+              >
                 {agent.emoji ? <span aria-hidden>{agent.emoji} </span> : null}
                 {agent.name}
               </button>
@@ -73,10 +92,40 @@ export function Frise({ agents, maintenant, choisir }: { agents: Array<Agent>; m
                 ))}
                 <span className="absolute inset-y-[-2px] w-0.5 bg-primary" style={{ left: position(maintenant) }} />
               </div>
-            </div>
+              {deplie === agent.id ? <Passages id={`passages-${agent.id}`} passages={passages} heure={heure} /> : null}
+            </Fragment>
           ))}
         </div>
       </CardContent>
     </Card>
+  )
+}
+
+/** Les passages du jour d'un agent, du plus récent au plus ancien, sur toute la largeur de la frise. */
+function Passages({ id, passages, heure }: { id: string; passages: Array<AgentRun>; heure: (iso: string) => string }) {
+  const t = useTextes()
+  const depuis = enEchecDepuis(passages)
+  return (
+    <div id={id} className="col-span-2 mb-1.5 rounded-md border bg-muted/30 p-2">
+      {depuis ? <p className="mb-1.5 font-medium text-destructive">{t.timeline.failingSince(heure(depuis))}</p> : null}
+      {passages.length ? (
+        <ol className="flex max-h-48 flex-col gap-1 overflow-y-auto">
+          {[...passages].reverse().map((r, i) => (
+            <li key={`${r.at}-${i}`} className="grid grid-cols-[3rem_4.5rem_1fr] items-baseline gap-2">
+              <span className="font-mono text-muted-foreground tabular-nums">{heure(r.at)}</span>
+              <span className={`flex items-center gap-1.5 ${r.ok === false ? 'text-destructive' : ''}`}>
+                <span className={`size-2 shrink-0 rounded-full ${r.ok === false ? 'bg-red-500' : 'bg-emerald-500'}`} />
+                {r.ok === false ? t.timeline.failedRun : t.timeline.ok}
+              </span>
+              <span className="truncate font-mono text-[0.65rem] text-muted-foreground" title={r.message}>
+                {r.message}
+              </span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="text-muted-foreground">{t.timeline.noRuns}</p>
+      )}
+    </div>
   )
 }

@@ -33,6 +33,11 @@ export type Texts = {
     runs: (n: number) => string
     failed: (n: number) => string
     hour: (h: number) => string
+    /** La liste des passages d'un agent, sous sa ligne. */
+    ok: string
+    failedRun: string
+    noRuns: string
+    failingSince: (heure: string) => string
   }
   /** La fenêtre des réglages, derrière la roue dentée. */
   settings: {
@@ -140,6 +145,10 @@ const EN: Texts = {
     runs: (n) => `${n} run${n === 1 ? '' : 's'} since midnight`,
     failed: (n) => `${n} failed`,
     hour: (h) => (h === 0 || h === 24 ? '12am' : h === 12 ? '12pm' : h < 12 ? `${h}am` : `${h - 12}pm`),
+    ok: 'OK',
+    failedRun: 'Failed',
+    noRuns: 'No run since midnight.',
+    failingSince: (heure) => `Failing since ${heure}`,
   },
   settings: {
     open: 'Settings',
@@ -250,6 +259,10 @@ const FR: Texts = {
     runs: (n) => `${n} passage${n > 1 ? 's' : ''} depuis minuit`,
     failed: (n) => `${n} raté${n > 1 ? 's' : ''}`,
     hour: (h) => `${h} h`,
+    ok: 'Réussi',
+    failedRun: 'Raté',
+    noRuns: 'Aucun passage depuis minuit.',
+    failingSince: (heure) => `En échec depuis ${heure}`,
   },
   settings: {
     open: 'Réglages',

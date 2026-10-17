@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.6.0 · 2026-10-17
+
+### Added
+
+- Click a job's name on the day timeline to see its runs of the day under its line, newest first: time, success or failure, and message. When its last runs failed, a red line says since when it has been failing. Click again to close it.
+
 ## 0.5.0 · 2026-10-17
 
 ### Added
