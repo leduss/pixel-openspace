@@ -97,7 +97,7 @@ export const TEXTES = {
     ],
     etape2: 'Feed it your jobs',
     etape2Texte:
-      'Expose your jobs’ state, poll it every few seconds and pass it down. When a status changes, the room reacts: the job sits down to work, or stands up, stretches and says its last log line in a speech bubble.',
+      'Expose your jobs’ state, poll it every few seconds and pass it down. When a status changes, the room reacts: the job sits down to work, or stands up, stretches and says its last log line in a speech bubble. For your GitHub Actions CI, githubAgents() writes this route for you: it finds your repository and gives each workflow a desk.',
     route: 'Your API route',
     page: 'Your page',
     etape3: 'Leave it on a screen',
@@ -175,7 +175,7 @@ export const TEXTES = {
     ],
     etape2: 'Lui donner tes tâches',
     etape2Texte:
-      'Expose l’état de tes tâches, relis-le toutes les quelques secondes et passe-le au composant. Quand un état change, la salle réagit : la tâche s’assoit pour travailler, ou se lève, s’étire et dit sa dernière ligne de journal dans une bulle.',
+      'Expose l’état de tes tâches, relis-le toutes les quelques secondes et passe-le au composant. Quand un état change, la salle réagit : la tâche s’assoit pour travailler, ou se lève, s’étire et dit sa dernière ligne de journal dans une bulle. Pour ta CI GitHub Actions, githubAgents() écrit cette route à ta place : elle trouve ton dépôt et donne un bureau à chaque workflow.',
     route: 'Ta route d’API',
     page: 'Ta page',
     etape3: 'Le laisser sur un écran',

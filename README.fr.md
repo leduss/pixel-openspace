@@ -17,12 +17,12 @@ Chaque agent a son bureau. Celui qui tourne s'assoit et tape, l'écran allumé. 
 
 **[Essayer la démo en ligne](https://pixel-openspace.vercel.app/fr)** · [🇬🇧 Read in English](./README.md)
 
-![La démo de pixel-openspace : des tâches démarrent, plantent et repartent, dans les cinq thèmes](./public/docs/demo.gif)
+![La démo de pixel-openspace : des tâches démarrent, plantent et repartent, d'un thème à l'autre](./public/docs/demo.gif)
 
 Deux façons de s'en servir :
 
 - **Dans ton appli** : un composant [shadcn/ui](https://ui.shadcn.com) pour Next.js et React. Le code est copié dans ton projet, habillé par tes propres `Button` et `Card`, et c'est toi qui lui passes tes tâches : cron, files d'attente, agents IA, pipelines de CI.
-- **Sans écrire de code** : un petit serveur local qui lit les tâches déjà planifiées sur ta machine (launchd, cron, timers systemd) et ouvre leur open space dans ton navigateur.
+- **Sans écrire de code** : un petit serveur local qui lit les tâches déjà planifiées sur ta machine (launchd, cron, timers systemd) ou les workflows GitHub Actions d'un dépôt, et ouvre leur open space dans ton navigateur.
 
 ## Dans ton appli
 
@@ -196,7 +196,7 @@ Chaque `Agent` a un `id`, un `name`, un `status`, et au choix un `emoji`, un `ro
 
 ## Sans écrire de code
 
-Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées sur ta machine et les montre dans l'open space :
+Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées sur ta machine, ou les workflows d'un dépôt GitHub, et les montre dans l'open space :
 
 - **launchd** (macOS) : tes agents de `~/Library/LaunchAgents` qui tournent selon un horaire. En cours ou non, dernier code de sortie, dernière ligne de leur journal. Un passage manqué pendant que le Mac dormait (lu dans `pmset -g log`) s'affiche `asleep`, pas `late`.
 - **cron** : ta crontab. cron ne garde pas d'historique : chaque passage est supposé avoir eu lieu à l'heure.
@@ -251,6 +251,7 @@ Toutes les options peuvent aussi aller dans un fichier `pixel-openspace.json`, d
 ## Ce qu'il y a d'autre dans la salle
 
 - Sept thèmes : un open space geek aux tours RGB (`geek`), un bureau d'entreprise de 1986, lambris et écrans cathodiques vert phosphore (`eighties`), une salle de sport où chaque tâche pédale sur son vélo (`gym`), un bureau moderne et lumineux, chêne clair, portables, bureaux assis-debout et table de ping-pong (`modern`), et une cuisine de restaurant où chaque tâche cuisine à son piano et où celle qui plante fait brûler sa poêle (`kitchen`), une ville néon la nuit, avec son stand de ramen, ses écrans holographiques qui crachent des glitchs quand une tâche plante et ses enseignes en katakana (`neon`), et une ferme douillette où chaque tâche arrose sa parcelle, où celle qui plante voit ses cultures faner sous l'œil d'un corbeau, et où le fermier se balance sur sa véranda (`farm`).
+- La frise de la journée sous la salle : un point par passage, rouge s'il a raté. Un clic sur un nom liste les passages du jour de cette tâche, et depuis quand elle échoue.
 - Deux bornes d'arcade jouables, **Snake des composants** et **Casse-puces**, avec leurs records au mur.
 - Un tableau blanc avec les cinq prochains passages, une horloge à l'heure, le chat de l'atelier qui dort sur les bureaux vides.
 - Les saisons : Halloween tout octobre, Noël tout décembre, et Pâques les deux semaines avant le lundi de Pâques, avec ses œufs cachés et son lapin.

@@ -74,7 +74,7 @@ export const SITE = {
         },
         {
           q: 'Where does the room get its data from?',
-          r: 'From you: pass an array of agents with a name and a status (working, ok, late, failed…). Read it from whatever you already track: an exit code, a queue, a CI API. Or run npx pixel-openspace, which reads your launchd or systemd jobs on your own machine, or the GitHub Actions workflows of a repository with --github owner/repo.',
+          r: 'From you: pass an array of agents with a name and a status (working, ok, late, failed…). Read it from whatever you already track: an exit code, a queue, a CI API. For GitHub Actions, githubAgents() finds your project’s workflows on its own. Or run npx pixel-openspace, which reads your launchd or systemd jobs on your own machine, or the GitHub Actions workflows of a repository with --github owner/repo.',
         },
         {
           q: 'Does it send my data anywhere?',
@@ -193,7 +193,7 @@ export const SITE = {
         },
         {
           q: 'D’où la salle tire-t-elle ses données ?',
-          r: 'De toi : passe-lui une liste d’agents avec un nom et un état (working, ok, late, failed…). Tire-le de ce que tu suis déjà : un code de sortie, une file d’attente, l’API de ta CI. Ou lance npx pixel-openspace, qui lit tes tâches launchd ou systemd sur ta propre machine, ou les workflows GitHub Actions d’un dépôt avec --github owner/repo.',
+          r: 'De toi : passe-lui une liste d’agents avec un nom et un état (working, ok, late, failed…). Tire-le de ce que tu suis déjà : un code de sortie, une file d’attente, l’API de ta CI. Pour GitHub Actions, githubAgents() trouve seule les workflows de ton projet. Ou lance npx pixel-openspace, qui lit tes tâches launchd ou systemd sur ta propre machine, ou les workflows GitHub Actions d’un dépôt avec --github owner/repo.',
         },
         {
           q: 'Est-ce que mes données partent quelque part ?',

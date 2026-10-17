@@ -17,12 +17,12 @@ Every agent gets a desk. Whoever is running sits down and types, screen lit up. 
 
 **[Try the live demo](https://pixel-openspace.vercel.app)** · [🇫🇷 Lire en français](./README.fr.md)
 
-![The pixel-openspace demo: jobs start, fail and recover across the five themes](./public/docs/demo.gif)
+![The pixel-openspace demo: jobs start, fail and recover across its themes](./public/docs/demo.gif)
 
 There are two ways to use it:
 
 - **In your app**: a [shadcn/ui](https://ui.shadcn.com) component for Next.js and React. The code is copied into your project, styled by your own `Button` and `Card`, and you feed it your jobs: cron jobs, queues, AI agents, CI pipelines.
-- **Without writing code**: a small local server that reads the jobs already scheduled on your machine (launchd, cron, systemd timers) and opens their open space in your browser.
+- **Without writing code**: a small local server that reads the jobs already scheduled on your machine (launchd, cron, systemd timers) or the GitHub Actions workflows of a repository, and opens their open space in your browser.
 
 ## In your app
 
@@ -196,7 +196,7 @@ Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `ro
 
 ## Without writing code
 
-The `cli/` folder holds a small server that finds the jobs scheduled on your machine and shows them in the open space:
+The `cli/` folder holds a small server that finds the jobs scheduled on your machine, or the workflows of a GitHub repository, and shows them in the open space:
 
 - **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log. A run missed while the Mac was asleep (read from `pmset -g log`) shows as `asleep`, not `late`.
 - **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
@@ -251,6 +251,7 @@ Every option can also live in a `pixel-openspace.json` file, in the current fold
 ## What else is in the room
 
 - Seven themes: a geek open space with RGB towers (`geek`), a 1986 corporate office with wood panelling and green-phosphor CRTs (`eighties`), a gym where every job rides an exercise bike (`gym`), a bright modern office in light oak with laptops, standing desks and a ping-pong table (`modern`), and a restaurant kitchen where every job cooks at its range and a failed one burns its pan (`kitchen`), a neon city at night, with a ramen stand, holographic screens that glitch when a job fails and katakana signs (`neon`), and a cozy farm where every job waters its plot, a failed one's crops wither under a crow, and the farmer rocks on the porch (`farm`).
+- The day timeline under the room: one dot per run, red when it failed. Click a name for that job's runs of the day, and since when it has been failing.
 - Two playable arcade cabinets, **Component Snake** and **Chip Breaker**, with their high scores on the wall.
 - A whiteboard with the next five runs, a real-time clock, the office cat napping on empty desks.
 - The seasons: Halloween all October, Christmas all December, and Easter for the two weeks before Easter Monday, with hidden eggs and a bunny.
