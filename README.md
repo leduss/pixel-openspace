@@ -199,7 +199,7 @@ Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `ro
 The `cli/` folder holds a small server that finds the jobs scheduled on your machine, or the workflows of a GitHub repository, and shows them in the open space:
 
 - **launchd** (macOS): your agents in `~/Library/LaunchAgents` that run on a schedule. Running or not, last exit code, last line of their log. A run missed while the Mac was asleep (read from `pmset -g log`) shows as `asleep`, not `late`.
-- **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time.
+- **cron**: your crontab. cron keeps no history, so each run is assumed to have happened on time, unless it fell while the machine was asleep (read from `pmset` on macOS, from `journalctl` on Linux): cron skipped it, and the job shows as `asleep`. On Linux, reading the system journal takes the `adm` or `systemd-journal` group, which most desktop users already have.
 - **systemd** (Linux): your user timers, with the result of their last run and their last journal line.
 - **GitHub Actions**: the workflows of any repository, with `--github owner/repo`. Each workflow gets a desk: working while a run is in progress, failed after a failure, late when a `schedule:` run is missing (GitHub's crons are read in UTC). Its runs of the day fill the timeline. Pull requests and pushes to other branches don't count, so a broken work in progress does not turn a desk red.
 

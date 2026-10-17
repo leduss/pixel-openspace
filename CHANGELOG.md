@@ -14,6 +14,16 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.10.0 · 2026-10-17
+
+### Added
+
+- `asleep` on Linux: the local server reads the sleep windows from `journalctl -t systemd-sleep`, whatever the systemd version writes ("Entering sleep state", "Performing sleep operation", "Suspending system"). (#8)
+
+### Fixed
+
+- A cron job whose run fell while the machine was asleep showed as up to date: cron keeps no history, so the run was assumed to have happened. cron simply skips those runs; the job now shows as `asleep`, on macOS and Linux, and its last run is the last one due while the machine was awake.
+
 ## 0.9.0 · 2026-10-17
 
 ### Added

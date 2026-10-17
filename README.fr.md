@@ -199,7 +199,7 @@ Chaque `Agent` a un `id`, un `name`, un `status`, et au choix un `emoji`, un `ro
 Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées sur ta machine, ou les workflows d'un dépôt GitHub, et les montre dans l'open space :
 
 - **launchd** (macOS) : tes agents de `~/Library/LaunchAgents` qui tournent selon un horaire. En cours ou non, dernier code de sortie, dernière ligne de leur journal. Un passage manqué pendant que le Mac dormait (lu dans `pmset -g log`) s'affiche `asleep`, pas `late`.
-- **cron** : ta crontab. cron ne garde pas d'historique : chaque passage est supposé avoir eu lieu à l'heure.
+- **cron** : ta crontab. cron ne garde pas d'historique : chaque passage est supposé avoir eu lieu à l'heure, sauf s'il tombait pendant une veille de la machine (lue dans `pmset` sur macOS, dans `journalctl` sur Linux) : cron l'a sauté, et la tâche s'affiche `asleep`. Sur Linux, lire le journal système demande le groupe `adm` ou `systemd-journal`, que la plupart des utilisateurs de bureau ont déjà.
 - **systemd** (Linux) : tes timers utilisateur, avec le résultat de leur dernier passage et la dernière ligne de leur journal.
 - **GitHub Actions** : les workflows de n'importe quel dépôt, avec `--github owner/repo`. Chaque workflow a son bureau : au travail pendant un run, en échec après un échec, en retard quand un passage du `schedule:` manque (les crons de GitHub sont lus en UTC). Ses passages du jour remplissent la frise. Les pull requests et les pushes sur d'autres branches ne comptent pas : un travail en cours cassé ne met pas un bureau en rouge.
 

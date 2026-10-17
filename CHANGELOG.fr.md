@@ -14,6 +14,16 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.10.0 · 2026-10-17
+
+### Ajouté
+
+- `asleep` sur Linux : le serveur local lit les veilles dans `journalctl -t systemd-sleep`, quelle que soit la formulation de sa version de systemd (« Entering sleep state », « Performing sleep operation », « Suspending system »). (#8)
+
+### Corrigé
+
+- Une tâche cron dont le passage tombait pendant une veille de la machine s'affichait à jour : cron ne garde pas d'historique, et le passage était supposé avoir eu lieu. cron saute simplement ces passages ; la tâche s'affiche désormais `asleep`, sur macOS comme sur Linux, et son dernier passage est le dernier prévu machine allumée.
+
 ## 0.9.0 · 2026-10-17
 
 ### Ajouté

@@ -5,7 +5,7 @@
  * ligne de son journal.
  */
 
-import { execFileSync } from 'node:child_process'
+import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'node:child_process'
 import { closeSync, existsSync, openSync, readdirSync, readSync, statSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
@@ -115,27 +115,81 @@ export function lireVeilles(journal: string, maintenant: Date): Array<Veille> {
   return veilles
 }
 
+/**
+ * Les périodes de veille d'un Linux, lues dans `journalctl -t systemd-sleep
+ * -o short-iso` : de « Entering sleep state » (ou « Performing sleep
+ * operation », « Suspending system », selon la version de systemd) au retour
+ * qui suit (« System returned from sleep », « System resumed »). Une veille
+ * sans retour derrière court jusqu'à `maintenant`.
+ */
+export function lireVeillesJournald(journal: string, maintenant: Date): Array<Veille> {
+  const veilles: Array<Veille> = []
+  let debut: number | null = null
+  for (const ligne of journal.split('\n')) {
+    const m = ligne.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:[.,]\d+)?([+-]\d{2}):?(\d{2})\s/)
+    if (!m) continue
+    const instant = Date.parse(`${m[1]}${m[2]}:${m[3]}`)
+    if (Number.isNaN(instant)) continue
+    if (/Entering sleep state|Performing sleep operation|Suspending system|Hibernating system/.test(ligne)) debut ??= instant
+    else if (/System returned from sleep|System resumed/.test(ligne) && debut !== null) {
+      veilles.push({ debut, fin: instant })
+      debut = null
+    }
+  }
+  if (debut !== null) veilles.push({ debut, fin: maintenant.getTime() })
+  return veilles
+}
+
 /* Le journal de veille pèse plusieurs mégaoctets : relu au plus toutes les cinq minutes. */
 let veillesEnCache: { lu: number; veilles: Array<Veille> } | null = null
 
-/** Les veilles du Mac, ou aucune ailleurs et si `pmset` ne répond pas. */
-export function veillesDuMac(maintenant: Date): Array<Veille> {
-  if (process.platform !== 'darwin') return []
+/**
+ * Les veilles de la machine : `pmset` sur macOS, `journalctl` sur Linux.
+ * Aucune ailleurs, ou si le journal ne répond pas (sur Linux, il faut pouvoir
+ * lire le journal système : groupes `adm` ou `systemd-journal`).
+ */
+export function veillesDeLaMachine(maintenant: Date): Array<Veille> {
+  if (process.platform !== 'darwin' && process.platform !== 'linux') return []
   if (veillesEnCache && maintenant.getTime() - veillesEnCache.lu < 5 * 60_000) return veillesEnCache.veilles
   let veilles: Array<Veille> = []
+  const options: ExecFileSyncOptionsWithStringEncoding = {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+    timeout: 15_000,
+    maxBuffer: 256 * 1024 * 1024,
+  }
   try {
-    const journal = execFileSync('pmset', ['-g', 'log'], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-      timeout: 15_000,
-      maxBuffer: 256 * 1024 * 1024,
-    })
-    veilles = lireVeilles(journal, maintenant)
+    veilles =
+      process.platform === 'darwin'
+        ? lireVeilles(execFileSync('pmset', ['-g', 'log'], options), maintenant)
+        : lireVeillesJournald(
+            execFileSync('journalctl', ['-t', 'systemd-sleep', '-o', 'short-iso', '--no-pager', '--since', '-14d'], options),
+            maintenant,
+          )
   } catch {
     /* Sans journal, aucune tâche ne passe pour endormie : elle reste en retard, comme avant. */
   }
   veillesEnCache = { lu: maintenant.getTime(), veilles }
   return veilles
+}
+
+const pendantUneVeille = (instant: Date, veilles: Array<Veille>) =>
+  veilles.some((v) => instant.getTime() >= v.debut && instant.getTime() < v.fin)
+
+/**
+ * Où en est une tâche cron, qui ne garde pas d'historique : son dernier passage
+ * prévu, et s'il tombait pendant une veille (cron l'a alors sauté). Le dernier
+ * passage supposé est le dernier prévu machine allumée.
+ */
+export function passageCron(horaire: Horaire, maintenant: Date, veilles: Array<Veille>): { dernier: Date | null; endormi: boolean } {
+  const prevu = passagePrecedent(horaire, maintenant)
+  if (!prevu || !pendantUneVeille(prevu, veilles)) return { dernier: prevu, endormi: false }
+  let dernier: Date | null = prevu
+  // On remonte les passages prévus jusqu'à un qui tombait machine allumée, sans fouiller trop loin.
+  for (let i = 0; i < 200 && dernier && pendantUneVeille(dernier, veilles); i++) {
+    dernier = passagePrecedent(horaire, new Date(dernier.getTime() - 1))
+  }
+  return { dernier: dernier && pendantUneVeille(dernier, veilles) ? null : dernier, endormi: true }
 }
 
 /**
@@ -200,7 +254,7 @@ export function lireLaunchd(filtre: Filtre, langue: Language, maintenant: Date):
   const dossier = join(homedir(), 'Library', 'LaunchAgents')
   if (process.platform !== 'darwin' || !existsSync(dossier)) return []
   const charges = chargesLaunchd()
-  const veilles = veillesDuMac(maintenant)
+  const veilles = veillesDeLaMachine(maintenant)
   const taches: Array<Tache> = []
   for (const fichier of readdirSync(dossier).filter((f) => f.endsWith('.plist'))) {
     let plist: Plist
@@ -284,6 +338,7 @@ export function lireCron(filtre: Filtre, langue: Language, maintenant: Date): Ar
   } catch {
     // Sans ps, personne n'est vu au travail.
   }
+  const veilles = veillesDeLaMachine(maintenant)
   const vus = new Map<string, number>()
   const taches: Array<Tache> = []
   for (const { expression, commande } of lignesCrontab(texte)) {
@@ -298,14 +353,15 @@ export function lireCron(filtre: Filtre, langue: Language, maintenant: Date): Ar
     const base = `cron:${nom}`
     const rang = (vus.get(base) ?? 0) + 1
     vus.set(base, rang)
-    // cron ne garde pas d'historique : on suppose que le dernier passage prévu a eu lieu.
-    const dernier = passagePrecedent(horaire, maintenant)
+    // cron ne garde pas d'historique : le dernier passage prévu a eu lieu, sauf s'il tombait pendant une veille.
+    const { dernier, endormi } = passageCron(horaire, maintenant, veilles)
+    const auTravail = processus.includes(commande.split(/\s*(?:>>?|2>&1|\|)/)[0])
     taches.push({
       id: rang > 1 ? `${base}#${rang}` : base,
       name: nomLisible(nom),
       emoji: emojiPour(commande),
       role: commande.slice(0, 120),
-      status: processus.includes(commande.split(/\s*(?:>>?|2>&1|\|)/)[0]) ? 'working' : horaire.type === 'aucun' ? 'on-demand' : 'ok',
+      status: auTravail ? 'working' : horaire.type === 'aucun' ? 'on-demand' : endormi ? 'asleep' : 'ok',
       lastRun: iso(dernier),
       nextRun: iso(prochainPassage(horaire, maintenant)),
       schedule: decrire(horaire, langue) ?? expression,

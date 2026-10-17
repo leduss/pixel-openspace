@@ -86,7 +86,7 @@ export const SITE = {
         },
         {
           q: 'What is the difference between late and asleep?',
-          r: 'Late means a run was missed. Asleep means it was missed while the laptop was asleep: nothing is broken, so the lead leaves it alone. The local server tells the two apart on its own on macOS.',
+          r: 'Late means a run was missed. Asleep means it was missed while the laptop was asleep: nothing is broken, so the lead leaves it alone. The local server tells the two apart on its own, on macOS and Linux.',
         },
         {
           q: 'Can I start a job from the room?',
@@ -205,7 +205,7 @@ export const SITE = {
         },
         {
           q: 'Quelle différence entre late et asleep ?',
-          r: 'Late, un passage a été manqué. Asleep, il l’a été pendant que le portable dormait : rien n’est cassé, alors le chef le laisse tranquille. Sur macOS, le serveur local fait la différence tout seul.',
+          r: 'Late, un passage a été manqué. Asleep, il l’a été pendant que le portable dormait : rien n’est cassé, alors le chef le laisse tranquille. Sur macOS et sur Linux, le serveur local fait la différence tout seul.',
         },
         {
           q: 'Puis-je lancer une tâche depuis la salle ?',

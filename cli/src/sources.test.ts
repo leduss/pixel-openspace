@@ -3,7 +3,18 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { horaireCron } from './horaire'
-import { derniereLigne, emojiPour, etatAuRepos, lignesCrontab, lireVeilles, nomCommande, nomLisible, retenue } from './sources'
+import {
+  derniereLigne,
+  emojiPour,
+  etatAuRepos,
+  lignesCrontab,
+  lireVeilles,
+  lireVeillesJournald,
+  nomCommande,
+  nomLisible,
+  passageCron,
+  retenue,
+} from './sources'
 
 describe('crontab', () => {
   it('garde les tâches, pas les commentaires ni les variables', () => {
@@ -100,5 +111,41 @@ describe('le journal de veille du Mac', () => {
     expect(new Date(nuit.fin).toISOString()).toBe('2026-10-04T06:13:37.000Z')
     // Pas de réveil derrière : elle court jusqu'à maintenant.
     expect(new Date(encore.fin).toISOString()).toBe('2026-10-05T15:00:00.000Z')
+  })
+})
+
+describe('le journal de veille de Linux', () => {
+  const journal = [
+    "2026-10-04T00:44:12+0200 portable systemd-sleep[4321]: Entering sleep state 'suspend'...",
+    "2026-10-04T00:44:12+0200 portable systemd-sleep[4321]: Successfully froze unit 'user.slice'.",
+    '2026-10-04T08:13:37+0200 portable systemd-sleep[4321]: System returned from sleep state.',
+    // systemd 256 et suivants.
+    "2026-10-05T12:00:00+02:00 portable systemd-sleep[5000]: Performing sleep operation 'suspend'...",
+    "2026-10-05T13:30:00+02:00 portable systemd-sleep[5000]: System returned from sleep operation 'suspend'.",
+    // Les plus anciens, et une veille encore en cours.
+    '2026-10-05T16:31:25+0200 portable systemd-sleep[6000]: Suspending system...',
+  ].join('\n')
+
+  it('une veille va de l’endormissement au retour, quelle que soit la version de systemd', () => {
+    const veilles = lireVeillesJournald(journal, new Date('2026-10-05T17:00:00+02:00'))
+    expect(veilles.map((v) => [new Date(v.debut).toISOString(), new Date(v.fin).toISOString()])).toEqual([
+      ['2026-10-03T22:44:12.000Z', '2026-10-04T06:13:37.000Z'],
+      ['2026-10-05T10:00:00.000Z', '2026-10-05T11:30:00.000Z'],
+      ['2026-10-05T14:31:25.000Z', '2026-10-05T15:00:00.000Z'],
+    ])
+  })
+})
+
+describe('le passage d’une tâche cron', () => {
+  const quotidien = horaireCron('0 3 * * *')
+  const maintenant = new Date(2026, 9, 4, 10, 0)
+  const nuit = { debut: new Date(2026, 9, 4, 0, 30).getTime(), fin: new Date(2026, 9, 4, 8, 15).getTime() }
+
+  it('a eu lieu à l’heure quand la machine était allumée', () => {
+    expect(passageCron(quotidien, maintenant, [])).toEqual({ dernier: new Date(2026, 9, 4, 3, 0), endormi: false })
+  })
+
+  it('a été sauté pendant la veille : la tâche dort, son dernier passage est celui de la veille au soir', () => {
+    expect(passageCron(quotidien, maintenant, [nuit])).toEqual({ dernier: new Date(2026, 9, 3, 3, 0), endormi: true })
   })
 })
