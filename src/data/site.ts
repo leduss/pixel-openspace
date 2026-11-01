@@ -6,7 +6,7 @@
 import type { Language } from '@/registry/pixel-openspace/types'
 import { CAFE, DEPOT } from './landing'
 
-export type Page = 'accueil' | 'changelog' | 'faq' | 'contact'
+export type Page = 'accueil' | 'changelog' | 'faq' | 'contact' | 'tableau'
 
 /** L'adresse d'une page dans une langue : l'anglais à la racine, le français sous /fr. */
 export function chemin(langue: Language, page: Page): string {

@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.14.0 · 2026-11-01
+
+### Added
+
+- A dashboard around the room, experimental: `npx shadcn@latest add @pixel-openspace/pixel-openspace-dashboard`. One card per source, the room in isometric view with one zone per source, a planning board with a filter per source, what needs you (with “Run again” when `onRun` is given), the selected agent's last runs and the team. Same props as the room, plus `sources`. A notification shows when an agent starts, finishes or fails.
+
 ## 0.13.0 · 2026-11-01
 
 ### Added

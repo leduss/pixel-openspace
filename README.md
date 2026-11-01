@@ -196,6 +196,29 @@ The local server does the same without any code, and also knows when a `schedule
 
 Each `Agent` has an `id`, a `name`, a `status`, and optionally an `emoji`, a `role`, a `schedule`, `lastMessage`, `lastRun`, `nextRun` (its screen counts down the last ten minutes), `staleAfterHours` (72 by default: after that without a run, its plant wilts) and `runs`, today’s runs as `{ at, ok, message }` for the timeline.
 
+### A dashboard around the room
+
+Experimental. A second block puts the room inside a dashboard: one card per source, the room in isometric view with one zone per source, a planning board, what needs you, the selected agent's last runs and the team. It takes the same props as the room, plus `sources`.
+
+```bash
+npx shadcn@latest add @pixel-openspace/pixel-openspace-dashboard
+```
+
+```tsx
+import { PixelOpenspaceDashboard } from '@/components/pixel-openspace/dashboard'
+
+<PixelOpenspaceDashboard
+  agents={agents}
+  sources={[
+    { id: 'mac', name: 'This Mac', detail: 'launchd', unit: 'jobs', agents: ['backup', 'invoices'] },
+    { id: 'github', name: 'GitHub Actions', detail: 'owner/repo', unit: 'workflows', agents: ['deploy'] },
+  ]}
+  onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
+/>
+```
+
+Its titles use [Fredoka](https://fonts.google.com/specimen/Fredoka) when the page loads it into a `--font-fredoka` CSS variable, the room's pixel font otherwise.
+
 ## Without writing code
 
 The `cli/` folder holds a small server that finds the jobs scheduled on your machine, or the workflows of a GitHub repository, and shows them in the open space:

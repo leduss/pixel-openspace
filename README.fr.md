@@ -196,6 +196,30 @@ Le serveur local fait la même chose sans une ligne de code, et sait en plus qua
 
 Chaque `Agent` a un `id`, un `name`, un `status`, et au choix un `emoji`, un `role`, un `schedule`, `lastMessage`, `lastRun`, `nextRun` (son écran fait le compte à rebours des dix dernières minutes), `staleAfterHours` (72 par défaut : passé ce délai sans passage, sa plante fane) et `runs`, les passages du jour sous la forme `{ at, ok, message }` pour la frise.
 
+### Un tableau de bord autour de la salle
+
+Expérimental. Un second bloc met la salle dans un tableau de bord : une carte par source, la salle en vue isométrique avec une zone par source, un planning, ce qui a besoin de toi, les derniers passages de l'agent choisi et l'équipe. Il prend les mêmes props que la salle, plus `sources`.
+
+```bash
+npx shadcn@latest add @pixel-openspace/pixel-openspace-dashboard
+```
+
+```tsx
+import { PixelOpenspaceDashboard } from '@/components/pixel-openspace/dashboard'
+
+<PixelOpenspaceDashboard
+  agents={agents}
+  language="fr"
+  sources={[
+    { id: 'mac', name: 'Ce Mac', detail: 'launchd', unit: 'jobs', agents: ['backup', 'invoices'] },
+    { id: 'github', name: 'GitHub Actions', detail: 'owner/repo', unit: 'workflows', agents: ['deploy'] },
+  ]}
+  onRun={(agent) => fetch(`/api/jobs/${agent.id}/run`, { method: 'POST' })}
+/>
+```
+
+Ses titres sont en [Fredoka](https://fonts.google.com/specimen/Fredoka) quand la page la charge dans une variable CSS `--font-fredoka`, sinon dans la police pixel de la salle.
+
 ## Sans écrire de code
 
 Le dossier `cli/` contient un petit serveur qui trouve les tâches planifiées sur ta machine, ou les workflows d'un dépôt GitHub, et les montre dans l'open space :

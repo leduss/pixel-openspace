@@ -4,8 +4,9 @@ import { Card } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CopyCommand } from '@/components/copy-command'
+import { ApercuIso } from '@/components/apercu-iso'
 import { Demo } from '@/components/demo'
-import { CARTE_README, DEPOT, INSTALL, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
+import { CARTE_README, DEPOT, INSTALL, INSTALL_TABLEAU, LAMPES, PAGE, ROUTE, TEXTES } from '@/data/landing'
 import { journal } from '@/data/changelog'
 import { BoutonCafe, Cadre } from '@/components/cadre'
 import { Nouveautes } from '@/components/journal'
@@ -123,6 +124,24 @@ export function Landing({ langue }: { langue: Language }) {
             className="h-auto w-full rounded-xl border"
           />
           <figcaption className="text-sm text-muted-foreground">{t.readmeLegende}</figcaption>
+        </figure>
+      </section>
+
+      <Separator />
+
+      {/* La vue iso et le tableau de bord : expérimentaux, avec un aperçu vivant et un lien vers la démo complète. */}
+      <section id="iso" className="grid scroll-mt-6 gap-10 py-20 lg:grid-cols-[1fr_1.6fr]">
+        <div className="flex min-w-0 max-w-[45ch] flex-col gap-4">
+          <h2 className="font-heading text-3xl sm:text-4xl">{t.isoTitre}</h2>
+          <p className="leading-relaxed text-muted-foreground">{t.isoTexte}</p>
+          <CopyCommand command={INSTALL_TABLEAU} copy={t.copier} copied={t.copie} />
+          <Button variant="outline" className="w-fit" nativeButton={false} render={<a href={chemin(langue, 'tableau')} />}>
+            {t.isoBouton}
+          </Button>
+        </div>
+        <figure className="flex min-w-0 flex-col gap-2">
+          <ApercuIso langue={langue} />
+          <figcaption className="text-sm text-muted-foreground">{t.isoLegende}</figcaption>
         </figure>
       </section>
 
