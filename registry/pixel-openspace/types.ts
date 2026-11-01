@@ -88,6 +88,17 @@ export type ThemeName = 'geek' | 'eighties' | 'gym' | 'modern' | 'kitchen' | 'ne
 /** How many desks per row. */
 export type Columns = 4 | 5 | 6
 
+/** A group of agents sharing a part of the room. */
+export type Zone = {
+  name: string
+  /** The ids of its agents. */
+  agents: Array<string>
+  /** Written under the name on its sign. */
+  detail?: string
+  /** The colour of its sign. */
+  color?: string
+}
+
 export type OpenSpaceProps = {
   /** Up to five per row; rows are added as needed. */
   agents: Array<Agent>
@@ -117,6 +128,14 @@ export type OpenSpaceProps = {
   theme?: ThemeName
   /** How many desks per row: 4, 5 or 6. Default 5. */
   columns?: Columns
+  /** Experimental: 'iso' draws the room in isometric view, with the modern theme's furniture. Default 'front'. */
+  view?: 'front' | 'iso'
+  /**
+   * Experimental: groups of agents that get their own columns of desks, side by
+   * side, such as one per source. In iso view, each zone gets its floor, its
+   * sign and a glass partition.
+   */
+  zones?: Array<Zone>
   /** Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday. Default true. */
   seasonal?: boolean
   /** From what hour to what hour everybody stays at their desk. Default [22, 6]. */

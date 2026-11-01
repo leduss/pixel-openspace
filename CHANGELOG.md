@@ -14,6 +14,13 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.13.0 · 2026-11-01
+
+### Added
+
+- Experimental isometric view: `view="iso"`. Same engine, same walks: the room is drawn in volume (open space, oak and tiled floors, bookshelf, arcade cabinets, sofa, kitchen, a window showing the `weather`, a clock), and each agent becomes an animated object that embodies its task, picked from its emoji: a floppy disk for the backup, a rocket for the deploy, an envelope for the inbox. The lead is a crowned coffee mug. Agents in trouble get a red or orange “!” above them.
+- Experimental `zones`: groups of agents (one per source, for instance) get their own columns of desks, side by side. In iso view, each zone gets its floor, its sign on the back wall with its last runs, and a glass partition opened in front of every aisle.
+
 ## 0.12.0 · 2026-10-17
 
 ### Added

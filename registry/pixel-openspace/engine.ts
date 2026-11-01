@@ -85,19 +85,60 @@ export const COINS_GEEK: Array<CoinDePause> = [
   { nom: 'pouf-droite', x: 538, y: 146, assis: true },
 ]
 
+/**
+ * La colonne et la rangée de chaque bureau. Sans zones, on remplit les rangées
+ * de gauche à droite. Avec des zones (les agents groupés par source, par
+ * exemple), chacune reçoit ses colonnes, côte à côte, et s'y remplit seule :
+ * on garde le partage qui demande le moins de rangées.
+ */
+function placesParZone(ids: Array<string>, zones: Array<Array<string>>, parRangee: number) {
+  const groupes = zones.map((z) => z.filter((id) => ids.includes(id))).filter((z) => z.length)
+  const seuls = ids.filter((id) => !groupes.some((z) => z.includes(id)))
+  if (seuls.length) groupes.push(seuls)
+  if (groupes.length < 2 || groupes.length > parRangee) {
+    return ids.map((_, i) => ({ colonne: i % parRangee, rangee: Math.floor(i / parRangee) }))
+  }
+  // Chaque zone a au moins une colonne ; on essaie les partages et on garde le plus bas, puis le plus proportionnel.
+  let meilleur: Array<number> = []
+  let score = Infinity
+  const essayer = (partage: Array<number>, reste: number) => {
+    if (partage.length === groupes.length - 1) {
+      const complet = [...partage, reste]
+      if (reste < 1) return
+      const rangees = Math.max(...groupes.map((z, k) => Math.ceil(z.length / complet[k])))
+      const ecart = groupes.reduce((e, z, k) => e + Math.abs(complet[k] / parRangee - z.length / ids.length), 0)
+      if (rangees + ecart / 10 < score) {
+        score = rangees + ecart / 10
+        meilleur = complet
+      }
+      return
+    }
+    for (let n = 1; n <= reste - (groupes.length - partage.length - 1); n++) essayer([...partage, n], reste - n)
+  }
+  essayer([], parRangee)
+  const debut = meilleur.map((_, k) => meilleur.slice(0, k).reduce((a, b) => a + b, 0))
+  return ids.map((id) => {
+    const k = groupes.findIndex((z) => z.includes(id))
+    const i = groupes[k].indexOf(id)
+    return { colonne: debut[k] + (i % meilleur[k]), rangee: Math.floor(i / meilleur[k]) }
+  })
+}
+
 export function plan(
   ids: Array<string>,
   phrases: Phrases = TEXTS.en.phrases,
   coins: Array<CoinDePause> = COINS_GEEK,
   colonnes: Columns = 5,
+  zones: Array<Array<string>> = [],
 ): Plan {
   const pas = PAS[colonnes] ?? PAS[5]
   const parRangee = PAS[colonnes] ? colonnes : 5
   const x0 = LARGEUR / 2 - ((parRangee - 1) * pas) / 2
-  const rangees = Math.max(1, Math.ceil(ids.length / parRangee))
+  const places = placesParZone(ids, zones, parRangee)
+  const rangees = Math.max(1, ...places.map((p) => p.rangee + 1))
   const bureaux = ids.map((id, i) => {
-    const cx = x0 + (i % parRangee) * pas
-    const dy = HAUT + Math.floor(i / parRangee) * RANGEE
+    const cx = x0 + places[i].colonne * pas
+    const dy = HAUT + places[i].rangee * RANGEE
     const allee = dy + 108
     return {
       id,
@@ -277,8 +318,7 @@ export function invite(p: Plan, genre: Invite, numero: number): Marcheur {
 }
 
 /** Ceux que leur état cloue au bureau : le travail, ou le souci qui les y retient. */
-export const auBureau = (s: Statut | undefined) =>
-  s === 'au-travail' || s === 'en-echec' || s === 'en-retard' || s === 'endormi'
+export const auBureau = (s: Statut | undefined) => s === 'au-travail' || s === 'en-echec' || s === 'en-retard' || s === 'endormi'
 
 function partir(m: Marcheur, etape: Etape, couloirs: Array<number>) {
   m.chemin = trajet(m.lieu, etape.lieu, couloirs)

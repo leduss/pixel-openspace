@@ -14,6 +14,13 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.13.0 · 2026-11-01
+
+### Ajouté
+
+- Vue isométrique, expérimentale : `view="iso"`. Même moteur, mêmes trajets : la salle est dessinée en volume (pièce ouverte, parquet et carrelage, bibliothèque, bornes d'arcade, canapé, cuisine, une fenêtre qui montre la `weather`, une horloge), et chaque agent devient un objet animé qui incarne sa tâche, choisi d'après son emoji : une disquette pour la sauvegarde, une fusée pour la mise en prod, une enveloppe pour la boîte mail. Le chef est une tasse de café couronnée. Qui a un souci porte un « ! » rouge ou orange au-dessus de lui.
+- `zones`, expérimental : des groupes d'agents (un par source, par exemple) ont chacun leurs colonnes de bureaux, côte à côte. En vue iso, chaque zone a son sol, son enseigne au mur du fond avec ses derniers passages, et une verrière percée en face de chaque allée.
+
 ## 0.12.0 · 2026-10-17
 
 ### Ajouté

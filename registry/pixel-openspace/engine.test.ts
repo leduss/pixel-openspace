@@ -48,6 +48,23 @@ describe('trajet', () => {
 describe('plan', () => {
   const douze = Array.from({ length: 12 }, (_, i) => `agent-${i}`)
 
+  it('donne à chaque zone ses colonnes, côte à côte, sans changer l’ordre des bureaux', () => {
+    const ids = ['m1', 'g1', 'm2', 'm3', 'm4', 'g2', 'm5', 'm6', 'm7', 'g3']
+    const zones = [ids.filter((id) => id.startsWith('m')), ids.filter((id) => id.startsWith('g'))]
+    const p = plan(ids, FR, undefined, 5, zones)
+    expect(p.bureaux.map((b) => b.id)).toEqual(ids)
+    const x = (id: string) => p.bureaux.find((b) => b.id === id)!.cx
+    const mac = zones[0].map(x)
+    const github = zones[1].map(x)
+    expect(Math.max(...mac)).toBeLessThan(Math.min(...github))
+    expect(new Set(p.bureaux.map((b) => b.dy)).size).toBe(3)
+    for (const de of [p.chef, ...p.bureaux]) {
+      for (const vers of p.bureaux) {
+        expect(traverseUnBureau([de.siege.pos, ...trajet(de.siege, vers.visite, p.couloirs)], p)).toBe(false)
+      }
+    }
+  })
+
   it('range cinq bureaux par rangée par défaut', () => {
     expect(new Set(plan(douze, FR).bureaux.map((b) => b.dy)).size).toBe(3)
   })

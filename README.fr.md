@@ -184,6 +184,8 @@ Le serveur local fait la même chose sans une ligne de code, et sait en plus qua
 | `language` | `'en' \| 'fr'` | Tout ce qui s'écrit et se dit dans la salle |
 | `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern' \| 'kitchen' \| 'neon' \| 'farm'` | L'allure de la salle (`'geek'` par défaut, voir plus bas) |
 | `columns` | `4 \| 5 \| 6` | Le nombre de bureaux par rangée (`5` par défaut). Aussi dans les réglages |
+| `view` | `'front' \| 'iso'` | Expérimental : `'iso'` dessine la salle en vue isométrique, les agents en objets animés (`'front'` par défaut) |
+| `zones` | `Array<{ name, agents, detail?, color? }>` | Expérimental : des groupes d'agents avec leurs propres colonnes de bureaux, un par source par exemple. En vue iso, chaque zone a son sol, son enseigne et une verrière |
 | `seasonal` | `boolean` | Halloween tout octobre, Noël tout décembre, Pâques les deux semaines avant le lundi de Pâques (`true` par défaut) |
 | `nightHours` | `[number, number]` | Les heures où chacun reste à son bureau (`[22, 6]` par défaut) |
 | `toolbar` | `boolean` | Le bouton du plein écran et la roue dentée des réglages (`true` par défaut) |
