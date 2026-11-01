@@ -5,6 +5,8 @@ import type { Language } from '@/registry/pixel-openspace/types'
 export const DEPOT = 'https://github.com/leduss/pixel-openspace'
 export const CAFE = 'https://buymeacoffee.com/leduss'
 export const INSTALL = 'npx shadcn@latest add @pixel-openspace/pixel-openspace'
+export const INSTALL_TABLEAU = 'npx shadcn@latest add @pixel-openspace/pixel-openspace-dashboard'
+
 export const CARTE_README = '![office](https://pixel-openspace.vercel.app/api/card?repo=owner/repo)'
 
 /* La couleur de la lampe de chaque état, la même que dans la salle. */
@@ -75,6 +77,11 @@ export const TEXTES = {
       'Paste one line into any repository’s README: its GitHub Actions workflows at their desks, up to date, animated. The image refreshes every five minutes.',
     readmeOptions: 'Add &theme=farm, &lang=fr, &cols=6 or &title=ACME to the address.',
     readmeLegende: 'This repository’s own room, live.',
+    isoTitre: 'A dashboard, in isometric view',
+    isoTexte:
+      'Experimental: the same room in volume, each agent an animated object that embodies its task (a floppy disk for the backup, a rocket for the deploy), one zone per source. A second block wraps it in a dashboard: per-source cards, what needs you, the planning of the day and the team.',
+    isoBouton: 'Open the dashboard demo',
+    isoLegende: 'The same team, split between a Mac and a GitHub repository.',
     sourcesTitre: 'What it watches',
     sourcesTexte:
       'Anything that runs on a schedule or on demand, and can succeed or fail. Some of it comes in without a line of code; the rest takes one API route.',
@@ -193,6 +200,11 @@ export const TEXTES = {
       'Colle une ligne dans le README de n’importe quel dépôt : ses workflows GitHub Actions à leur bureau, à jour, animés. L’image se rafraîchit toutes les cinq minutes.',
     readmeOptions: 'Ajoute &theme=farm, &lang=fr, &cols=6 ou &title=ACME à l’adresse.',
     readmeLegende: 'La salle de ce dépôt-ci, en direct.',
+    isoTitre: 'Un tableau de bord, en vue iso',
+    isoTexte:
+      'Expérimental : la même salle en volume, chaque agent en objet animé qui incarne sa tâche (une disquette pour la sauvegarde, une fusée pour la mise en prod), une zone par source. Un second bloc l’entoure d’un tableau de bord : une carte par source, ce qui a besoin de toi, le planning du jour et l’équipe.',
+    isoBouton: 'Ouvrir la démo du tableau de bord',
+    isoLegende: 'La même équipe, répartie entre un Mac et un dépôt GitHub.',
     sourcesTitre: 'Ce que la salle surveille',
     sourcesTexte:
       'Tout ce qui tourne selon un horaire ou à la demande, et peut réussir ou échouer. Une partie entre sans une ligne de code ; le reste demande une route d’API.',

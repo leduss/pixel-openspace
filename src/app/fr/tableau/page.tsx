@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <div className={fredoka.variable}>
-      <Tableau />
+      <Tableau langue="fr" />
     </div>
   )
 }

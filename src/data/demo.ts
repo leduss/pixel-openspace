@@ -1,3 +1,4 @@
+import type { DashboardSource } from '@/registry/pixel-openspace/dashboard'
 import type { Agent, AgentRun, Language, Weather } from '@/registry/pixel-openspace/types'
 
 /** Les ciels à essayer dans la fenêtre du chef, avec une température de saison ; la nuit, c'est un ciel clair sans soleil. */
@@ -194,6 +195,28 @@ export function equipe(langue: Language): Array<Agent> {
       role: fr ? 'Le vieux cron que personne n’ose supprimer' : 'The old cron nobody dares to delete',
       status: 'off',
       lastRun: ilYa(60 * 24 * 40),
+    },
+  ]
+}
+
+/* L'équipe de démonstration, répartie entre ce Mac (launchd) et un dépôt GitHub : pour le tableau de bord et la salle iso. */
+export function sourcesDemo(langue: Language): Array<DashboardSource> {
+  return [
+    {
+      id: 'mac',
+      name: langue === 'fr' ? 'Ce Mac' : 'This Mac',
+      detail: 'launchd',
+      unit: 'jobs',
+      color: '#9aa3ff',
+      agents: ['backup', 'invoices', 'scraper', 'emails', 'social', 'photos', 'legacy'],
+    },
+    {
+      id: 'github',
+      name: 'GitHub Actions',
+      detail: 'acme/ops',
+      unit: 'workflows',
+      color: '#f6a26a',
+      agents: ['deploy', 'audit', 'reports'],
     },
   ]
 }

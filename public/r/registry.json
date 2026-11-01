@@ -8,18 +8,7 @@
       "type": "registry:block",
       "title": "Pixel Openspace",
       "description": "A pixel-art open space where your scheduled jobs and AI agents come to work: they sit and type while running, wander to the coffee machine when idle, and their PC smokes when they fail.",
-      "registryDependencies": [
-        "button",
-        "card",
-        "badge",
-        "button-group",
-        "dialog",
-        "kbd",
-        "switch",
-        "label",
-        "separator",
-        "input"
-      ],
+      "registryDependencies": ["button", "card", "badge", "button-group", "dialog", "kbd", "switch", "label", "separator", "input"],
       "files": [
         {
           "path": "registry/pixel-openspace/pixel-openspace.tsx",
@@ -167,8 +156,20 @@
           "target": "components/pixel-openspace/themes/farm.tsx"
         }
       ],
-      "dependencies": [
-        "lucide-react"
+      "dependencies": ["lucide-react"]
+    },
+    {
+      "name": "pixel-openspace-dashboard",
+      "type": "registry:block",
+      "title": "Pixel Openspace Dashboard",
+      "description": "The open space inside a dashboard: per-source cards, the room in isometric view with one zone per source, a planning board, what needs you, an agent's last runs and the team.",
+      "registryDependencies": ["https://pixel-openspace.vercel.app/r/pixel-openspace.json"],
+      "files": [
+        {
+          "path": "registry/pixel-openspace/dashboard.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/dashboard.tsx"
+        }
       ]
     }
   ]

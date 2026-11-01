@@ -14,6 +14,12 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` remplace les fichiers de `components/pixel-openspace/` (tes retouches y sont perdues) et les composants shadcn/ui dont il se sert, si les tiens diffèrent des officiels. Les nouvelles dépendances s'installent au passage.
 
+## 0.14.0 · 2026-11-01
+
+### Ajouté
+
+- Un tableau de bord autour de la salle, expérimental : `npx shadcn@latest add @pixel-openspace/pixel-openspace-dashboard`. Une carte par source, la salle en vue isométrique avec une zone par source, un planning filtrable par source, ce qui a besoin de toi (avec « Relancer » quand `onRun` est donné), les derniers passages de l'agent choisi et l'équipe. Les mêmes props que la salle, plus `sources`. Une notification s'affiche quand un agent démarre, finit ou plante.
+
 ## 0.13.0 · 2026-11-01
 
 ### Ajouté
