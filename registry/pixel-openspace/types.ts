@@ -138,7 +138,7 @@ export type OpenSpaceProps = {
   zones?: Array<Zone>
   /** Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday. Default true. */
   seasonal?: boolean
-  /** From what hour to what hour everybody stays at their desk. Default [22, 6]. */
+  /** From what hour to what hour everybody stays at their desk. Default [22, 6]; [0, 0] keeps them moving at all hours. */
   nightHours?: [number, number]
   /** The fullscreen button and the settings gear above the scene. Default true. */
   toolbar?: boolean

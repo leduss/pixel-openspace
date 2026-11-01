@@ -184,7 +184,7 @@ The local server does the same without any code, and also knows when a `schedule
 | `language` | `'en' \| 'fr'` | Everything written and said in the room |
 | `theme` | `'geek' \| 'eighties' \| 'gym' \| 'modern' \| 'kitchen' \| 'neon' \| 'farm'` | The look of the room (default `'geek'`, see below) |
 | `columns` | `4 \| 5 \| 6` | How many desks per row (default `5`). Also in the settings |
-| `view` | `'front' \| 'iso'` | Experimental: `'iso'` draws the room in isometric view, with the agents as animated objects (default `'front'`) |
+| `view` | `'front' \| 'iso'` | Experimental: `'iso'` draws the room in isometric view, with the agents as little 3D characters; click one to zoom in (default `'front'`) |
 | `zones` | `Array<{ name, agents, detail?, color? }>` | Experimental: groups of agents with their own columns of desks, such as one per source. In iso view, each zone gets its floor, its sign and a glass partition |
 | `seasonal` | `boolean` | Halloween all October, Christmas all December, Easter for the two weeks before Easter Monday (default `true`) |
 | `nightHours` | `[number, number]` | When everybody stays at their desk (default `[22, 6]`) |

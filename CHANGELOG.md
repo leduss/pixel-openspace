@@ -14,6 +14,17 @@ npx shadcn@latest add @pixel-openspace/pixel-openspace --overwrite
 
 `--overwrite` replaces the files in `components/pixel-openspace/` (your own edits there are lost) and the shadcn/ui components it uses, if yours differ from the official ones. New dependencies are installed along the way.
 
+## 0.15.0 · 2026-11-01
+
+### Changed
+
+- Iso view: the agents are now little 3D characters instead of animated objects. A round colored head with big eyes, the theme's outfit (top, trousers, sneakers), and for some white headphones or a cap; the lead keeps a crown. Seated at their desk they face us, like the lead.
+- The dashboard and its iso room ignore `nightHours` by default (`[0, 0]`): the agents keep walking in the evening. Pass `nightHours` to bring the night back.
+
+### Added
+
+- Iso view: click an agent to zoom in on it. The room slides and grows to center it, and its card opens top right; click the floor, the agent again or the card's cross to see the whole room.
+
 ## 0.14.0 · 2026-11-01
 
 ### Added

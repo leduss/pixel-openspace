@@ -17,6 +17,8 @@ export function ApercuIso({ langue }: { langue: Language }) {
         theme="modern"
         view="iso"
         toolbar={false}
+        // Un aperçu doit bouger à toute heure : pas de nuit où chacun reste à son bureau.
+        nightHours={[0, 0]}
         timeline={false}
         zones={sourcesDemo(langue).map((s) => ({ name: s.name, agents: s.agents, detail: s.detail, color: s.color }))}
         weather={{ temperature: 14, sky: 'clouds', day: true, place: 'Lanton' }}

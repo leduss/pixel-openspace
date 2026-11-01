@@ -9,7 +9,7 @@
 
 import { useState, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { THEMES } from './contexte'
-import { Portrait } from './iso'
+import { Portrait, habitsDe } from './iso'
 import { PixelOpenspace } from './pixel-openspace'
 import type { Agent, AgentStatus, Language, OpenSpaceProps } from './types'
 
@@ -316,7 +316,14 @@ type Colonne = {
  * last runs and the team. Takes the same props as `PixelOpenspace`, plus
  * `sources`; the room is in isometric view unless `view` says otherwise.
  */
-export function PixelOpenspaceDashboard({ sources: sourcesProp, view: vueProp = 'iso', theme = 'modern', ...salle }: DashboardProps) {
+export function PixelOpenspaceDashboard({
+  sources: sourcesProp,
+  view: vueProp = 'iso',
+  theme = 'modern',
+  // Pas de nuit par défaut : un tableau de bord se regarde le soir aussi, et tout le monde y reste en mouvement.
+  nightHours = [0, 0],
+  ...salle
+}: DashboardProps) {
   const { agents, onRun, language = 'en', now } = salle
   const m = MOTS[language] ?? MOTS.en
   const horloge = useSyncExternalStore(abonnerHorloge, lireHorloge, () => null)
@@ -344,13 +351,13 @@ export function PixelOpenspaceDashboard({ sources: sourcesProp, view: vueProp = 
     }
   }
 
-  const tenue = THEMES[theme]?.tenue ?? THEMES.modern.tenue
   const sources: Array<Source> = (
     sourcesProp?.length ? sourcesProp : [{ id: 'tous', name: m.toutes, agents: agents.map((a) => a.id) }]
   ).map((s, k) => ({ ...s, couleur: s.color ?? COULEURS[k % COULEURS.length] }))
   const sourceDe = (id: string) => sources.find((s) => s.agents.includes(id)) ?? sources[0]
-  const portrait = (a: Pick<Agent, 'id' | 'emoji'>, taille = 28) => (
-    <Portrait id={a.id} emoji={a.emoji} couleur={tenue(a.id).c} taille={taille} />
+  const habille = THEMES[theme] ?? THEMES.modern
+  const portrait = (a: Pick<Agent, 'id'>, taille = 28) => (
+    <Portrait id={a.id} habits={habitsDe(a.id, habille.tenue(a.id), habille.casque(a.id))} taille={taille} />
   )
 
   if (maintenant === null) return <div className="min-h-[600px] rounded-[18px] bg-[#080b16]" />
@@ -427,6 +434,7 @@ export function PixelOpenspaceDashboard({ sources: sourcesProp, view: vueProp = 
             <PixelOpenspace
               {...salle}
               theme={theme}
+              nightHours={nightHours}
               view={vue}
               zones={sources.length > 1 ? sources.map((s) => ({ name: s.name, agents: s.agents, detail: s.detail, color: s.couleur })) : []}
             />

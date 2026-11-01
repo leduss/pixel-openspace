@@ -79,7 +79,7 @@ export const TEXTES = {
     readmeLegende: 'This repository’s own room, live.',
     isoTitre: 'A dashboard, in isometric view',
     isoTexte:
-      'Experimental: the same room in volume, each agent an animated object that embodies its task (a floppy disk for the backup, a rocket for the deploy), one zone per source. A second block wraps it in a dashboard: per-source cards, what needs you, the planning of the day and the team.',
+      'Experimental: the same room in volume, each agent a little 3D character (its outfit, sometimes headphones or a cap), one zone per source. Click one to zoom in on it. A second block wraps it in a dashboard: per-source cards, what needs you, the planning of the day and the team.',
     isoBouton: 'Open the dashboard demo',
     isoLegende: 'The same team, split between a Mac and a GitHub repository.',
     sourcesTitre: 'What it watches',
@@ -202,7 +202,7 @@ export const TEXTES = {
     readmeLegende: 'La salle de ce dépôt-ci, en direct.',
     isoTitre: 'Un tableau de bord, en vue iso',
     isoTexte:
-      'Expérimental : la même salle en volume, chaque agent en objet animé qui incarne sa tâche (une disquette pour la sauvegarde, une fusée pour la mise en prod), une zone par source. Un second bloc l’entoure d’un tableau de bord : une carte par source, ce qui a besoin de toi, le planning du jour et l’équipe.',
+      'Expérimental : la même salle en volume, chaque agent en petit personnage 3D (sa tenue, parfois un casque ou une casquette), une zone par source. Un clic sur l’un d’eux zoome sur lui. Un second bloc l’entoure d’un tableau de bord : une carte par source, ce qui a besoin de toi, le planning du jour et l’équipe.',
     isoBouton: 'Ouvrir la démo du tableau de bord',
     isoLegende: 'La même équipe, répartie entre un Mac et un dépôt GitHub.',
     sourcesTitre: 'Ce que la salle surveille',

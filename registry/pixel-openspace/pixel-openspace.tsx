@@ -34,7 +34,7 @@ import { Chat, ColisDeposes, Confettis, EcranMural, Fenetre, Horloge, Nuit, Reco
 import { Fetes } from './festivities'
 import { SONS, jouerNotes } from './sound'
 import { Annonce, Parole, Personnage, Poste, cadrage } from './people'
-import { SceneIso, ancreIso, cadreIso } from './iso'
+import { SceneIso, cadreIso } from './iso'
 
 /*
  * pixel-openspace — an open space in pixel art where your scheduled jobs and
@@ -480,11 +480,8 @@ export function PixelOpenspace({
   // La carte s'accroche au-dessus de l'agent choisi, ou à son bureau s'il est absent.
   const ancre = (() => {
     if (!selection) return null
-    if (iso) {
-      const place = postes.find(({ vue }) => vue.fiche.id === selection.fiche.id)?.place
-      const present = presents.find(({ vue }) => vue.fiche.id === selection.fiche.id)
-      return place ? ancreIso(iso, present?.pose ?? null, place) : null
-    }
+    // En iso, la salle zoome sur l'agent choisi : sa carte s'ouvre en panneau, en haut à droite.
+    if (iso) return { x: LARGEUR - 12, haut: 12, bas: 12 }
     const present = presents.find(({ vue }) => vue.fiche.id === selection.fiche.id)
     const place = postes.find(({ vue }) => vue.fiche.id === selection.fiche.id)?.place
     // Assis à son bureau, la carte passe au-dessus de l'écran pour ne pas le cacher.
@@ -558,6 +555,7 @@ export function PixelOpenspace({
                   choisi={choisi}
                   choisir={choisir}
                   cliquerAgent={cliquerAgent}
+                  lacher={() => setChoisi(null)}
                 />
               ) : null}
               {pret && !iso ? (
