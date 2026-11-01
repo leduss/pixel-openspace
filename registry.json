@@ -87,6 +87,11 @@
           "target": "components/pixel-openspace/settings.tsx"
         },
         {
+          "path": "registry/pixel-openspace/iso.tsx",
+          "type": "registry:component",
+          "target": "components/pixel-openspace/iso.tsx"
+        },
+        {
           "path": "registry/pixel-openspace/timeline.tsx",
           "type": "registry:component",
           "target": "components/pixel-openspace/timeline.tsx"

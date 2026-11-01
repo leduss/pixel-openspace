@@ -34,6 +34,7 @@ import { Chat, ColisDeposes, Confettis, EcranMural, Fenetre, Horloge, Nuit, Reco
 import { Fetes } from './festivities'
 import { SONS, jouerNotes } from './sound'
 import { Annonce, Parole, Personnage, Poste, cadrage } from './people'
+import { SceneIso, ancreIso, cadreIso } from './iso'
 
 /*
  * pixel-openspace — an open space in pixel art where your scheduled jobs and
@@ -95,6 +96,8 @@ export function PixelOpenspace({
   language: langueProp = 'en',
   theme: themeProp = 'geek',
   columns: colonnesProp = 5,
+  view = 'front',
+  zones = [],
   seasonal: saisonsProp = true,
   nightHours = [22, 6],
   toolbar = true,
@@ -299,7 +302,10 @@ export function PixelOpenspace({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- on ne réagit qu'à ce qui se voit : états, messages, compteurs
   }, [empreinteEquipe, visitors, deliveries])
 
-  const lePlan = plan(cle ? cle.split(',') : [], t.phrases, theme.coins, colonnes)
+  // Les zones, en texte pour que la boucle d'animation ne reparte que si leur composition change.
+  const cleZones = zones.map((z) => z.agents.join(',')).join('|')
+  const groupes = cleZones ? cleZones.split('|').map((z) => z.split(',')) : []
+  const lePlan = plan(cle ? cle.split(',') : [], t.phrases, theme.coins, colonnes, groupes)
   const [sceneAnimee, setScene] = useState<Record<string, Pose>>(() => posesAuBureau(lePlan))
   // Les déplacements coupés, chacun reste assis à son bureau.
   const scene = mouvement ? sceneAnimee : posesAuBureau(lePlan)
@@ -316,7 +322,7 @@ export function PixelOpenspace({
 
   useEffect(() => {
     if (!mouvement || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins, colonnes)
+    const p = plan(cle ? cle.split(',') : [], t.phrases, theme.coins, colonnes, groupes)
     // Chacun se lève à son heure, pas tous ensemble.
     let marcheurs = [...[p.chef, ...p.bureaux].map((b) => marcheur(b.id, b.siege, 2_000 + Math.random() * 60_000)), chat(p)]
     let numero = 0
@@ -404,7 +410,7 @@ export function PixelOpenspace({
       clearTimeout(attente)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- la boucle ne repart que si les bureaux, leur disposition, la langue, le thème ou les déplacements changent
-  }, [cle, colonnes, language, nomTheme, mouvement])
+  }, [cle, cleZones, colonnes, language, nomTheme, mouvement])
 
   const tous = [equipe.chef, ...equipe.agents]
   const postes = [{ vue: equipe.chef, place: lePlan.chef }, ...equipe.agents.map((vue, i) => ({ vue, place: lePlan.bureaux[i] }))]
@@ -467,9 +473,18 @@ export function PixelOpenspace({
     ...theme.lumieres,
   ]
 
+  // En iso, la scène a son propre cadre : la carte s'y accroche à l'agent projeté.
+  const iso = view === 'iso' ? cadreIso(lePlan.hauteur) : null
+  const hauteurScene = iso ? (iso.hauteur * LARGEUR) / iso.largeur : lePlan.hauteur
+
   // La carte s'accroche au-dessus de l'agent choisi, ou à son bureau s'il est absent.
   const ancre = (() => {
     if (!selection) return null
+    if (iso) {
+      const place = postes.find(({ vue }) => vue.fiche.id === selection.fiche.id)?.place
+      const present = presents.find(({ vue }) => vue.fiche.id === selection.fiche.id)
+      return place ? ancreIso(iso, present?.pose ?? null, place) : null
+    }
     const present = presents.find(({ vue }) => vue.fiche.id === selection.fiche.id)
     const place = postes.find(({ vue }) => vue.fiche.id === selection.fiche.id)?.place
     // Assis à son bureau, la carte passe au-dessus de l'écran pour ne pas le cacher.
@@ -518,15 +533,34 @@ export function PixelOpenspace({
 
           <div
             ref={scenePleinEcran}
-            style={{ background: theme.fond }}
+            style={{ background: iso ? '#0b0f20' : theme.fond }}
             className="overflow-x-auto rounded-xl border [&:fullscreen]:flex [&:fullscreen]:items-center [&:fullscreen]:justify-center [&:fullscreen]:rounded-none [&:fullscreen]:border-0"
           >
             <div
               className="relative min-w-[720px] [:fullscreen>&]:w-[min(100vw,calc(100vh*var(--ratio)))]"
-              style={{ '--ratio': LARGEUR / lePlan.hauteur } as CSSProperties}
+              style={{ '--ratio': LARGEUR / hauteurScene } as CSSProperties}
             >
-              {!pret ? <div style={{ aspectRatio: `${LARGEUR} / ${lePlan.hauteur}` }} /> : null}
-              {pret ? (
+              {!pret ? <div style={{ aspectRatio: `${LARGEUR} / ${hauteurScene}` }} /> : null}
+              {pret && iso ? (
+                <SceneIso
+                  plan={lePlan}
+                  zones={zones}
+                  postes={postes}
+                  presents={presents}
+                  invites={invites}
+                  poseChat={poseChat}
+                  paroles={paroles}
+                  enseigne={enseigne}
+                  meteo={meteo}
+                  liens={objectLinks}
+                  aller={aller}
+                  jouer={setJeu}
+                  choisi={choisi}
+                  choisir={choisir}
+                  cliquerAgent={cliquerAgent}
+                />
+              ) : null}
+              {pret && !iso ? (
                 <svg
                   viewBox={`0 0 ${LARGEUR} ${lePlan.hauteur}`}
                   className="block w-full select-none"
@@ -612,7 +646,7 @@ export function PixelOpenspace({
                   key={selection.fiche.id}
                   agent={selection}
                   ancre={ancre}
-                  hauteur={lePlan.hauteur}
+                  hauteur={hauteurScene}
                   maintenant={maintenant}
                   lancer={onRun}
                   fermer={() => setChoisi(null)}
